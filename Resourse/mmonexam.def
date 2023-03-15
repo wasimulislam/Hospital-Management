@@ -1,0 +1,16 @@
+product ZAB ERP
+
+table mmonexam
+  caption "ON EXAMINATION"
+  columns ztime,zutime,zid,zauserid,zuuserid,xrow,~
+          xcase,xpatient,xepisodetype,xepisodeno,~
+          xlong,xrem,xcode,xnote 
+		 
+
+  primary key zid, xcase,xrow
+
+  foreign key
+        zid references zbusiness.zid
+        zid,xcase references mmappointment.zid,xcase
+  end foreign key
+end table

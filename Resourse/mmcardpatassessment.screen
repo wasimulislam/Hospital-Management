@@ -1,0 +1,681 @@
+screen mmcardpatassessment
+
+    sidebar list patassessment,nurspatass
+    sections form one, jscript myscript
+    
+	  list nurspatass
+        caption "Out-Patient Initial Assessment Form - Nursing" 
+        table mmpreschistory
+        order xcase
+        fixed xcase
+        rows 20
+        objects xallergyse,xallergy, xpainselect, xpaincher, xpainonset, ~
+		xpainloc, xpainduration, xpainscale, xtotal, xnutscrenappetite, xcontinousanti, xpriskduemultdisorderadlt
+        //header "Serial No","Alergies","Pain","Drug History","Past Disease History"
+     end list
+	  
+	 
+	
+	 
+	 list patassessment
+        caption "History of Illness "+xpatient+"-"+mmpatient.xname("xpatient='"+xpatient+"'")
+        table mmpreschistory
+        order xcase
+        fixed xcase
+        rows 20
+        objects xchiefcomplain attrib(link "login?screen=mmcardpatassessment&command=Show&xcase=?"),~
+				xsurgicalhistory attrib(link "login?screen=mmcardpatassessment&command=Show&xcase=?"),~
+				xfamilyhistory attrib(link "login?screen=mmcardpatassessment&command=Show&xcase=?"),~
+				xcomorbidities attrib(link "login?screen=mmcardpatassessment&command=Show&xcase=?"),~
+				xdrugall attrib(link "login?screen=mmcardpatassessment&command=Show&xcase=?"),~
+				xfoodall attrib(link "login?screen=mmcardpatassessment&command=Show&xcase=?"),~
+				xdrughistory attrib(link "login?screen=mmcardpatassessment&command=Show&xcase=?")
+        header "Presenting Symptoms","Surgical History","Family History","Comorbidities","Drug Allergy","Food allergy","Medication History"
+     end list
+	 
+	 
+
+	 
+     form one
+        caption "History of illness (Cardiology) <br>"
+        table mmpreschistory
+		primarykey xcase
+        order xcase
+		fixed xcase
+        return "login"
+        layout 4
+        pstyle 3 
+        objects Add,Update,Delete,Show,Clear,History,Investigation_History,General Examinations,Physical Examination,Investigation,Diagnosis,Medications,Diet & Advice,Back,*next,~
+		        Risk_History,Intervention/Surgery_History,Top,Previous,Next,Bottom,"<p>",~
+				xuserdept display(hide),~
+				xsurgicalhistory,xsurgcheck,xcomorbidities,xmorbcheck,xchiefcomplain,xfamilyother,xcompcheck,~
+				xdrughistory,xdrughistoryothers,xmedicheck,xobhistory,xobscheck,xmeandobhistory,xmenscheck,xcontraception,xcontcheck,xfamilyhistory,xfamcheck,~
+				,,xdum2 display(const),,,xoccupation,xlifstyle,xmstatus,xeducation,~
+				xsocialhistory,xother,xphychostatus,xcauti,xothistory display(const),xallergycheck,xdrugall,xfoodall
+				
+
+			field xallergycheck
+			col 2
+			end field
+			
+			field xfamilyother
+				caption <b><font>Please specify Presenting Symptoms for others</font></b>
+				//width 80
+				height 3
+				display editor
+			end field
+			
+			field xdrughistoryothers
+				caption <b><font>Please specify Others Medications</font></b>
+				//width 80
+				height 3
+				display editor
+			end field
+			
+			field xcompcheck
+			//column 2
+			//caption <b><font>Please Check No If You Don't Want to print Presenting Symptoms in Report<b><font>
+			event after
+				//action show
+			end event
+			end field
+
+			field xfamcheck
+			//caption <b><font>Please Check No If You Don't Want to print Family History in Report<b><font> 
+			event after
+				//action show
+			end event
+			end field
+			
+			field xsurgcheck
+			//caption <b><font>Please Check No If You Don't Want to print Past Medical/Surgical History in Report<b><font> 
+			event after
+				//action show
+			end event
+			end field
+			
+			field xmorbcheck
+			//caption <b><font>Please Check No If You Don't Want to print Co-morbidities in Report<b><font> 
+			event after
+				//action show
+			end event
+			end field
+			
+			field xmedicheck
+			//caption <b><font>Please Check No If You Don't Want to print Current Medication Details in Report<b><font> 
+			event after
+				//action show
+			end event
+			end field
+			
+			field xobscheck
+			//caption <b><font>Please Check No If You Don't Want to print Obsterical History in Report<b><font> 
+			event after
+				//action show
+			end event
+			end field
+			
+			field xmenscheck
+			//caption <b><font>Please Check No If You Don't Want to print Menstrual History in Report<b><font> 
+			event after
+				//action show
+			end event
+			end field
+			
+			field xcontcheck
+			//caption <b><font>Please Check No If You Don't Want to print Contraception History in Report<b><font> 
+			event after
+				//action show
+			end event
+			end field
+			
+			field xriskcheck
+			//caption <b><font>Please Check No If You Don't Want to print Risk Factors in Report<b><font> 
+			event after
+				//action show
+			end event
+			end field
+			
+			field xinvescheck
+			//caption <b><font>Please Check No If You Don't Want to print Investigation History in Report<b><font> 
+			event after
+				//action show
+			end event
+			end field
+			
+			field xinvestigationhistroy
+				caption <b><font color=green size=+1>Investigation History</font></b>
+				height 3
+				display editor
+			end field
+			
+			field xchiefcomplain
+				height 3
+				col 2
+				caption <b><font color=green size=+1>Presenting Symptoms</font></b>
+				pick "select xcode from xcodesnew where zactive='1' and xtype='Chief Complain' and xdeptname='0016' "
+				display multi
+			end field
+			
+			field xsurgicalhistory 
+				caption <b><font color=green size=+1>Past Medical History</font></b>
+				height 3
+				display editor
+            end field
+			
+			field xcomorbidities
+				//width 80
+				height 3
+				//embed required
+				caption <b><font color=green size=+1>Co-morbidities</font></b>
+				pick "select xcode from xcodesnew where zactive='1' and xtype='Comorobidity' and xdeptname='0016' "
+				display multi
+			end field
+			
+			field xfamilyhistory 
+				//embed required 
+				//caption Family History
+				caption <b><font color=green size=+1>Family History</font></b>
+				display editor
+				height 3
+            end field
+			
+			field xrisk 
+				//embed required 
+				//caption Family History
+				caption <b><font color=green size=+1>Risk Factors</font></b>
+				pick "select xcode from xcodesnew where zactive='1' and xtype='risk' and xdeptname='0016'"
+				display multi
+				height 3
+            end field
+			
+			field xdum2
+			caption <b><font color=green size=+1>Personal & Social History</font></b>
+			attrib local
+			column 4
+			end field
+			
+			field xoccupation 
+				caption Occupation
+				height 2	
+				col 2				
+            end field
+			
+			field xlifstyle 
+				caption Life Style	
+				display radio
+				col 2
+				pick "Sadentary,Active"
+            end field
+			
+			field xmstatus 
+				caption Marital Status
+				display combo
+				col 2
+				pick "select xcode from xcodes where zactive='1' and xtype='MARITAL STATUS'"				
+			
+            end field			
+		
+			field xsocialhistory
+			caption Personal Habit
+			display multi
+			col 2
+			end field
+
+			
+			field xother
+			caption <b><font>Please specify for others</font></b>
+			col 2
+	        width 20
+			end field
+			
+			
+			field xphychostatus 
+				col 2
+				//embed required 
+				pick "Calm,Anxious,Depressed,Others"
+				caption <b><font color=green size=+1>Psychological Assessment</font></b>				
+				display radio-horizontal
+            end field
+			
+			field xcauti 
+				col 2
+				//width 30
+				caption <b><font>Please specify for others</font></b>				
+				display editor
+            end field
+
+			
+				
+			field xothistory
+				caption <b><font color=green size=+1>H/O Allergy</font></b>
+				attrib local
+				//width 80                                  
+				column 2
+			end field
+			
+			field xdrugall
+				pick "select xcode from xcodes where zactive='1' and xtype='Drug Allergy'"
+				display editor
+				col 2
+				//width 50
+			end field
+
+			field xfoodall
+				pick "select xcode from xcodes where zactive='1' and xtype='Food Allergy'"
+				display editor
+				col 2
+			end field
+
+			field xpast
+				caption Others
+				display area
+				col 2
+				//width 80
+				height 3
+			end field
+
+			field xdrughistory 
+				height 3
+				col 2
+				caption <b><font color=green size=+1>Current Medication Details	</font></b>
+				pick "select xcode from xcodesinvest where zactive='1' and xtype='Drug_History' and xdeptname='0016' "
+				display multi
+				
+            end field
+			
+			field xobhistory
+				//caption Obsterical History
+				caption <b><font color=green size=+1>Obsterical History</font></b>
+				display editor
+				//column 2
+				height 3
+				//width 80                                   
+			end field
+			
+			field xmeandobhistory
+				//cption Menstrual History
+				caption <b><font color=green size=+1>Menstrual History</font></b>
+				display editor
+				//column 2
+				height 3
+				//width 80                                        
+			end field
+			
+			field xcontraception
+				//caption Contraception History
+				caption <b><font color=green size=+1>Contraceptive History</font></b>
+				display editor
+				//column 2
+				height 3
+				//width 80                                        
+			end field
+
+			field Back
+				width 100
+				height 40
+				embed onclick="clicked(this)"
+			end field
+		
+		
+			field xpatient
+				attrib readonly	
+				caption Patient
+				width 18
+				event after
+				set globals(xcase)=xcase
+				set globals(xpatient)=xpatient
+				set globals(xdoctor)=xdoctor
+				//class careports(getreport{mmclinicalreportns,xcase,Print Neuro Surgery Case Record})
+				end event
+			end field
+
+			field xname
+				attrib local
+				display const
+				caption Patient Details
+				event after
+					set xname = "Name: "mmpatient.xname("xpatient='"+xpatient+"'")+"<br/>AGE: "xage+"<br/> Gender: "+xsex
+				end event
+			end field
+		
+			field xsex
+				display hide
+			end field
+	
+		
+			field xnote
+			attrib local
+			event before
+				set xyear=#sub(#date,0,4)
+				set year=#sub(#date,0,4)
+				set per=#sub(#date,5,2)
+				set day=#sub(#date,8,2)
+				set xper=#sub(#date,5,2)
+				set xyearperdate1 = year+per+day
+				set xnote=xyearperdate1
+			end event
+			end field
+
+			field xcase
+				event before
+				set xyear=#sub(#date,0,4)
+				set year=#sub(#date,0,4)
+				set per=#sub(#date,5,2)
+				set day=#sub(#date,8,2)
+				set xper=#sub(#date,5,2)
+				set xyearperdate1 = year+per+day 
+				end event
+				event after
+				set docname = pdmst.xname("xstaff='"+#user+"'")			
+				end event
+			end field
+		
+
+			field xuserdept
+				caption Doctor Department
+				attrib local
+				display hide
+				event after
+				set xuserdept=pdmstview.departmentname("xposition='"+#position+"'")
+				end event
+			end field
+			
+			
+		
+			
+			
+		Field Add
+		event after
+			//set temp=#sesql("Update mmpreschistory set xchiefcomplain=(select REPLACE(xchiefcomplain, ',', '<br>') where zid='"+#id+"' and xcase='"+xcase+"') where zid='"+#id+"' and xcase='"+xcase+"'")
+			//set temp=#sesql("Update mmpreschistory set xfamilyother=(select REPLACE(xfamilyother, ',', '<br>') where zid='"+#id+"' and xcase='"+xcase+"') where zid='"+#id+"' and xcase='"+xcase+"'")
+			//set temp=#sesql("Update mmpreschistory set xcomorbidities=(select REPLACE(xcomorbidities, ',', '<br>') where zid='"+#id+"' and xcase='"+xcase+"') where zid='"+#id+"' and xcase='"+xcase+"'")
+			set #field(Add.attrib) = "disabled"
+		end event
+		end field
+			
+		
+		Field Update
+		event after
+			//set temp=#sesql("Update mmpreschistory set xchiefcomplain=(select REPLACE(xchiefcomplain, ',', '<br>') where zid='"+#id+"' and xcase='"+xcase+"') where zid='"+#id+"' and xcase='"+xcase+"'")
+			//set temp=#sesql("Update mmpreschistory set xfamilyother=(select REPLACE(xfamilyother, ',', '<br>') where zid='"+#id+"' and xcase='"+xcase+"') where zid='"+#id+"' and xcase='"+xcase+"'")
+			//set temp=#sesql("Update mmpreschistory set xcomorbidities=(select REPLACE(xcomorbidities, ',', '<br>') where zid='"+#id+"' and xcase='"+xcase+"') where zid='"+#id+"' and xcase='"+xcase+"'")
+			set #field(Add.attrib) = "disabled"
+		end event
+		end field
+		
+		
+		field History
+			caption History
+			height 40
+			width 120
+			embed onclick="clicked(this)"
+        end field
+		
+		field Diet & Advice
+			caption Diet & Advice
+			height 40
+			//width 100
+			embed onclick="clicked(this)"
+        end field
+
+        field Investigation
+			//width 100
+			height 40
+			embed onclick="clicked(this)"
+        end field
+		
+		field Investigation_History
+			width 180
+			height 40
+			embed onclick="clicked(this)"
+        end field
+		
+		field Intervention/Surgery_History
+			//width 120
+			height 40
+			embed onclick="clicked(this)"
+        end field
+		
+		field Risk_History
+			width 120
+			height 40
+			embed onclick="clicked(this)"
+        end field
+     
+        field Medications
+		    width 100
+			height 40
+			embed onclick="clicked(this)"
+        end field
+
+		field Physical Examination
+			height 40
+			width 100
+			embed onclick="clicked(this)"
+        end field
+		
+		field General Examinations
+		  height 40
+		  width 100
+          embed onclick="clicked(this)"
+        end field
+		
+		
+		field Diagnosis
+			height 40
+		  //width 100
+			embed onclick="clicked(this)"
+        end field
+		
+		
+		embed onsubmit="submitit(this)"
+
+		end form
+
+	jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+        function submitit(form){
+		var prcstype = document.one.xuserdept.value
+		
+		if (detail=="History"){
+			if (prcstype=="ENT" ){
+				form.screen.value = "mmentpatientassessment"
+				form.searchbutton.value = "Top"
+			}
+			
+			else if (prcstype=="Pediatric Surgery" ){
+				form.screen.value = "mmpaedneunpatassessment"
+				form.searchbutton.value = "Top"
+			}
+	
+			else if (prcstype=="Obstetrics & Gynaecology" ){
+				form.screen.value = "mmobsandgynpatientassessment"
+				form.searchbutton.value = "Top"
+			}
+			else if (prcstype=="Cardiac Surgery" || prcstype=="Cardiology"){
+				form.screen.value = "mmcardpatassessment"
+				form.searchbutton.value = "Top"
+			}
+			else if (prcstype=="Endocrinology"){
+				form.screen.value = "mmendropatassessment"
+				form.searchbutton.value = "Top"
+			}
+			else {
+			form.screen.value = "mmpatassessment"
+			form.searchbutton.value = "Top"
+		   
+        } 	
+		
+        }
+		  if (detail=="Investigation_History"){
+            form.screen.value = "mmcardinvsthistory"
+            form.searchbutton.value = "Clear"
+          }
+		  
+		  if (detail=="Intervention/Surgery_History"){
+            form.screen.value = "mmcardsurgichistory"
+            form.searchbutton.value = "Top"
+          }
+		  
+		  if (detail=="Risk_History"){
+            form.screen.value = "mmcardriskhistory"
+            form.searchbutton.value = "Clear"
+          }
+		  
+		  if (detail=="General Examinations"){
+            form.screen.value = "mmgeneralexam"
+            form.searchbutton.value = "Clear"
+          }
+		  	
+		//Physical Examination
+		
+		if (detail=="Physical Examination"){
+		if (prcstype=="ENT"){
+            form.screen.value = "mmentexamination"
+            form.searchbutton.value = "Find xcase=?"
+          }
+		 else if (prcstype=="Internal Medicine"){
+			form.screen.value = "mmhistoryexami"
+			form.searchbutton.value = "Find xcase=?"
+			}
+						
+		else if (prcstype=="General Surgery"){
+			form.screen.value = "mmhistoryexamgene"
+			form.searchbutton.value = "Find xcase=?"
+			}
+			
+		 else if (prcstype=="Obstetrics & Gynaecology"){
+			form.screen.value = "mmhistoryexmobs"
+			form.searchbutton.value = "Find xcase=?"
+			}
+		else if (prcstype=="Urology"){
+           form.screen.value = "mmhistoryexamuro"
+           form.searchbutton.value = "Find xcase=?"
+			}
+		else if (prcstype=="Gastroenterology"){
+           form.screen.value = "mmhistoryexamgas"
+           form.searchbutton.value = "Find xcase=?"
+			}	
+		else if (prcstype=="Nephrology"){
+            form.screen.value = "mmhistoryexamnep"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+			
+		else if (prcstype=="Orthopaedic"){
+            form.screen.value = "mmhistoryexamort"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+		else if (prcstype=="Neuro Medicine"){
+            form.screen.value = "mmhistoryexamneu"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+		else if (prcstype=="Neuro Surgery"){
+            form.screen.value = "mmhistoryexamneuro"
+			form.searchbutton.value = "Find xcase=?"
+		    }
+		else if (prcstype=="Respiratory Medicine"){
+            form.screen.value = "mmhistoryexamres"
+			form.searchbutton.value = "Find xcase=?"
+		    }				
+	     else if (prcstype=="Pediatric Surgery"){
+            form.screen.value = "mmhistorypediatric"
+            form.searchbutton.value = "Find xcase=?"
+			}
+		 else if (prcstype=="Cardiac Surgery"){
+            form.screen.value = "mmhistorycardiac"
+            form.searchbutton.value = "Find xcase=?"
+			}
+		 else if (prcstype=="Cardiology"){
+            form.screen.value = "mmhistoryexamcardsurg"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+		 else if (prcstype=="Oncology" || prcstype=="Endocrinology"){
+            form.screen.value = "mmhistoryoncology"
+			form.searchbutton.value = "Find xcase=?"
+		    }	 
+		 else if (prcstype=="Dermatology"){
+            form.screen.value = "mmhistoryexamiderm"
+			form.searchbutton.value = "Find xcase=?"
+		    }
+		 else if (prcstype=="Thoracic Surgery"){
+            form.screen.value = "mmhistoryexamithor"
+			form.searchbutton.value = "Find xcase=?"
+		    }	 			
+		} 
+		 	   
+				  			
+
+	      if (detail=="Investigation"){
+            form.screen.value = "mmlaborder"
+            form.searchbutton.value = "Clear"
+          }
+		  
+		 // Diagnosis
+		  if (detail=="Diagnosis"){
+            form.screen.value = "mmdiagnosisnew"
+            form.searchbutton.value = "find xcase=?"
+          }
+         		
+        
+    	   
+          if (detail=="Medications"){
+            form.screen.value = "mmprescription"
+            form.searchbutton.value = "xpatient=?"
+          }
+		 
+		if (detail=="Diet & Advice"){
+		   if (prcstype=="ENT" ){
+            form.screen.value = "mmentadvice"
+            form.searchbutton.value = "Top"
+          }
+		  
+		   else if (prcstype=="Pediatric Surgery"  || prcstype=="Neonatology" || prcstype=="Paediatrics"){
+            form.screen.value = "mmpaedneoadvice"
+            form.searchbutton.value = "Top"
+          }
+		  
+		   else if (prcstype=="Obstetrics & Gynaecology" ){
+            form.screen.value = "mmobsgynadvice"
+            form.searchbutton.value = "Top"
+         }
+		 
+		   else if (prcstype=="Cardiology"){
+			form.screen.value = "mmcardadvice"
+			form.searchbutton.value = "Top"
+		 }
+			
+		   else if (prcstype=="Oncology" || prcstype=="Endocrinology"){
+			form.screen.value = "mmendroadvice"
+			form.searchbutton.value = "Top"
+		 }
+		  
+		   else {
+            form.screen.value = "mmadvice"
+            form.searchbutton.value = "Top"
+         }
+        }
+		  
+	    if (detail=="Back"){
+        form.screen.value = "mmdocapp"
+        form.searchbutton.value = "Find xcase=?"
+      }
+
+    }
+		
+        </script>
+     end jscript
+
+
+
+end screen
+		
+		
+		 
+		  		  		  
+		   

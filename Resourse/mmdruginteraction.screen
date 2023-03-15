@@ -1,0 +1,113 @@
+screen mmdruginteraction
+
+     sidebar list one//,two,three
+     sections form one, jscript myscript
+
+     list one
+        caption "Drug Interaction"
+        table drugintrmaster
+        order xgenericdesc,xrow
+        fixed xgenericdesc
+        rows 20
+        objects xrow attrib(link "login?screen=mmdruginteraction&command=Show&xrow=?"),~
+               xdruginteraction,xnote1//,xfoodinteraction,xnote2,xdiagnosis,xnote3
+				
+
+        header "Serial No","Drug Interaction","Output"//,"Food Interaction","Output","Disease Interaction","Output"
+     end list
+	 
+	 
+	 
+     form one
+        caption "Drug Interaction Master "+xgenericdesc
+        table drugintrmaster
+	    primarykey xgenericdesc,xrow
+        order xgenericdesc,xrow
+		fixed xgenericdesc
+        return "login"
+        layout 2
+        pstyle 3
+        objects Show,Clear,Add, Update, Delete,Back,~//Food,Disease,~
+        	    Top,Previous,Next,Bottom,"<p>",~
+                xrow attrib(row 0 1),xdruginteraction,xnote1,xgenericname display(hide)//,xfoodinteraction,xnote2,xdiagnosis,xnote3
+		
+		field xrow
+		column 2
+			event after
+				set globals(xgenericdesc)=xgenericdesc
+			end event
+		end field
+		
+       
+		
+		field xnote1
+			caption Outcome
+			height 5
+		end field
+		
+		
+		field Add
+		event before	
+			set xgenericname=genericmaster.xgenericname("xgenericdesc='"+xgenericdesc+"'")
+		end event
+		event after
+			set xrow=''
+			action show
+		end event
+		end field
+		
+		field Update
+		event before	
+			set xgenericname=genericmaster.xgenericname("xgenericdesc='"+xgenericdesc+"'")
+		end event
+		event after
+			set xrow=''
+			action show
+		end event
+		end field
+		
+		field Back
+          embed onclick="clicked(this)"
+		  width 100
+        end field
+		
+		
+
+        embed onsubmit="submitit(this)"
+     end form
+
+
+
+
+
+     jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+        function submitit(form){
+
+         if (detail=="Back"){
+            form.screen.value = "mmgenericmaster"
+            form.searchbutton.value = "Find xgenericdesc=?"
+          }
+		   
+        }
+      function pickDetail(link){
+        if (navigator.appName.indexOf("Netscape") >= 0){
+          document.one.xinvnum.value=link.text
+          document.one.xbalance.value=primebal.text
+          document.one.xdate.value=date.text
+        }else{
+          document.one.xgenericname.value=link.innerText
+        }
+	return false
+	}	
+        </script>
+     end jscript
+
+
+
+end screen

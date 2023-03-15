@@ -1,0 +1,20 @@
+product ZAB ERP
+
+table patientadmissionview
+  caption "Designation View"
+  columns  zid, xname, xpatient,xadmissionno,xage,xsex,xroom,xbedno,xfloor,xcostitem
+
+  primary key zid, xcase
+
+  foreign key
+        zid references zbusiness.zid
+  end foreign key
+
+
+sql CREATE VIEW patientadmissionview (zid, xname, xpatient,xadmissionno,xage,xsex,xroom,xbedno,xfloor)~  
+		  
+	AS select a.zid, b.xname,a.xpatient,a.xadmissionno,isnull(a.xage,'')as xage,isnull(a.xsex,'')as xsex,isnull(a.xroom,'')as xroom,isnull(a.xbedno,'')as xbedno,isnull(a.xfloor,'')as xfloor ~
+	from mmadmission a join mmpatientrptview b on a.zid=b.zid and a.xpatient=b.xpatient
+
+end table
+

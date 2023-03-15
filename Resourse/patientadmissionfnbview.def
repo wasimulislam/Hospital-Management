@@ -1,0 +1,27 @@
+product ZAB ERP
+
+table patientadmissionfnbview
+  caption "Patient Admission"
+  columns zid,xadmissionno,xpatient,xname,xage,xsex,xroom,xbedno,xfloor,xwing,xcurrdiet,xdesc,xlnfooduni1,xbrfooduni1,xbrfooduni2,xbrfooduni3,xbrfooduni4,xdnfooduni1,xdnfooduni2,xdnfooduni3,xstatus
+
+
+  primary key zid,xadmissionno
+
+  foreign key
+        zid references zbusiness.zid
+  end foreign key
+
+	sql create view patientadmissionfnbview (zid,xadmissionno,xpatient,xname,xage,xsex,xroom,xbedno,xfloor,xwing,xcurrdiet,xdesc,xlnfooduni1,xbrfooduni1,xbrfooduni2,xbrfooduni3,xbrfooduni4,xdnfooduni1,xdnfooduni2,xdnfooduni3,xstatus) ~ 
+		 as SELECT a.zid,a.xadmissionno,a.xpatient,b.xname,a.xage,b.xsex,a.xroom,a.xbedno,a.xfloor,a.xwing,a.xcurrdiet,ISNULL(e.xdesc,''),ISNULL(d.xlnfooduni1,''),~
+         ISNULL(d.xbrfooduni1,''),ISNULL(d.xbrfooduni2,''),ISNULL(d.xbrfooduni3,''),ISNULL(d.xbrfooduni4,''),ISNULL(d.xdnfooduni1,''),ISNULL(d.xdnfooduni2,''),ISNULL(d.xdnfooduni3,''),a.xstatus ~
+         from mmadmission (NOLOCK) as a ~
+         join mmpatientrptview (NOLOCK) as b on a.zid=b.zid and a.xpatient=b.xpatient ~
+         left join pdsign1 (NOLOCK) as c on a.zid=c.zid and a.xdoctor=c.xstaff ~
+         left join mmadmissiondetail (NOLOCK) as d on a.zid=c.zid and a.xadmissionno=d.xadmissionno ~
+         left join caitem (NOLOCK) as e on d.zid=e.zid and d.xcostitem=e.xitem 
+								
+
+								
+								
+								  
+	 end table							  

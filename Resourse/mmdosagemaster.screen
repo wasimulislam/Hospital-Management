@@ -1,0 +1,112 @@
+screen mmdosagemaster
+
+     sidebar list one//,two
+     sections form one, jscript myscript
+
+     list one
+        caption "Dosage Master"
+        table dosemaster
+        order xgenericdesc,xrow
+        fixed xgenericdesc
+        rows 20
+        objects xrow attrib(link "login?screen=mmdosagemaster&command=Show&xrow=?"),~
+                xdosagetype,xgindication,xstrength1,xunit,xstrength2,xunitdose,xfrequency,xdoseduration3,xdoseduration2
+				
+
+        //header "Generic Name","Description","Therapeutic Classification","LASA","Frequency","Drug Information"
+     end list
+	 
+
+
+
+
+     form one
+        caption "Dosage Master For " +xgenericdesc
+        table dosemaster
+	    primarykey xgenericdesc,xrow
+        order xgenericdesc,xrow
+		fixed xgenericdesc
+        return "login"
+        layout 2
+        pstyle 3
+        objects Show,Clear,Add, Update, Delete,Back,~
+        	    Top,Previous,Next,Bottom,"<p>",~
+                xrow attrib(row 0 1),xdosagetype,xgindication,xstrength1,xunit,xstrength2,xunitdose,xfrequency,xdoseduration3,xdurationday,xdoseduration2,xdurationday2
+		
+		field xrow
+			event after
+				set globals(xgenericdesc)=xgenericdesc
+			end event
+		end field
+		
+        field xdosagetype
+			//column 2
+			display radio-horizontal
+        end field
+
+        field xgindication
+			display multi
+			column 2
+			pick "select xcode from xcodes where zactive='1' and xtype='Indication'"
+		end field
+
+		field xremdesc
+			caption <span class=sheader style="BACKGROUND:#a796c3;color:white;PADDING-BOTTOM: 3px;PADDING-LEFT: 7px; PADDING-RIGHT: 20px; PADDING-TOP: 3px;">Instruction Template</span>
+			attrib local
+			display const
+			
+		end field
+		
+		field xfrequency
+			column 2
+		end field
+		
+		field Back
+          embed onclick="clicked(this)"
+		  width 100
+        end field
+		
+		field add
+		event after
+			set xrow=''
+			action show
+		end event
+		end field
+
+        embed onsubmit="submitit(this)"
+     end form
+
+
+
+
+
+     jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+        function submitit(form){
+
+         if (detail=="Back"){
+            form.screen.value = "mmgenericmaster"
+            form.searchbutton.value = "Find xgenericdesc=?"
+          }
+        }
+      function pickDetail(link){
+        if (navigator.appName.indexOf("Netscape") >= 0){
+          document.one.xinvnum.value=link.text
+          document.one.xbalance.value=primebal.text
+          document.one.xdate.value=date.text
+        }else{
+          document.one.xgenericname.value=link.innerText
+        }
+	return false
+	}	
+        </script>
+     end jscript
+
+
+
+end screen

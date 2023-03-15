@@ -1,0 +1,22 @@
+//opd.menu
+//-------------------------------------------------------------------
+option                           |action
+
+Patient Registration              |#classPath+"/login?screen=mmpatient"                  	|ca		|	|210
+OPD Appointment                  |#classPath+"/login?screen=mmappheader"
+View Appointment                 |#classPath+"/login?screen=mmappheaderview"
+Slot Management                  |#classPath+"/login?screen=mmappheadermanual" 
+DaySlot Shifting                  |#classPath+"/login?screen=mmdateappshift" 
+Search Appointment               |#classPath+"/login?screen=mmappdetailsearch"
+Patient Registration Confirm      |#classPath+"/login?screen=mmpatienttemp"
+//OPD Reports						        		|#classPath+"/login?menu=opdrept"     	            |ac  		|   	|210
+//OPD Appointment For Dietitian    |#classPath+"/login?screen=mmdietappheader"
+//View Appointment For Dietitian               |#classPath+"/login?screen=mmdtappheaderview"
+//Search Appointment For Dietitian              |#classPath+"/login?screen=mmappdtdetailsearch"
+//Procedure Appointment			|#classPath+"/login?screen=mmprocedureheader"
+//Prescription		             |#classPath+"/login?screen=mmdocappprescription"
+/////Codes & Parameter                            |#classPath+"/login?menu=opdmaster" 
+//OPDNEW Appointment                  |#classPath+"/login?screen=mmappheadernew"
+
+
+//------------------------------------------------------------------------------------------------------------

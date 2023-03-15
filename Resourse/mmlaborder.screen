@@ -1,0 +1,453 @@
+ screen mmlaborder
+ 
+     sidebar list one,list profile,list profile2
+     sections form one, jscript myscript
+
+     list one
+        caption "Investigation At a Glance "+"-"+mmpatient.xname("xpatient='"+xpatient+"'")
+        table mmlaborderview
+        order xcase,xrow
+        fixed xcase
+		//select "xgitem='1021'"
+        navigator alpha
+        rows 20
+        objects xrow attrib(link "login?screen=mmlaborder&command=Show&xcase=?&xrow=?"),xdesc attrib(link "login?screen=mmlaborder&command=Show&xcase=?&xrow=?"),xlong attrib(link "login?screen=mmlaborder&command=Show&xcase=?&xrow=?"),xrem attrib(link "login?screen=mmlaborder&command=Show&xcase=?&xrow=?")
+         
+
+        header "Serial No","Name of Lab Test","Test Type","Note"
+     end list
+	 
+	 list two
+        caption "Radiology Order List "
+        table mmlaborderview
+        order xcase,xrow
+        fixed xcase
+		select "xgitem='1035'"
+        rows 20
+        objects xrow attrib(link "login?screen=mmlaborder&command=Show&xcase=?&xrow=?"),xdesc,xlong,xrem
+                
+		header "Serial No","Investigation",Test Type,"Note"
+     end list
+
+     list profile
+        caption "Lab Profile"
+        table mmdoclabprofileview
+        order xstaff,xrow
+		//fixed xstaff
+		//select "xgitem='1021'"
+        select "xstaff=(select xstaff from pdmst where xposition='"+#position+"') and xgitem='1021'"
+        rows 100
+        objects xitem attrib(link "abc" embed onclick="return pickDetail(this)"),~
+                xdesc//desc equals((select xdesc from caitem where caitem.zid=mmdoclabprofile.zid and caitem.xitem=mmdoclabprofile.xitem))
+
+
+
+        header "Charge Code","Name of Investigation"
+     end list
+	 
+	 list profile2
+        caption "Radiology Profile"
+        table mmdoclabprofileview
+        order xstaff,xrow
+        select "xstaff=(select xstaff from pdmst where xposition='"+#position+"') and xgitem='1035'"
+        rows 20
+        objects xitem  attrib(link "abc" embed onclick="return pickDetail(this)"),~
+                xdesc// equals((select xdesc from caitem where caitem.zid=mmdocrcprofile.zid and caitem.xitem=mmdocrcprofile.xitem)) attrib(name xdesc#)
+
+
+
+        header "Radiology Code","Name of Investigation"
+     end list
+
+
+     form one
+        caption "Investigations Advised "//+mmpatient.xname("xpatient='"+xpatient+"'")
+        table mmlaborder
+	    primarykey xcase,xrow
+        order xcase,xrow
+        fixed xcase
+        return "login"
+        layout 3
+        pstyle 3
+        report mmlabprescription,xcase,Print Lab Order
+        objects Add,Update,Delete,Show,Clear,History,General Examinations,Physical Examination,Investigation,Diagnosis,Medications,Diet & Advice,Back,*next,~
+        		Top,Previous,Next,Bottom,"<p>",~
+                xrow attrib(row 0 1),xitem,xpatdate,xitemdesc,xrem,~
+
+                //hide
+                xepisodeno display(hide),xepisodetype display(hide),xuserdept display(hide)//,xremarkxotherinfo
+
+
+		field xpatdate
+			caption Date
+			col 2
+		end field
+		
+        field xrow
+			display hide
+		end field
+
+        field xname
+			attrib local
+			display hide
+			event after
+				set xname=mmpatient.xname("xpatient='"+xpatient+"'")
+			end event
+        end field
+
+
+        field xitem
+			//caption Test Code
+			caption <b><font color=green size=+1>Test Code/Name</font></b>
+			pick list xitemlc
+			width 50
+        end field
+
+        field xitemdesc
+			caption <b><font color=green>Test Name</font></b>
+			attrib local
+			col 2
+			display const
+			event after
+				set xitemdesc=caitem.xdesc("xitem='"+xitem+"'")
+			end event
+
+        end field
+
+        field xuserdept
+			caption Doctor Department
+			attrib local
+			event after
+				set xuserdept=pdmstview.departmentname("xposition='"+#position+"'")
+			end event
+		end field
+		
+		 field xinvestigationhistroy
+		 //display const
+		// caption Investigation History For OUT Patient
+		 caption <b><font color=green size=+1>Investigation History</font></b>
+		  width 80
+		  height 6
+		  col 3
+		 end field
+
+        field Back
+			width 100
+			height 40
+          embed onclick="clicked(this)"
+        end field
+
+        field xrem
+			caption <b><font color=green size=+1>Special Notes</font></b>
+			col 3
+			width 80
+			
+        end field
+		
+		
+		
+		field Add
+			event before
+			if caitem.xitem("xitem='"+xitem+"'") .ne. xitem
+				error "Cannot Proceed -- This Lab Item is not available"
+			else if xcase .eq. ""
+				error "Please select Prescription ID"
+			end if
+			end event
+			event after
+				set xrow=''
+				action show
+			end event
+        end field
+		
+		field History
+			caption History
+			height 40
+			width 100
+			embed onclick="clicked(this)"
+        end field
+		
+		field Diet & Advice
+			caption Diet & Advice
+			height 40
+			//width 100
+			embed onclick="clicked(this)"
+        end field
+
+        field Investigation
+			//width 100
+			height 40
+			embed onclick="clicked(this)"
+        end field
+
+     
+        field Medications
+		    width 100
+			height 40
+			embed onclick="clicked(this)"
+        end field
+
+		field Physical Examination
+			height 40
+			width 100
+			embed onclick="clicked(this)"
+        end field
+		
+		field General Examinations
+		  height 40
+		  width 100
+          embed onclick="clicked(this)"
+        end field
+		
+		
+		field Diagnosis
+			height 40
+		  //width 100
+			embed onclick="clicked(this)"
+        end field
+
+        embed onsubmit="submitit(this)"
+     end form
+
+
+
+
+	jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+		function pickDetail(link){
+          if (navigator.appName.indexOf("Netscape") >= 0){
+            document.one.xitem.value=link.text
+           
+          }else{
+            document.one.xitem.value=link.innerText
+          }
+          return false
+        }
+        function submitit(form){
+		var prcstype = document.one.xuserdept.value
+		
+		if (detail=="History"){
+          if (prcstype=="ENT" ){
+            form.screen.value = "mmentpatientassessment"
+            form.searchbutton.value = "Top"
+          }
+		  
+		   else if (prcstype=="Pediatric Surgery"  || prcstype=="Neonatology" || prcstype=="Paediatrics"){
+            form.screen.value = "mmpaedneunpatassessment"
+            form.searchbutton.value = "Top"
+          }
+
+		else if (prcstype=="Obstetrics & Gynaecology" ){
+           form.screen.value = "mmobsandgynpatientassessment"
+           form.searchbutton.value = "Top"
+         }
+		 else if (prcstype=="Cardiology"){
+			form.screen.value = "mmcardpatassessment"
+			form.searchbutton.value = "Top"
+		}
+		else if (prcstype=="Endocrinology" || prcstype=="Ophthalmology"){
+			form.screen.value = "mmendropatassessment"
+			form.searchbutton.value = "Top"
+			}
+		else if (prcstype=="Oncology"){
+			form.screen.value = "mmoncopatassessment"
+			form.searchbutton.value = "Top"
+			}
+		else if (prcstype=="Dentistry"){
+			form.screen.value = "mmdentalpatassessment"
+			form.searchbutton.value = "Top"
+			}
+		else if (prcstype=="Nephrology"){
+				form.screen.value = "mmnephropatassessment"
+				form.searchbutton.value = "Top"
+			}
+		else if (prcstype=="Internal Medicine"){
+			form.screen.value = "mminternalpatassessment"
+			form.searchbutton.value = "Top"
+		}
+		else{
+           form.screen.value = "mmpatassessment"
+           form.searchbutton.value = "Top"
+		}
+         		 
+        }
+		  
+		 if (detail=="General Examinations"){
+			if (prcstype=="ENT" ){
+            form.screen.value = "mmentgeneralexam"
+            form.searchbutton.value = "Clear"
+			}
+			else {
+            form.screen.value = "mmgeneralexam"
+            form.searchbutton.value = "Clear"
+			}
+		}
+		  	
+		//Physical Examination
+		
+		if (detail=="Physical Examination"){
+		if (prcstype=="ENT"){
+            form.screen.value = "mmentexamination"
+            form.searchbutton.value = "Find xcase=?"
+          }
+		 else if (prcstype=="Internal Medicine"){
+			form.screen.value = "mmhistorycardiac"
+			form.searchbutton.value = "Find xcase=?"
+			}
+		else if (prcstype=="Ophthalmology"){
+			form.screen.value = "mmhistoryoptham"
+			form.searchbutton.value = "Find xcase=?"
+		}
+						
+		else if (prcstype=="General Surgery"){
+			form.screen.value = "mmhistoryexamgene"
+			form.searchbutton.value = "Find xcase=?"
+			}
+			
+		 else if (prcstype=="Obstetrics & Gynaecology"){
+			form.screen.value = "mmhistoryexmobs"
+			form.searchbutton.value = "Find xcase=?"
+			}
+		else if (prcstype=="Urology"){
+           form.screen.value = "mmhistoryexamuro"
+           form.searchbutton.value = "Find xcase=?"
+			}
+		else if (prcstype=="Gastroenterology"){
+           form.screen.value = "mmhistoryexamgas"
+           form.searchbutton.value = "Find xcase=?"
+			}	
+		else if (prcstype=="Nephrology"){
+            form.screen.value = "mmhistoryexamnep"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+			
+		else if (prcstype=="Orthopaedic"){
+            form.screen.value = "mmhistoryexamort"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+		else if (prcstype=="Neuro Medicine"){
+            form.screen.value = "mmhistoryexamneu"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+		else if (prcstype=="Neuro Surgery"){
+            form.screen.value = "mmhistoryexamneuro"
+			form.searchbutton.value = "Find xcase=?"
+		    }
+		else if (prcstype=="Respiratory Medicine"){
+            form.screen.value = "mmhistoryexamres"
+			form.searchbutton.value = "Find xcase=?"
+		    }				
+	      else if (prcstype=="Pediatric Surgery"  || prcstype=="Neonatology" || prcstype=="Paediatrics"){
+            form.screen.value = "mmhistorypediatric"
+            form.searchbutton.value = "Find xcase=?"
+			}
+		 else if (prcstype=="Cardiac Surgery"){
+            form.screen.value = "mmhistorycardiac"
+            form.searchbutton.value = "Find xcase=?"
+			}
+		 else if (prcstype=="Cardiology"){
+            form.screen.value = "mmhistoryexamcardsurg"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+		 else if (prcstype=="Oncology" || prcstype=="Endocrinology" || prcstype=="Dentistry"){
+            form.screen.value = "mmhistoryoncology"
+			form.searchbutton.value = "Find xcase=?"
+		    }	 
+		 else if (prcstype=="Dermatology"){
+            form.screen.value = "mmhistoryexamiderm"
+			form.searchbutton.value = "Find xcase=?"
+		    }
+		else if (prcstype=="Ophthalmology"){
+			form.screen.value = "mmhistoryoptham"
+			form.searchbutton.value = "Find xcase=?"
+		}
+		 else if (prcstype=="Thoracic Surgery"){
+            form.screen.value = "mmhistoryexamithor"
+			form.searchbutton.value = "Find xcase=?"
+		    }	 			
+		} 
+		 	   
+				  			
+
+	      if (detail=="Investigation"){
+            form.screen.value = "mmlaborder"
+            form.searchbutton.value = "Clear"
+          }
+		  
+		 // Diagnosis
+		  if (detail=="Diagnosis"){
+		  if (prcstype=="ENT"){
+            form.screen.value = "mmentdiagnosisnew"
+            form.searchbutton.value = "Top"
+          }
+		  else {
+            form.screen.value = "mmdiagnosisnew"
+            form.searchbutton.value = "Top"
+          }
+		  }	
+         		
+        
+    	   
+          if (detail=="Medications"){
+            form.screen.value = "mmprescription"
+            form.searchbutton.value = "xpatient=?"
+          }
+		 
+		   ///Diet&Advice
+		 
+		   if (detail=="Diet & Advice"){
+		   if (prcstype=="ENT" ){
+            form.screen.value = "mmentadvice"
+            form.searchbutton.value = "Top"
+          }
+		  
+		   else if (prcstype=="Pediatric Surgery"  || prcstype=="Neonatology" || prcstype=="Paediatrics"){
+            form.screen.value = "mmpaedneoadvice"
+            form.searchbutton.value = "Top"
+          }
+		  
+		   else if (prcstype=="Obstetrics & Gynaecology" ){
+            form.screen.value = "mmobsgynadvice"
+            form.searchbutton.value = "Top"
+         }
+		 
+		   else if (prcstype=="Cardiology"){
+			form.screen.value = "mmcardadvice"
+			form.searchbutton.value = "Top"
+		 }
+			
+		 else if (prcstype=="Endocrinology"){
+			form.screen.value = "mmendroadvice"
+			form.searchbutton.value = "Top"
+		 }
+		  else if (prcstype=="Oncology"){
+			form.screen.value = "mmoncoadvice"
+			form.searchbutton.value = "Top"
+		 }
+		  
+		   else {
+            form.screen.value = "mmadvice"
+            form.searchbutton.value = "Top"
+         }
+          }
+		  
+	    if (detail=="Back"){
+        form.screen.value = "mmdocapp"
+        form.searchbutton.value = "Find xcase=?"
+      }
+
+    }
+		
+		
+        </script>
+     end jscript
+
+
+
+
+end screen

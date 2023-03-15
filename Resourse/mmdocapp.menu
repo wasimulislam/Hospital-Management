@@ -1,0 +1,29 @@
+//Human Resources.menu
+//-------------------------------------------------------------------
+option                           |action
+//-------------------------------------------------------------------
+Doctors Patient List             |#classPath+"/login?screen=doctorpatientlist" 			    |ca        	|   	|rx.png   |210
+Appointments                     		|#classPath+"/login?screen=mmdocapp"
+Appointments Follow up      |#classPath+"/login?screen=mmdocappfollowup"
+//Patient Assessment                   	|#classPath+"/login?screen=mmpatassessment"
+//Patient Assessment for Neuro Depat. Dr     |#classPath+"/login?screen=mmneuropatientassessment"
+Search Doctor Appointment  	    |#classPath+"/login?screen=*viewcrystal opddatewisedocapp(3;in,st,dt;zid,doctor,date;xuser=Doctor,xdate=Date,xviewtype=Report View)"
+//OT Booking Form                  |#classPath+"/login?screen=mmotappheader"
+//Medical Board                               |#classPath+"/login?screen=medicalboardheader"
+//Tumor Board                           	|#classPath+"/login?screen=mmtumorboard"
+Refer Doctor                     		|#classPath+"/login?screen=refdoctor"
+//IPD Prescription                           |#classPath+"/login?menu=mmipddocmenu" 
+Clinical Notes        |#classPath+"/login?screen=mmclinicalnote"
+//Diet Appointments                     		|#classPath+"/login?screen=mmdtdocapp"
+//Patient History     					|#classPath+"/login?screen=mmpatienthistory"
+//Present Complain     					|#classPath+"/login?screen=mmpresentgenaral"
+//Vitals Collection               		|#classPath+"/login?screen=mmgeneralexam"
+//Appointments New (Obs)               |#classPath+"/login?screen=mmdocappobsnew"
+//Appointments (Gynae)               |#classPath+"/login?screen=mmdocappgynae"
+////Reports                             |#classPath+"/login?menu=investrept"        |       |      |120
+//Codes & Parameter                   |#classPath+"/login?menu=opdmaster" 
+//Today's Appointments             |#classPath+"/login?screen=mmdocapptoday"
+//Radiology Report   	   		   |#classPath+"/login?screen=*viewcrystal allradiology(2;in,st;zid,patient;xpatient=Patient ID,xviewtype=Report View)"
+
+//-------------------------------------------------------------------
+

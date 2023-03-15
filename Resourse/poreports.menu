@@ -1,0 +1,53 @@
+Purchase Reports.menu
+//-------------------------------------------------------------------  xgitem
+option                           |action
+//-------------------------------------------------------------------  xgitemrpt
+
+Product                          		|#classPath+"/login?menu=misreportspoproduct"
+Store Purchase Requisition (SPR) List	|#classPath+"/login?screen=*viewcrystal sprlisting(8;in,st,dt,dt,st,st,st,st;zid,wh,fdate,tdate,titem,reqtype,status,group;xwh=Store=,xdate=From date=#date,xdate=To Date=#date,xtitem=Item Type,xreqtype=Requisition Type,xappstatus=Approval Status,xgitemrpt=Item Group,xviewtype=Report View)"
+Pending SPR list For PR					|#classPath+"/login?screen=*viewcrystal sprpending(5;in,st,dt,dt,st;zid,wh,fdate,tdate,titem;xwh=Store=,xdate=From date=#date,xdate=To Date=#date,xtitem=Item Type,xviewtype=Report View)"
+Pending PR list for PO           		|#classPath+"/login?screen=*viewcrystal poprpending(7;in,st,dt,dt,st,st,st;zid,wh,fdate,tdate,dept,staff,rpt;xwh=Store=,xdate=From date=#date,xdate=To Date=#date,xdeptcar=Dept,xstaff=Staff ID,xviewtype=Report View)"
+//Date wise Club Detail 	 				 |#classPath+"/login?screen=*viewcrystal imtorclubDET(5;in,dt,dt,st,st;zid,fdate,tdate,wh,status;xdate=From Date,xdate=To Date,xwh=Store,xstatusgrn=Club Status,xviewtype=Report View)"
+///Clubbed Transaction Detail 	  |#classPath+"/login?screen=*viewcrystal imtorclub(3;in,st,st;zid,trnnum,item;xtrnnumclub=Transaction Number,xitem=Item,xviewtype=Report View)"
+//PR Status List                   		|#classPath+"/login?screen=*viewcrystal reqlist-pr(6;in,st,st,st,st,st;zid,fdate,tdate,status,staff,reptype;xdate=From date=#date,xdate=To Date=#date,xreqstatuspr=Requisition Status,xstaff=Employee ID,xreptype=Report Type,xviewtype=Report View)"
+PO Print          		                |#classPath+"/login?screen=*viewcrystal poprint(2;in,st;zid,pornum;xpornum=PO No,xviewtype=Report View)"
+////PO Status List                   		|#classPath+"/login?screen=*viewcrystal polist(8;in,dt,dt,st,st,st,st,st;zid,fdate,tdate,status,spr,staff,rpttype,project;xdate=From date=#date,xdate=To Date=#date,xreqstatuspo=Requisition Status,xdegree=To Show,xstaff=Employee ID,xreptype=Report Type,xproject=Project,xviewtype=Report View)"
+PO Status List                   		|#classPath+"/login?screen=*viewcrystal polist(9;in,dt,dt,st,st,st,st,st,st;zid,fdate,tdate,status,spr,staff,rpttype,project,pono;xdate=From date=#date,xdate=To Date=#date,xreqstatuspo=Requisition Status,xdegree=To Show,xstaff=Employee ID,xreptype=Report Type,xproject=Project,xpornum=PO Number,xviewtype=Report View)"
+Supplier-wise PO/WO Report            	|#classPath+"/login?screen=*viewcrystal pomrrsum(7;in,st,st,dt,dt,st,st;zid,wh,tornum,fdate,tdate,sup,rpt;xwh=Store,xsprnum=SPR No,xdate=From Date=#date,xdate=To Date=#date,xsup=Supplier=,xpodoctype=Document Type,xviewtype=Report View)"
+//Date-wise PO/WO Report(With value) 		|#classPath+"/login?screen=*viewcrystal pomrsumval(11;in,dt,dt,st,st,st,st,st,st,st,st;zid,fdate,tdate,wh,gitem,catitem,titem,sup,item,rpt,repmodule;xdate=From Date=#date,xdate=To Date=#date,xwh=Plant/Store,xgitemrpt=Item Group,xcatitem = Item Category,xtitem = Item Type,xsup=Supplier=,xitem=Item,xpodoctype=Document Type,xhide=Hide=1,xviewtype=Report View)"
+Monthly Purchase Details 				|#classPath+"/login?screen=*viewcrystal posumval(12;in,dt,dt,st,st,st,st,st,st,st,st,st;zid,fdate,tdate,wh,gitem,catitem,titem,sup,staff,item,rpt,repmodule;xdate=From Date=#date,xdate=To Date=#date,xwh=Plant/Store,xgitemrpt=Item Group,xcatitem = Item Category,xtitem = Item Type,xsup=Supplier=,xstaff=Preparer Name,xitem=Item,xpo= >,xhide=Hide=1,xviewtype=Report View)"
+Monthly SPR Details 					|#classPath+"/login?screen=*viewcrystal sprtogrn(5;in,st,st,st,st;@zid,@user,@fdate,@tdate,@pwh;xhide=Hide,xdate=From Date=#date,xdate=To Date=#date,xhide=Hide,xviewtype=Report View)"
+
+PR Status List                   		|#classPath+"/login?screen=*viewcrystal reqlist-pr(6;in,dt,dt,st,st,st;zid,fdate,tdate,status,staff,reptype;xdate=From date=#date,xdate=To Date=#date,xreqstatuspr=Requisition Status,xstaff=Employee ID,xreptype=Report Type,xviewtype=Report View)"
+
+//Date-wise PO/WO Report(With value) 		|#classPath+"/login?screen=*viewcrystal pomrsumval(11;in,dt,dt,st,st,st,st,st,st,st,st;zid,fdate,tdate,sup,item,rpt,wh,gitem,titem,repmodule,pono;xdate=From Date=#date,xdate=To Date=#date,xsup=Supplier=,xitem=Item Code,xpo= >,xwh=Plant/Store,xgitemrpt=Item Group,xtitem = Item Type,xhide=Hide=1,xpornum=PO Number,xviewtype=Report View)"
+Date-wise PO/WO Report(With value) 		|#classPath+"/login?screen=*viewcrystal pomrsumval(11;in,dt,dt,st,st,st,st,st,st,st,st;zid,fdate,tdate,sup,item,rpt,wh,gitem,titem,repmodule,pono;xdate=From Date=#date,xdate=To Date=#date,xsup=Supplier=,xitem=Item Code,xpo= >,xwh=Plant/Store,xgitemrpt=Item Group,xtitem = Item Type,xhide=Hide=1,xpornum=PO Number,xviewtype=Report View)"
+Purchase report With GRN		  		|#classPath+"/login?screen=*viewcrystal pogrnrptval(6;in,st,st,dt,dt,st;zid,wh,cus,fdate,tdate,pono;xwh=Store,xsup=Supplier,xdate=From Date,xdate=To Date,xpornum=PO No,xviewtype=Report View)"
+
+Supplier Wise GRN Item List      		|#classPath+"/login?screen=*viewcrystal pooritemqty(5;in,dt,dt,st,st;zid,fdate,tdate,sup,wh;xdate=From Date=#date,xdate=To Date=#date,xsup=Supplier=,xwh=Store=,xviewtype=Report View)"
+Supplier Wise GRN/SQC Listing     	 	|#classPath+"/login?screen=*viewcrystal posupwisegrndetail(9;in,st,st,st,st,dt,dt,st,st;zid,project,wh,sup,item,fdate,tdate,grnstatus,doctype;xproject=Plant/Project,xwh=Store,xsup=Supplier=,xitemall=Item,xdate=From Date=#date,xdate=To Date=#date,xstatusrep=GRN/SQC Status,ximdoctype=Document Type,xviewtype=Report View)"
+Item Wise GRN Listing            		|#classPath+"/login?screen=*viewcrystal itemwisegrndetail(4;in,dt,dt,st;zid,fdate,tdate,item;xdate=From Date=#date,xdate=To Date=#date,xitem=Item=,xviewtype=Report View)"
+Supplier List                 			|#classPath+"/login?screen=*viewcrystal supplierlist(3;in,st,st;zid,gsup,supcat;xgsup=Supplier Group,xsupcat=Supplier Category,xviewtype=Report View)"
+Product List                  	 |#classPath+"/login?screen=*viewcrystal caitem(4;in,st,st,st;zid,gitem,itemtype,activeinactive;xgitem=Item Group,xitemgrptype=Item Type,xempjobstatus=Activation Status<span>*</span>,xviewtype=Report View)"
+//Product List                  			|#classPath+"/login?screen=*viewcrystal caitem(3;in,st,st;zid,gitem,catitem;xgitemrpt=Item Group,xcatitem=Item Category,xviewtype=Report View)"
+
+Product Analysis                 		|#classPath+"/login?menu=misprodanalysis"
+//Pending SR list for PR                 |#classPath+"/login?screen=*viewcrystal poreqpending(6;in,st,dt,dt,st,st;zid,wh,fdate,tdate,dept,rpt;xwh=Store=,xdate=From date=#date,xdate=To Date=#date,xdeptcar=Dept,xviewtype=Report View)"
+///Service                          |#classPath+"/login?menu=misreportsposervice"
+//Date Wise GRN Listing            |#classPath+"/login?screen=*jspcrystal datewisegrndetail(xdate=From Date=#date,xdate=To Date=#date)"
+//Requisition Print                |#classPath+"/login?screen=*crystal poindent(xporeqnum=Requisition No=)"
+//LC Detail Report                 |#classPath+"/login?screen=*jspcrystal polc(xpornum=PO Numner)"
+//LC Listing                       |#classPath+"/login?screen=*jspcrystal polcdetail(xdate=From Date=#date,xdate=To Date=#date)"
+//PO Listing                       |#classPath+"/login?screen=*jspcrystal polistsum(xsup=Supplier=,xdate=From Date=#date,xdate=To Date=#date)"
+//PO Wise GRN Listing            |#classPath+"/login?screen=*jspcrystal powisegrndetail(xpornum=PO Number=)"
+//LC Status Report                 |#classPath+"/login?screen=*crystal polcstatus(xdate=From Date=#date,xdate=To Date=#date)"
+//GRN Listing                      |#classPath+"/login?screen=*crystal pogrnlist(xsup=From Supplier=,xsup=To Supplier=,xdate=From Date=#date,xdate=To Date=#date)"
+//Item wise Purchase Report         |#classPath+"/login?screen=*crystal pobyitemsum(xdate=From Date=#date,xdate=To Date=#date,xitem=Item)"
+//GRN Detail By PO                 |#classPath+"/login?screen=*crystal pogrnlistsum(xsup=From Supplier=,xsup=To Supplier,xdate=From Date=#date,xdate=To Date=#date)"
+//View Cash Advance Request           |#classPath+"/login?screen=*jspcrystal prletter(xporeqcash=PR No)"
+//View Comparative Statement          |#classPath+"/login?screen=*jspcrystal poquotcomp(xporeqother=PR No)"
+//Supplier-wise PO Report            |#classPath+"/login?screen=*jspcrystal pomrrsum(xdate=From Date=#date,xdate=To Date=#date,xsup=Supplier=,xpo= >)"
+//PO Report            				|#classPath+"/login?screen=*jspcrystal poscmstmt(xdate=From Date=#date,xdate=To Date=#date,xwh=Plant/Office,xptypepo=Purchase Type,xreptypepo=Report Type,xpo= >)"
+//PO Report Graph            			|#classPath+"/login?screen=*jspcrystal poscmstmbar(xdate=From Date=#date,xdate=To Date=#date,xpurtype=Purchase Type,xpo= >)"
+//-------------------------------------------------------------------
+

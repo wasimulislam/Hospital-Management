@@ -1,0 +1,62 @@
+screen mmpatientadmissionlist
+     
+    
+     sections  form one, jscript myscript
+
+ 
+     form one
+        caption "Patient Admission Card For F&B"
+      	table patientadmissionview
+		primarykey xcase
+        order xcase
+        return "login"
+        layout 2
+        pstyle 3
+        objects Search,Clear,"<p>" ,~
+                
+               xadmissionno,xwing,xfloor
+
+			
+			field Search
+				width 100
+				height 40
+				event before
+				end event
+			
+				event after
+				class patientadmissioncard(SearchByAdmission)
+				end event		
+			end field
+
+			field Back
+				width 100
+				height 40
+			  embed onclick="clicked(this)"
+			end field
+
+         embed onsubmit="submitit(this)"
+
+     end form
+
+     jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+		   
+       
+		
+		$('#Search').on('click', function() {
+			$('#apptSearchModal').show();
+		});
+		
+	
+
+        </script>
+     end jscript
+
+
+
+end screen

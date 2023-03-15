@@ -1,0 +1,508 @@
+screen moreqheadernurse
+
+  sidebar list imtor,list one,list imtoreject
+	sections form one, jscript myscript
+
+	 list imtor
+        caption "SR List"
+        table imtorheader
+        order xtornum desc
+		//dtordering [0,"desc"]
+		select "zauserid='"+#user+"' and left(xtornum,2)='SR' and xtypesr='Transfer' and xstatustor<>'Rejected'"
+        rows 10
+        objects  xtornum  attrib(link "login?screen=moreqheadernurse&command=Show&xtornum=?"),~// ,xdate,xbatch,~
+                 xdate,xstatustor,xidsupdesc equals((select top 1 xname from pdmst where zid=imtorheader.zid and xposition=imtorheader.xidsup)),~
+				 xidsupdesc2 equals((select top 1 xname from pdmst where zid=imtorheader.zid and xposition=imtorheader.xsuperior2))
+				 //xidsupdesc3 equals((select xname from pdmst where zid=imtorheader.zid and xposition=imtorheader.xsuperior3))
+        headers "Requisition No","Date","SR Status","Approver","OR >>>>>> Approver"
+    end list
+	
+	 list imtoreject
+        caption "Rejected SR List"
+        table imtorheader
+        order xtornum desc
+		select "zauserid='"+#user+"' and left(xtornum,2)='SR' and xstatustor='Rejected'"
+        rows 10
+        objects  xtornum  attrib(link "login?screen=moreqheadernurse&command=Show&xtornum=?"),~
+                 xdate,xstatustor
+        headers "Requisition No","Date","SR Status"
+    end list
+              
+   list one
+        caption "Requisition List For Requisition No "+xtornum
+        table imtordetailview
+        order xtornum,xrow
+        fixed xtornum
+        rows 30
+        objects ~
+        xrow,~// attrib(link "login?screen=moreqdetailnurse&command=Show&xtornum=?&xrow=?"), ~
+        xitem,desc equals((select xdesc from caitem where zid=imtordetailview.zid and xitem=imtordetailview.xitem)),xserial,~
+        xqtyreq,xavail equals((select xavail from imstockdetview where zid=imtordetailview.zid and xitem=imtordetailview.xitem and xwh=imtordetailview.xfwh)),~
+		xunit
+
+		totals "","","Total","","",sum
+		
+        headers "Serial No","Item","Description","Part No","Quantity Required","Available Qty","UOM",
+     end list
+
+
+
+     form one
+        caption "Store Requisition(Transfer)"
+        table imtorheader
+        primarykey xtornum
+        order xtornum 
+		select "zauserid='"+#user+"' and left(xtornum,2)='SR' and xtypesr='Transfer'""
+        return "login"
+        pstyle 3
+        layout 3
+		objects	Show,Add,Update,Delete,Top,Next,Previous,Bottom,Clear,Detail,Confirm,*next,"<p>",~
+        xtornum,xdate,xdatecom display(hide),xdatereq,~
+        xtypesr,,,xremadd,xfwh,xfwhdesc,xref,xtwh,xtwhdesc,xregi,~
+		xstatusrec display(hide),xidsup display(hide),xstatustor,xstatussr display(hide),~
+		xlong,xassetcode display(const),~
+		xnote,xstatusreq display(const),~
+		xpkey display(hide) attrib(local),~
+		signatorysec display(const),,,~
+		xpreparer display(hide),preparer display(const),~		
+		xsignatory1 display(hide),signatory1  display(const),~
+		xsignatory2 display(hide),signatory2 display(const),~
+		xsignatory3 display(hide),signatory3 display(const),~
+		xsignatory4 display(hide),signatory4 display(const),~
+		xsignatory5 display(hide),signatory5 display(const),~
+		xsignreject display(hide),signreject display(const)
+		
+		
+				
+		field xdate
+			caption Requisition Date
+		end field
+		
+		field xtypesr
+			default "Transfer"
+			display const
+		end field
+		
+		field xtypeobj
+			caption Requisition Type
+			pick code Requisition Type
+			display combo
+		end field
+		
+		field xassetcodedesc
+			attrib local
+			caption Asset Name
+			display const
+			event after
+				set xassetcodedesc=famst.xname("xcode='"+xassetcode+"'")
+			end event
+		end field		
+		
+		
+		field xdatereq
+			caption Required By Date
+		end field
+		
+		field xshift
+			caption Shift Name
+			pick code Shift Name
+		end field
+		
+		field xstatustor
+		caption SR Status
+		display const
+		end field
+		
+		field xstatusreq
+		caption PR Status
+		display const
+		end field
+		
+		
+		
+		field signatorysec
+		attrib local
+		caption <span class=sheader style="	BACKGROUND:#0480ba;	PADDING-BOTTOM: 5px;PADDING-LEFT: 10px; PADDING-RIGHT: 50px; 	PADDING-TOP: 2px;">Signatories</span>
+		display const
+		//column 2
+		end field
+		
+		field xdum
+			display const
+			attrib local
+			caption
+		end field
+		
+		field xregi
+		///pick list xcardept
+		  pick "select xcode,xlong from xcodes where zid='"+#id+"' and xtype='Department Name' and zactive='1'"
+		  display combo2
+		  display hide
+			caption Department Name
+			event before
+			end event
+		end field
+		
+		field preparer
+          caption Preparer
+		  attrib local
+		  event after
+		  if xpreparer .ne. ""
+		  set preparer=pdmst.xname("xstaff='"+xpreparer+"'")+"<br><font SIZE=2>"+pdmstview.designationname("xstaff='"+xpreparer+"'")+", "+pdmstview.departmentname("xstaff='"+xpreparer+"'")+"</font>"
+		  end if
+		  end event
+        end field
+		
+		field signatory1
+          caption pick,"select xsignatory1 from pdsignatoryrpt where xtypetrn='SR_WR Approval'"
+		  attrib local
+		  event after
+		  if xsignatory1 .ne. ""
+		  set signatory1=pdmst.xname("xstaff='"+xsignatory1+"'")+"<br><font SIZE=2>"+pdmstview.designationname("xstaff='"+xsignatory1+"'")+", "+pdmstview.departmentname("xstaff='"+xsignatory1+"'")+"</font>"
+		  end if
+		  end event
+        end field
+		
+		field signatory2
+          caption pick,"select xsignatory2 from pdsignatoryrpt where xtypetrn='SR_WR Approval'"
+		  attrib local
+		  event after
+		  if xsignatory2 .ne. ""
+		  set signatory2=pdmst.xname("xstaff='"+xsignatory2+"'")+"<br><font SIZE=2>"+pdmstview.designationname("xstaff='"+xsignatory2+"'")+", "+pdmstview.departmentname("xstaff='"+xsignatory2+"'")+"</font>"
+		  end if
+		  end event
+        end field
+		
+		
+		field signatory3
+          caption pick,"select xsignatory3 from pdsignatoryrpt where xtypetrn='SR_WR Approval'"
+		  attrib local
+		  event after
+		  if xsignatory3 .ne. ""
+		  set signatory3=pdmst.xname("xstaff='"+xsignatory3+"'")+"<br><font SIZE=2>"+pdmstview.designationname("xstaff='"+xsignatory3+"'")+", "+pdmstview.departmentname("xstaff='"+xsignatory3+"'")+"</font>"
+		  end if
+		  end event
+        end field
+		
+		field signatory4
+          caption pick,"select xsignatory4 from pdsignatoryrpt where xtypetrn='SR_WR Approval'"
+		  attrib local
+		  event after
+		  if xsignatory4 .ne. ""
+		  set signatory4=pdmst.xname("xstaff='"+xsignatory4+"'")+"<br><font SIZE=2>"+pdmstview.designationname("xstaff='"+xsignatory4+"'")+", "+pdmstview.departmentname("xstaff='"+xsignatory4+"'")+"</font>"
+		  end if
+		  end event
+        end field
+		
+		field signatory5
+          caption pick,"select xsignatory5 from pdsignatoryrpt where xtypetrn='SR_WR Approval'"
+		  attrib local
+		  event after
+		  if xsignatory5 .ne. ""
+		  set signatory5=pdmst.xname("xstaff='"+xsignatory5+"'")+"<br><font SIZE=2>"+pdmstview.designationname("xstaff='"+xsignatory5+"'")+", "+pdmstview.departmentname("xstaff='"+xsignatory5+"'")+"</font>"
+		  end if
+		  end event
+        end field
+		
+		field signreject
+          caption Reject Signatory
+		  attrib local
+		  event after
+		  if xsignreject .ne. ""
+		  set signreject=pdmst.xname("xstaff='"+xsignreject+"'")+"<br><font SIZE=2>"+pdmstview.designationname("xstaff='"+xsignreject+"'")+", "+pdmstview.departmentname("xstaff='"+xsignreject+"'")+"</font>"
+		  end if
+		  end event
+        end field
+		
+		field xremadd
+			attrib local
+			caption 
+			display hide
+			event after
+				set xremadd=#getremadd
+			end event
+		end field	
+
+		field xfwh
+			//display const
+			caption To Store
+		width 30
+			pick list xwhall
+			
+		//default #sesql("select xcode from xcodes where xtype='Branch' and xtypeobj='Store' and xipaddress='"+xremadd+"' and isnull(xipaddress,'')<>'' and zactive='1'")
+		default #sesql("select xwh from caitemwhpcipview where zid='"+#id+"'  and xipaddress= '"+#getremadd+"' and isnull(xipaddress,'')<>''")
+		event before
+			//set fwh=#sesql("select xcode from xcodes where zid ='"+#id+"' and xtype='Branch' and xtypeobj='Store' and xipaddress='"+xremadd+"' and isnull(xipaddress,'')<>''")
+		end event
+		event after
+		  //set xfwh=xcodes.xcode("xtype='Branch' and xtypeobj='Store' and xipaddress='"+xremadd+"' and isnull(xipaddress,'')<>''")
+			
+		end event
+        end field
+		
+		field xtwh
+		caption From Store
+			pick list xtwh
+		width 30
+		//default #wh
+		display const
+			event after
+				//set xtwh=xcodes.xcode("xtype='Branch' and xtypeobj='Store' and xipaddress='"+xremadd+"' and isnull(xipaddress,'')<>''")
+				
+				//set xtwh= #sesql("select xwh from caitemwhpcipview where   zid='"+#id+"' and xipaddress= '"+#getremadd+"' and isnull(xipaddress,'')<>'' ")
+			end event
+        end field
+		
+		field show
+		event after
+			//print xremadd
+          set xpkey=xtornum
+		  end event
+        end field
+		
+		  field appname
+        attrib local
+        caption Approved Person
+        display const
+        event after
+          set appname=pdmst.xname("xposition='"+xidsup+"'")
+        end event
+       end field
+		
+       field xfwhdesc
+        attrib local
+        caption Store Name
+        display const
+        event after
+          set xfwhdesc=xcodes.xlong("xtype='Branch' and xcode='"+xfwh+"'")
+        end event
+       end field
+
+       field xtwhdesc
+        attrib local
+        caption Store Name
+        display const
+        event after
+          set xtwhdesc=xcodes.xlong("xtype='Branch' and xcode='"+xtwh+"'")
+        end event
+       end field
+	   
+	field xnote
+      caption Reject Note
+	display const
+    end field
+
+        field xtornum
+		caption SR No.
+		width 30
+		pick list srno
+          event after
+			set global(xtornum)=xtornum
+			set global(xdocrow)=xdocrow
+			set global(xfwh)=xfwh
+			if xtornum .ne. ""
+			class careports(getReport{imtranissueprint;2;in,st;zid,tornum;xtornum;View SR Status})
+			//class careports(getReport{imstockbal;6;in,st,st,st,st,st;zid,acdiv,wh,gitem,catitem,item;"",xtwh,"","","";View Current Product Status})
+			class careports(getReport{imstockbalb;5;in,st,st,st,st;zid,wh,gitem,item,xzero;"",xtwh,"","","";View Current Product Status})
+			end if
+			if imtorheader.xstatustor("xtornum='"+xtornum+"'") .eq. "Confirmed"
+					set #field(Update.attrib) = "disabled"
+					set #field(Detail.attrib) = "disabled"
+					set #field(Confirm.attrib) = "disabled"
+				end if
+		
+				if imtorheader.xstatustor("xtornum='"+xtornum+"'") .ne. "" .and. imtorheader.xstatustor("xtornum='"+xtornum+"'") .ne. "Rejected"
+					set #field(Update.attrib) = "disabled"
+					set #field(Detail.attrib) = "disabled"
+					set #field(Confirm.attrib) = "disabled"
+				end if
+				if xtornum .eq. ""
+					set #field(delete.attrib) = "disabled"
+					set #field(update.attrib) = "disabled"
+					set #field(Detail.attrib) = "disabled"
+					set #field(Confirm.attrib) = "disabled"
+				end if
+				if xtornum .ne. ""
+					set #field(add.attrib) = "disabled"
+				end if
+					set #field(top.attrib) = "disabled"
+					set #field(next.attrib) = "disabled"
+					set #field(previous.attrib) = "disabled"
+					set #field(Bottom.attrib) = "disabled"
+					//set #field(delete.attrib) = "disabled"
+			
+           end event
+        end field
+
+        field xlong
+		caption Justification/Note
+          height 2
+          width 50
+         // column 2
+        end field
+		
+		field confirm
+			width 100
+			height 40
+            event before
+			set justificat=#sql("select xlong from imtorheader WHERE xtornum='"+xtornum+"'")
+			double prepqty=#sql("select sum(xprepqty) from imtordetail where xtornum='"+xtornum+"'")
+			if prepqty <0.01
+			error "Please add detail"
+			else if imtorheader.xstatustor("xtornum='"+xtornum+"'") .ne. "" .and. imtorheader.xstatustor("xtornum='"+xtornum+"'") .ne. "Rejected"
+				error "SR Already Confirmed"
+			//else if justificat .eq. ""
+			//	error "Please write Justification!"
+			end if
+            end event
+            event after
+			set temp =  #spsql(zabsp_Confirmed_Request,#id,#user,#position,xfwh,xtornum,"SR")
+			//set temp = #spsql(zabsp_sendmail,#id,#user,#position,xtornum,"Department","")
+	         action show
+            end event
+          end field
+		  
+        field add
+			event before
+				set backdate=#sql("select xdateexp from acdef")
+				set backentry=#sql("select xbacklock from acdef")
+				//set xfwh=#sesql("select xcode from xcodes where zid ='"+#id+"' and xtype='Branch' and xtypeobj='Store' and xipaddress='"+xremadd+"' and isnull(xipaddress,'')<>'' and zactive='1'")
+				//set xtwh=#sesql("select xcode from xcodes where zid ='"+#id+"' and xtype='Branch' and xtypeobj='Store' and xipaddress='"+xremadd+"' and isnull(xipaddress,'')<>'' and zactive='1'")
+				set xtwh=#sesql("select xwh from caitemwhpcipview where zid='"+#id+"' and xipaddress= '"+#getremadd+"' and isnull(xipaddress,'')<>'' ")
+				set wh=branchclientview.xcode("xcode='"+xfwh+"' and zactive='1' and xtype='Branch' and xtypeobj='Store'")
+				set twh=branchclientview.xcode("xcode='"+xtwh+"' and zactive='1' and xtype='Branch' and xtypeobj='Store'")
+				//set xidsup=pdmst.xidsup("xposition='"+#position+"'")
+				if xregi .eq. ""
+					set xregi =pdmstview.xdeptname("xposition='"+#position+"'")
+				end if				
+				//set cardept=cacardept.xregi("xregi='"+xregi+"'")
+				set assetcode=famst.xcode("xcode='"+xassetcode+"'")
+				set trn = "SR--"
+				set xtypesr="Transfer"
+				if xtypesr .ne. "Transfer"	
+					set xtwh = xfwh
+				end if
+				set xstatussr="Open"
+				set xstatusreq="Open"
+				//set xstatustor="Open"
+				set xstatusrec="Open"
+				set xpreparer=pdmst.xstaff("xposition='"+#position+"'")
+				//if xregi .eq. ""
+					//error "Please select department!"
+				if xregi .ne. "" .and.  xregi .ne. departmentview.xdeptname("xcode='"+xregi+"' and zactive='1'")
+					error "Cannot Proceed--This Department Does Not Exist!"
+				else if xfwh .eq. "" //.or. wh .ne. xfwh
+					error "Please select Store Code"
+				else if xfwh .ne. "" .and. wh .ne. xfwh
+					error "Cannot Proceed--This Store Does Not Exist"
+				else if xtypesr .eq. "Transfer" .and. xfwh .eq. xtwh
+					error "Cannot Proceed-- For Transfer From Store and To Store Will not Same"
+				else if xtwh .eq. "" //.or. wh .ne. xfwh
+					error "Please select From Store Code"
+				else if xtwh .ne. "" .and. twh .ne. xtwh
+					error "Cannot Proceed--This From Store Does Not Exist"
+				else if xtypesr .eq. ""
+					error "Please Select Requisition Type"
+				else if xtypesr .ne. "" .and. xtwh .eq. ""
+					error "Please Select From Store"
+				else if xassetcode .ne. "" .and. assetcode .ne. xassetcode
+					error "Asset does not Exist!"
+				else if backentry .eq. "No" .and. xdate .le. backdate
+					error "Back Lock Entry not allowed!"
+				else 
+					set xtornum = #trn("Transfer Transaction",trn,10)
+					set xpkey=xtornum
+				end if
+			end event
+        end field
+		
+        field update
+          event before
+			set backdate=#sql("select xdateexp from acdef")
+			set backentry=#sql("select xbacklock from acdef")
+			//set xfwh=#sesql("select xcode from xcodes where zid ='"+#id+"' and xtype='Branch' and xtypeobj='Store' and xipaddress='"+xremadd+"' and isnull(xipaddress,'')<>'' and zactive='1'")
+			set wh=branchclientview.xcode("xcode='"+xfwh+"' and zactive='1' and xtype='Branch' and xtypeobj='Store'")
+			//set xtwh=#sesql("select xcode from xcodes where zid ='"+#id+"' and xtype='Branch' and xtypeobj='Store' and xipaddress='"+xremadd+"' and isnull(xipaddress,'')<>'' and zactive='1'")
+			set xtwh=#sesql("select xwh from caitemwhpcipview where zid='"+#id+"'  and xipaddress= '"+#getremadd+"' and isnull(xipaddress,'')<>'' ")
+			set twh=branchclientview.xcode("xcode='"+xtwh+"' and zactive='1' and xtype='Branch' and xtypeobj='Store'")
+			set assetcode=famst.xcode("xcode='"+xassetcode+"'")
+			if xregi .eq. ""
+				set xregi =pdmst.xdeptname("xposition='"+#position+"'")
+			end if
+			//set cardept=cacardept.xregi("xregi='"+xregi+"'")
+			if xtypesr .ne. "Transfer"
+			   set xtwh = xfwh
+			end if
+				if xpkey .ne. xtornum
+					error "Please Show First!"
+				else if xfwh .eq. "" //.or. wh .ne. xfwh
+					error "Please Select Store"
+				else if xfwh .ne. "" .and. wh .ne. xfwh
+					error "Cannot Proceed--This Store Does Not Exist"
+				else if xtwh .eq. "" //.or. wh .ne. xfwh
+					error "Please select To Store Code"
+				else if xtwh .ne. "" .and. twh .ne. xtwh
+					error "Cannot Proceed--This To Store Does Not Exist"
+				else if xassetcode .ne. "" .and. assetcode .ne. xassetcode
+					error "Asset Does Not Exist!"
+				//else if xregi .eq. "" //.and.  xregi .ne. cardept
+					//error "Please select department!"
+				else if xregi .ne. "" .and.  xregi .ne. departmentview.xdeptname("xcode='"+xregi+"' and zactive='1'")
+					error "Cannot Proceed--This Department Does Not Exist!"
+				else if xtypesr .eq. ""
+					error "Please Select Requisition Type"
+				else if xtypesr .ne. "" .and. xtwh .eq. ""
+					error "Please Select To Store"
+				else if imtorheader.xstatustor("xtornum='"+xtornum+"'") .ne. "" .and. imtorheader.xstatustor("xtornum='"+xtornum+"'") .ne. "Rejected"
+					error "Can not Proceed-- Already Confirmed!"
+				else if backentry .eq. "No" .and. xdate .le. backdate
+					error "Back Lock Entry not allowed!"
+			end if
+          end event
+        end field
+
+        embed onsubmit="submitit(this)"
+
+        field Detail
+			width 100
+			height 40
+          embed onclick="clicked(this)"
+        end field
+        
+		field Select
+          embed onclick="clicked(this)"
+        end field
+     end form
+
+     jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var but
+
+        function clicked(b){
+          but=b.value
+        }
+
+        function submitit(form){
+          if (but=="Detail"){
+            form.screen.value = "moreqdetailnurse"
+            form.searchbutton.value = "Find xtornum=?"
+          }
+        }
+		function pickRecipe(link,row){
+          if (navigator.appName.indexOf("Netscape") >= 0){
+            document.one.xmoprcs.value=link.text
+            document.one.xdocrow.value=row.text
+          }else{
+            document.one.xmoprcs.value=link.innerText
+            document.one.xdocrow.value=row.innerText
+          }
+          return false
+        }
+		
+        </script>
+     end jscript
+
+
+
+end screen

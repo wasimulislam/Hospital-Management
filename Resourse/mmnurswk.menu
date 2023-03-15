@@ -1,0 +1,58 @@
+option                  		|action                                          	|modules	|models	|width
+//------------------------------------------------------------------------------------------------------------------------------------------
+Diet Requsition Search                  	|#classPath+"/login?screen=mmdietsearch"
+Diet Requsition by Nurse                  	|#classPath+"/login?screen=mmdietreq"
+DIET Process Update                      	|#classPath+"/login?screen=mmdtstatuschng"
+Discharge Request  							|#classPath+"/login?screen=mmadmissiondisreq"
+Discharge Summary                       	|#classPath+"/login?screen=mmdissummary"
+Day Care Order Entry             			|#classPath+"/login?screen=opdoheaderdcorder"
+Daycare Pharmacy Order Entry       			|#classPath+"/login?screen=opdcpcreqheader" 
+Emergency Order Entry            			|#classPath+"/login?screen=opdoheaderorder" 
+OT Store Charge Entry                  		|#classPath+"/login?screen=opdoheaderotorder"
+IPD Order Entry                  			|#classPath+"/login?screen=opdoheaderipdorder"
+IPD Pharmacy Order Entry       				|#classPath+"/login?screen=opipdpcreqheader" 
+IPD Remain Charge Entry                 	|#classPath+"/login?screen=opdoheaderipdorderrc"
+IPD Patient List   							|#classPath+"/login?screen=currentpatient" 			    |ca        	|   	|rx.png   |210
+Lab Result                 	   				|#classPath+"/login?screen=mmlabresultnursedatatable"
+OPD Patient Assessment                   	|#classPath+"/login?screen=mmnurspatass"
+
+
+Patient Transfer                 			|#classPath+"/login?screen=mmpatienttransfer"
+Patient Transfer Prev Bed                	|#classPath+"/login?screen=mmpatienttransferreturn"
+Receive From IPD Pharmacy    				|#classPath+"/login?screen=opipdpcreqheaderrec" 
+Receive From Daycare Pharmacy    			|#classPath+"/login?screen=opdcpcreqheaderrec"
+Receive From Store							|#classPath+"/login?screen=imtransfersr"
+
+
+Store Requisition(Transfer)					|#classPath+"/login?screen=moreqheadernurse"
+Transfer Transaction			  			|#classPath+"/login?menu=imtransfer"
+
+Current Patient List For IPD EM DC         	|#classPath+"/login?screen=*viewcrystal mmpatinetliststatuswise(7;in,st,st,st,st,st,st;@zid,@episodetype,@wing,@floor,@deptnamep,@staffp,@roomp;xpatientstatus= Episode Type,xwing=Wing,xfloor=Floor,xdeptnameclinical=Department Name,xdoctor=Doctor,xroom=Room No,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+Daily IPD Order List          				|#classPath+"/login?screen=*viewcrystal ipdorderdaily(3;in,st,dt;zid,patient,fdate;xpatientipd=Patient ID,xdate=Date=#date,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+//Discharge Details							|#classPath+"/login?screen=*viewcrystal DischargeReport(10;in,dt,dt,st,st,st,st,st,st,st;zid,fdate,tdate,dischargetype,doctor,dept,roomtype,floor,admissioncause,patient;xdate=From Date=#date,xdate=To Date=#date,xdistype_new=Discharge Type,xdoctor= Doctor Name,xdptname = Depertment Name,xroom = Room,xfloor = Floor,xcauseadm= Cause of Admission,xpatient= Patient ID,xviewtype=Report View)"
+//Duration of patient Stay       				|#classPath+"/login?screen=*viewcrystal durationofpatstay(5;in,st,st,st,st;@zid,@fdate,@tdate,@patient,@episodetype;xdate=From Date,xdate=To Date,xpatient=Patient Id,xpatientstatus=Episode Type,xviewtype=Report View)"
+//Duration List								|#classPath+"/login?screen=*viewcrystal Duration(9;in,dt,dt,st,st,st,st,st,st;zid,fdate,tdate,doctor,dept,roomtype,floor,admissioncause,patient;xdate=From Date=#date,xdate=To Date=#date,xdoctor= Doctor Name,xdptname = Depertment Name,xroom = Room,xfloor = Floor,xcauseadm= Cause of Admission,xpatient= Patient ID,xviewtype=Report View)"
+//Emergency Patient List        	    		|#classPath+"/login?screen=*viewcrystal empatientlist(5;in,dt,dt,st,st;zid,fdate,tdate,patient,cause;xdate=From Date,xdate=To Date,xpatient=Patient ID,xcauseadm=Cause of Admission,xviewtype=Report View)"
+//Emergency Patient Convert List        	    |#classPath+"/login?screen=*viewcrystal emconvertpatientlsit(5;in,dt,dt,st,st;zid,fdate,tdate,patient,cause;xdate=From Date,xdate=To Date,xpatient=Patient ID,xcauseadm=Cause of Admission,xviewtype=Report View)"
+//IPD Order List         						|#classPath+"/login?screen=*viewcrystal ipdorder(4;in,dt,dt,st,;zid,fdate,tdate,patient;xdate=From date=#date,xdate=To Date=#date,xpatientipd=Patient ID,xviewtype=Report View)"
+//Patient list of Oncology Day Care           |#classPath+"/login?screen=*viewcrystal dcpatientlist(5;in,dt,dt,st,st;zid,fdate,tdate,patient,cause;xdate=From Date,xdate=To Date,xpatient=Patient ID,xcauseadm=Cause of Admission,xviewtype=Report View)" 
+
+
+/////Diet Requsition by Nurse                  	|#classPath+"/login?screen=mmdietreq"
+/////Nurse Verification     					|#classPath+"/login?screen=mmipdnurseack"              |       |      |120
+/////Medication Administration Record           |#classPath+"/login?screen=mmmadmnistrationrecord"
+/////Inital Patient Assessment                  |#classPath+"/login?screen=mmipdpatassessment"
+/////Nursing Patient Daily Notes        	    |#classPath+"/login?screen=mmnursingdailynote"
+/////Nursing Asessment-Emergency Triage        	|#classPath+"/login?screen=mmemgnursassesment"
+//Requisition Entry              				|#classPath+"/login?screen=imtorheader"
+//Receive Confirmation   						|#classPath+"/login?screen=imtransferreq"
+/////Vitals Assessment                   		|#classPath+"/login?screen=mmipdvitals"
+/////Chief Complains                   			|#classPath+"/login?screen=mmipdpresentgenaral"
+///Nurse Notification             				|#classPath+"/login?screen=nursenotify" 			    |ca        	|   	|rx.png   |210
+///Discharge Notification 						|#classPath+"/login?screen=tdnotification"
+////IPD Return Order Entry                  	|#classPath+"/login?screen=opdoheaderipdordreturn"
+/////Clinical & Nursing Flow                    |#classPath+"/login?screen=ipdflowscreen"
+//IPD Order Entry for Visitor                  	|#classPath+"/login?screen=opdoheaderipdordervisit"
+/////Clinical Notes        						|#classPath+"/login?screen=mmclinicalnote"
+//Lab Print                  	   				|#classPath+"/login?screen=mmlabresultprintdatatable"
+//Emergency Patient's Convert List           	|#classPath+"/login?screen=*viewcrystal emconvertpatientlsit(5;in,dt,dt,st,st;zid,fdate,tdate,patient,cause;xdate=From Date=#date,xdate=To Date=#date,xpatient=Patient ID,xcauseadm=Cause of Admission,xviewtype=Report View)"

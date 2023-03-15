@@ -1,0 +1,577 @@
+screen pogrnheaderacsup
+
+     sidebar list grndetail,list accprovdet,list accdet,list accdetaacrued,list supinvgrn//,list one,list detail,,list requi 
+     sections form one,list po, jscript myscript
+	 
+	 list accprovdet
+		caption "Provisional Voucher Detail List"
+		table acdetailtemppv
+		order xvoucher,xrow
+		fixed xgrnnum
+		rows 50
+		objects  xvoucher, ~
+		xrow, ~
+		xacc,desc equals((select xdesc from acmst where acmst.zid=acdetailtemppv.zid and acmst.xacc=acdetailtemppv.xacc)),~
+		xsub,subdesc equals((select xorg from acsubview where zid=acdetailtemppv.zid and xsub=acdetailtemppv.xsub and xacc=acdetailtemppv.xacc)),xdebit,xcredit
+
+		totals "","","","","Total","",sum,sum
+		headers "Voucher No","Line No","Acc Code","Description","Sub Code","Description","Debit","Credit"
+    end list 
+	 
+	 list supinvgrn
+		caption "Rejected Supplier Invoice List"
+		table pogrnheader
+		order xgrnnum
+		select " xstatusinv='Rejected'"
+		rows 20
+		objects  xgrnnum attrib(link "login?screen=pogrnheaderacsup&command=Show&xgrnnum=?"), ~
+		xdate,xgrninvno,sup  equals((select xorg from cacus where zid=pogrnheader.zid and xcus=pogrnheader.xcus))
+		headers "GRN No","Date","Invoice No","Party"
+	end list 
+
+     list detail
+        caption "Account Mapping List For "+xgrnnum
+        table potoacchkview
+        order xgrnnum
+        fixed xgrnnum
+        rows 20
+        objects  xtype,xgitem,xgsup,xaccdr,xdescdr,xacccr,xdesccr,xaccvat,xdescvat,xaccait,xdescait,xlineamt
+
+        headers "Type","Item Group","Supplier Group","Debit Account","Account Description","Credit Account","Account Description","VAT Account","Account Description","AIT Account","Account Description","Amount"
+		total "","","","","","","","","","","Total",sum
+     end list
+
+     list grndetail
+        caption "GRN Detail"
+        table pogrndetail
+        order xgrnnum,xrow
+        fixed xgrnnum
+        rows 20
+        objects  xrow,~// attrib(link "login?screen=pogrndetail&command=Show&xgrnnum=?&xrow=?"), ~
+                xitem,desc equals((select xdesc from caitem where zid=pogrndetail.zid and  xitem=pogrndetail.xitem)),xqtygrn,xunitpur,~
+				xrate,xlineamt
+
+        headers "Row","Item","Description","Qty","Purchase Unit","Rate","Line amount"
+		totals "Total","","","","","",sum
+     end list
+	 
+	list accdet
+    caption "Payable Voucher Detail"
+    table acdetail
+    order xvoucher,xrow
+    fixed xvoucher
+	//maxwidth 500
+    rows 50
+    objects  xvoucher attrib(link "login?screen=acheader&command=Show&xvoucher=?"), ~
+			 xrow attrib(link "login?screen=acdetail&command=Show&xvoucher=?&xrow=?"), ~
+             xacc,desc equals((select xdesc from acmst where acmst.zid=acdetail.zid and acmst.xacc=acdetail.xacc)),~
+			 xsub,subdesc equals((select xorg from acsubview where zid=acdetail.zid and xsub=acdetail.xsub and xacc=acdetail.xacc)),xdebit,xcredit
+
+    totals "","","","","Total","",sum,sum
+    headers "Voucher No","Line No","Acc Code","Description","Sub Code","Description","Debit","Credit"
+  end list
+  
+	list accdetaacrued
+    caption "Accrual Voucher Detail"
+    table acdetail
+    order xvoucher,xrow
+    select "xvoucher='"+xvoucheraccrual+"'"
+	//maxwidth 500
+    rows 50
+    objects  xvoucher attrib(link "login?screen=acheader&command=Show&xvoucher=?"), ~
+			 xrow attrib(link "login?screen=acdetail&command=Show&xvoucher=?&xrow=?"), ~
+             xacc,desc equals((select xdesc from acmst where acmst.zid=acdetail.zid and acmst.xacc=acdetail.xacc)),~
+			 xsub,subdesc equals((select xorg from acsubview where zid=acdetail.zid and xsub=acdetail.xsub and xacc=acdetail.xacc)),xdebit,xcredit
+
+    totals "","","","","Total","",sum,sum
+    headers "Voucher No","Line No","Acc Code","Description","Sub Code","Description","Debit","Credit"
+  end list	
+
+	 list po
+        //caption "References"
+        table pogrnheader
+        order xpornum
+        fixed xgrnnum
+		maxwidth 300
+        rows 20
+        objects  xpornum attrib(link "login?screen=poordheader_q&command=Show&xpornum=?"),~
+				 xtornum  attrib(link "login?screen=imsprheader_q&command=Show&xtornum=?")
+		headers "Reference PO/WO No","Reference Store Purchase Requisition No"
+     end list  
+	 
+     form one
+        caption "Supplier Invoice Entry"
+        table pogrnheader
+	    primarykey xgrnnum
+        order xgrnnum
+        select "xstatusgrn='Confirmed' and isnull(xtype,'') not in ('Cash','LC','Direct')" //and xstatuspa='Approved' 
+        return "login"
+        layout 3
+        pstyle 3
+        objects ~
+                Show,Clear,Update,~
+                *next,Top,Previous,Next,Bottom,Confirm,GenerateProvisionalVoucher,"<p>" ,~//Detail,Transfer To AP,
+                xgrnnum,xdategl,xgrninvno display(const),xfwh display(hide),xwhdesc display(hide),xdisc display(hide),~
+				xdiscf display(hide),xcus display(const),xorg,xref display(const),~
+                xstatusgrn display(hide),xstatusap display(hide),~
+				xpornum display(const),xpodate display(hide),povalue display(const),~
+				xadjustment display(hide),totval display(const) attrib(local),xinvnum,~
+				advatamt display(const) attrib(local),xprimetotamt display(hide),xvatamt,xinvvalue,~
+				adaitamt display(const) attrib(local),xaitamt display(text),~
+				xdate display(hide),xamtother display(hide),~
+				xdiscamt display(hide),xstatusinv,advamt display(const) attrib(local),apamt display(const) attrib(local), ~
+				xvoucher display(const),xstatusjv display(const),~
+				//xpafnum display(const),xpreparer display(hide),preparer display(const),xproject display(const),~
+				xwh display(const),whdesc  display(const),xnote1,xvoucheraccrual  display(hide),,,~
+				signatorysec display(const),,,~
+				xpreparer2 display(hide),preparer2 display(const),~	
+				xsignatory7 display(hide),signatory7 display(const),~
+				xsignatory8 display(hide),signatory8 display(const),~
+				xsignatory9 display(hide),signatory9 display(const),~
+				xsignreject2 display(hide),signreject2 display(const)
+ 
+		field xdategl
+			caption GL Voucher Date
+		end field
+		
+		field xnote1
+		caption Reject Note
+		display const
+		end field
+		
+		field signatorysec
+		attrib local
+		caption <span class=sheader style="	BACKGROUND:#0480ba;	PADDING-BOTTOM: 5px;PADDING-LEFT: 10px; PADDING-RIGHT: 50px; 	PADDING-TOP: 2px;">Signatories</span>
+		display const
+		//column 2
+		end field
+		
+		field signatory7
+          caption pick,"select xsignatory1 from pdsignatoryrpt where xtypetrn='Supplier Invoice Approval GRN'"
+		  attrib local
+		  event after
+		  if xsignatory7 .ne. ""
+		  set signatory7=pdmst.xname("xstaff='"+xsignatory7+"'")+"<br><font SIZE=2>"+pdmstview.designationname("xstaff='"+xsignatory7+"'")+", "+pdmstview.departmentname("xstaff='"+xsignatory7+"'")+"</font>"
+		  end if
+		  end event
+        end field
+		
+		field signatory8
+          caption pick,"select xsignatory2 from pdsignatoryrpt where xtypetrn='Supplier Invoice Approval GRN'"
+		  attrib local
+		  event after
+		  if xsignatory8 .ne. ""
+		  set signatory8=pdmst.xname("xstaff='"+xsignatory8+"'")+"<br><font SIZE=2>"+pdmstview.designationname("xstaff='"+xsignatory8+"'")+", "+pdmstview.departmentname("xstaff='"+xsignatory8+"'")+"</font>"
+		  end if
+		  end event
+        end field
+		
+		field signatory9
+          caption pick,"select xsignatory3 from pdsignatoryrpt where xtypetrn='Supplier Invoice Approval GRN'"
+		  attrib local
+		  event after
+		  if xsignatory9 .ne. ""
+		  set signatory9=pdmst.xname("xstaff='"+xsignatory9+"'")+"<br><font SIZE=2>"+pdmstview.designationname("xstaff='"+xsignatory9+"'")+", "+pdmstview.departmentname("xstaff='"+xsignatory9+"'")+"</font>"
+		  end if
+		  end event
+        end field
+		
+		field signreject2
+          caption Reject Signatory
+		  attrib local
+		  event after
+		  if xsignreject2 .ne. ""
+		  set signreject2=pdmst.xname("xstaff='"+xsignreject2+"'")+"<br><font SIZE=2>"+pdmstview.designationname("xstaff='"+xsignreject2+"'")+", "+pdmstview.departmentname("xstaff='"+xsignreject2+"'")+"</font>"
+		  end if
+		  end event
+        end field
+		
+		field preparer2
+          caption Preparer
+		  attrib local
+		  event after
+		  if xpreparer2 .ne. ""
+		  set preparer2=pdmst.xname("xstaff='"+xpreparer2+"'")+"<br><font SIZE=2>"+pdmstview.designationname("xstaff='"+xpreparer2+"'")+", "+pdmstview.departmentname("xstaff='"+xpreparer2+"'")+"</font>"
+		  end if
+		  end event
+        end field
+		
+		field Show
+		event before
+		//if isnull(xinvstatus,"") 
+		  	//set temp=#sesql("update pogrnheader set xinvstatus='Open' where zid='"+#id+"' and xgrnnum='"+xgrnnum+"'")
+		//end if
+		end event 
+		end field 
+		
+		field povalue
+		  	attrib local
+			caption <br><FONT SIZE=2 COLOR=red>PO Value</font>
+		  	event after
+		  		double val=#sql(double,"select sum(xlineamt) from poorddetail where xpornum='"+xpornum+"'")
+				double disc=val*xdisc/100
+				double discf=disc+xdiscf
+				double vat=val*xvatrate/100
+				double value=val+vat-discf
+				set povalue=value
+			end event
+		  end field	
+		  
+		field xpafnum
+			caption SI No.
+		end field
+		
+		field xwh
+			caption Receiving Store
+			event before
+			end event
+		end field		
+		
+		field xstatusjv
+			caption GL Status
+		end field
+		
+		field xdate
+		attrib local
+			caption GRN Date
+		  event after
+		  set xdate=#sql("select xdate from pogrnheader where xgrnnum='"+xgrnnum+"'")
+		  end event
+		end field
+		
+		  field xpornum
+			caption PO No
+			attrib local
+			event after
+		  		set xpornum=pogrnheader.xpornum("xgrnnum='"+xgrnnum+"'")
+		  	end event
+		  end field
+		  
+		field xpreparer
+		  attrib local
+		  event before
+		  set xpreparer=pogrnheader.xpreparer("xgrnnum='"+xgrnnum+"'")
+		  end event
+        end field
+		
+		field preparer
+          caption Preparer
+		  attrib local
+		  event after
+		  set preparer=pdmst.xname("xstaff='"+xpreparer+"'")
+		  end event
+        end field
+		
+		  field xcus
+			caption Supplier ID
+			attrib local
+			event after
+		  		set xcus=pogrnheader.xcus("xgrnnum='"+xgrnnum+"'")
+		  	end event
+		  end field
+		field xamtother
+			caption <br><FONT SIZE=2 COLOR=red>Other Amount</font>
+		end field
+		
+		field xdiscamt
+			caption <br><FONT SIZE=2 COLOR=red>Discount Amount</font>
+		end field		
+	    
+		field totval
+		 caption <br><FONT SIZE=2 COLOR=red>GRN Value</font>
+		  event after
+		  double val=#sql(double,"select sum(xlineamt) from pogrndetail where xgrnnum='"+xgrnnum+"'")
+		  set val2=val+xamtother-xdiscamt
+		  set totval=val2
+		  end event
+        end field	
+
+		field advamt
+		 caption <br><FONT SIZE=2 COLOR=blue>Advance Paid</font>
+		  event after
+		  double advanceamt=#sesql("select sum(isnull(xprime,0)) from arhed where zid ='"+#id+"' and xpornum='"+xpornum+"' and xpornum<>'' and xsign >0")
+		  set advamt=advanceamt
+		  end event
+        end field	
+		
+		field apamt
+		 caption <br><FONT SIZE=2 COLOR=Red>Supplier Payable</font>
+		  event after
+		  double lineamt=0.00
+		  double xapamt =0.00
+		  double lineamt=#sesql("select sum(isnull(xlineamt,0)) from pogrndetail where zid ='"+#id+"' and xgrnnum='"+xgrnnum+"'")
+		  set xapamt = lineamt-xvatamt
+		  set xapamt = xapamt-xaitamt
+		  set apamt = xapamt
+		  end event
+        end field		
+
+		field advatamt
+		 caption <br><FONT SIZE=2 COLOR=blue>VAT Deducted At Source(Advance)</font>
+		  event after
+			double advancevatamt=#sesql("select sum(isnull(xvatamt,0)) from arhed where zid ='"+#id+"' and xpornum='"+xpornum+"' and xpornum<>'' and xsign >0")
+			set advatamt=advancevatamt
+		  end event
+        end field	
+
+		field adaitamt
+		 caption <br><FONT SIZE=2 COLOR=blue>AIT Deducted At Source(Advance)</font>
+		  event after
+			double advanceaitamt=#sesql("select sum(isnull(xaitamt,0)) from arhed where zid ='"+#id+"' and xpornum='"+xpornum+"' and xpornum<>'' and xsign >0")
+		  set adaitamt=advanceaitamt
+		  end event
+        end field			
+		
+    field xfwh
+	  caption Project Code
+      default #project
+	  pick list xproject
+    end field
+		
+		 field xref
+			caption Chalan No/Ref No
+		end field
+		
+		
+		field xwhdesc
+          attrib local
+          //display constant
+          caption Project Name
+          event after
+            set xwhdesc=projectallview.xlong("xcode='"+xfwh+"'")
+          end event
+        end field
+		
+		field whdesc
+			attrib local
+			display const
+			caption Store Name
+			event after
+				set whdesc=xcodes.xlong("xtype='Branch' and xcode='"+xwh+"'")
+			end event
+		end field		
+
+	
+
+    field xinvnum
+		pick
+	end field
+	
+
+		  field xorg
+		  	attrib local
+		  	dispaly const
+		  	caption Supplier Name
+		  	event after
+		  		set xorg=cacus.xorg("xcus='"+xcus+"'")
+		  	end event
+		  end field
+		  
+        field xpodate
+          attrib local
+          caption PO Date
+          //display constant
+          event after
+            set xpodate = #sql("select xdate from poordheader where xpornum='"+xpornum+"'")
+            set xpodate = #sub(xpodate,0,10)///#sub(xpodate,8,2)+"-"+#sub(xpodate,2,2)+"-"+#sub(xpodate,0,4)
+          end event
+        end field
+ 
+
+        field xgrnnum
+		pick list pogrncredit
+           event after
+              set globals(xgrnnum) = xgrnnum
+			  set globals(xstatusap) = xstatusap
+			   set globals(xvoucher) = xvoucher
+			   set globals(xvoucheraccrual)=xvoucheraccrual
+			  class careports(getReport{acvoucher;2;in,st;zid,svoucher;xvoucher;Print voucher})
+			  class careports(getReport{pogrnprint;2;in,st;zid,grnnum;xgrnnum;Print GRN})
+			  class careports(getReport{poqtc;2;in,st;zid,grnnum;xgrnnum;View Quality Certificate})
+			  class careports(getReport{acprovisnalvoucher;2;in,st;zid,svoucher;xgrnnum;Print Provisional Voucher})
+			if xstatusap .eq. "Confirmed" .and. xstatusjv .eq. "Confirmed"
+				set #field(update.attrib) = "disabled" 
+				set #field(transfer.display) = "hidden"
+			end if
+			if pogrnheader.xstatusinv("xgrnnum='"+xgrnnum+"'") .ne. "Open"  
+				set #field(confirm.attrib) = "disabled" 
+			end if
+			
+		   if xstatusap .eq. "Confirmed"
+		    set #field(GenerateProvisionalVoucher.attrib) = "disabled"
+		   end if 
+           end event
+        end field
+
+        field update
+		 event before
+			set backdate=#sql("select xdateexp from acdef")
+			set backentry=#sql("select xbacklock from acdef")	
+			set xstatusinv="Open"
+		if xinvnum .eq. ""
+			//set xinvnum =xgrnnum
+		end if 
+		if xfwh .eq. ""
+			set xfwh = branchview.xwh("xcode='"+xwh+"'")
+		end if		
+		
+		if pogrnheader.xstatusap("xgrnnum='"+xgrnnum+"'") .eq. "Confirmed" .and. pogrnheader.xstatusjv("xgrnnum='"+xgrnnum+"'") .eq. "Confirmed"
+        	error "Cannot Proceed -- Already Transfered!"
+		else if backentry .eq. "No" .and. xdategl .le. backdate
+			error "Back Lock Entry does not allow!"			
+		else if pogrnheader.xpornum("xgrnnum='"+xgrnnum+"'") .ne. xpornum 
+			error "Cannot Proceed -- Please Show first!"
+		end if
+		 end event
+          event after
+			if xaitamt ==0
+				set temp = #spsql(zabsp_AIT_Update,#id,#user,xcus,xgrnnum,"GRN")
+			end if		  
+            //set temp = #spsql(zabsp_PO_validateAfterHeaderGRN,#id,#user,xgrnnum,0,0,0,0,0,0)
+            action show
+          end event
+        end field
+
+
+        field Transfer
+           event before
+			set backdate=#sql("select xdateexp from acdef")
+			set backentry=#sql("select xbacklock from acdef")		   
+		    set voucherar=arhed.xvoucher("xvoucher='"+xinvnum+"'")
+		    set poaccruedgl=#sql("select xpoaccruedgl from poimdef")
+		   // print voucherar
+			set acc = #sql("select xaccdr from potoacchkview where xgrnnum='"+xgrnnum+"'")
+           	if pogrnheader.xinvnum("xgrnnum='"+xgrnnum+"'") .eq. ""
+           		error "Cannot Proceed -- Please Input Invoice Number"
+			else if backentry .eq. "No" .and. xdategl .le. backdate
+				error "Back Lock Entry does not allow!"						
+			else if voucherar .eq. xinvnum .and. pogrnheader.xstatusap("xgrnnum='"+xgrnnum+"'") .eq. "Open"
+           		error "Cannot Proceed -- Duplicate invoice no does not allowed"
+			else if  #sub(pogrnheader.xdategl("xgrnnum='"+xgrnnum+"'"),0,10) .eq. "1900-01-01"
+				error "Cannot Proceed -- Please Input GL Voucher Date"	
+			else if  acc .eq. "No Account" .or. acc .eq. "Debit Account Not Set"
+				error "Cannot Proceed -- Interface With General Accounts Not Set"	
+           	else if xfwh .eq. ""
+           		error "Cannot Proceed -- Please Select Plant/Office Code"
+           	else if pogrnheader.xstatusap("xgrnnum='"+xgrnnum+"'") .eq. "Confirmed" .and. pogrnheader.xstatusjv("xgrnnum='"+xgrnnum+"'") .eq. "Confirmed"
+           		error "Cannot Proceed -- Already Transfered!"
+           	end if
+           end event
+           event after
+			if poaccruedgl .ne. "Yes"
+				if pogrnheader.xstatusap("xgrnnum='"+xgrnnum+"'") .eq. "Open"
+					set temp = #spsql(zabsp_PO_transferPOtoAP,#id,#user,xgrnnum,"pogrnheaderac")
+				end if
+				if pogrnheader.xstatusjv("xgrnnum='"+xgrnnum+"'") .eq. "Open"
+					set temp = #spsql(zabsp_PO_transferPOtoGL,#id,#user,xgrnnum,"pogrnheaderac")
+				end if
+			else if poaccruedgl .eq. "Yes"
+				if pogrnheader.xstatusap("xgrnnum='"+xgrnnum+"'") .eq. "Open"
+					set temp = #spsql(zabsp_PO_transferPOtoAP,#id,#user,xgrnnum,"pogrnheaderac")
+				end if
+				if pogrnheader.xstatusjv("xgrnnum='"+xgrnnum+"'") .eq. "Open"
+					set temp = #spsql(zabsp_PO_transferPOtoGL,#id,#user,xgrnnum,"pogrnheaderadj")
+				end if
+			end if
+            action show
+           end event
+        end field
+		
+		field Confirm
+           event before
+			set backdate=#sql("select xdateexp from acdef")
+			set backentry=#sql("select xbacklock from acdef")		   
+		    set voucherar=arhed.xvoucher("xvoucher='"+xinvnum+"'")
+			set acc = #sql("select xaccdr from potoacchkview where xgrnnum='"+xgrnnum+"'")
+            
+			///set temp=#sesql("update pogrnheader set xdategl=cast(GETDATE() as date) where zid='"+#id+"' and xgrnnum='"+xgrnnum+"'")
+			
+			if pogrnheader.xinvnum("xgrnnum='"+xgrnnum+"'") .eq. ""
+           		error "Cannot Proceed -- Please Input Invoice Number"
+			else if backentry .eq. "No" .and. xdategl .le. backdate
+				error "Back Lock Entry does not allow!"						
+			else if voucherar .eq. xinvnum .and. pogrnheader.xstatusap("xgrnnum='"+xgrnnum+"'") .eq. "Open"
+           		error "Cannot Proceed -- Duplicate invoice no not allowed"
+			else if  #sub(pogrnheader.xdategl("xgrnnum='"+xgrnnum+"'"),0,10) .eq. "1900-01-01"
+				error "Cannot Proceed -- Please Input GL Voucher Date"	
+			else if  acc .eq. "No Account" .or. acc .eq. "Debit Account Not Set"
+				error "Cannot Proceed -- Interface With General Accounts Not Set"	
+           	else if xfwh .eq. ""
+           		error "Cannot Proceed -- Please Select Plant/Office Code"
+           	else if pogrnheader.xstatusap("xgrnnum='"+xgrnnum+"'") .eq. "Confirmed" .and. pogrnheader.xstatusjv("xgrnnum='"+xgrnnum+"'") .eq. "Confirmed"
+           		error "Cannot Proceed -- Already Transfered!"
+           	end if
+			if pogrnheader.xgrninvno("xgrnnum='"+xgrnnum+"'") .eq. ""
+				set grninvno = #trn("GRN Invoice Number","GINV",10)
+				set temp=#sesql("update pogrnheader set xgrninvno='"+grninvno+"',xdategl=cast(GETDATE() as date) where zid='"+#id+"' and xgrnnum='"+xgrnnum+"'")
+			 end if
+           end event
+           event after
+			if pogrnheader.xgrninvno("xgrnnum='"+xgrnnum+"'") .ne. ""
+				set temp =  #spsql(zabsp_Confirmed_Request,#id,#user,#position,xwh,xgrnnum,"Supplier Invoice Approval GRN")
+			end if
+			 set tmp = #sesql("delete from acdetailtemppv where zid='"+#id+"' and xgrnnum='"+xgrnnum+"'")
+	         set tmp = #sesql("delete from acheadertemppv where zid='"+#id+"' and xgrnnum='"+xgrnnum+"'")
+			 
+			 action show
+           end event
+        end field
+		
+		field GenerateProvisionalVoucher
+		    event after
+			 set temp = #spsql(zabsp_PO_transferPOtoGL_demo,#id,#user,#position,xgrnnum)
+			 action show
+            end event
+        end field  
+
+        embed onsubmit="return submitit(this)"
+
+        field Detail
+          embed onclick="clicked(this)"
+        end field
+		
+		field Confirm
+          embed onclick="clicked(this)"
+        end field
+		
+		
+		field GenerateProvisionalVoucher
+          embed onclick="clicked(this)"
+        end field
+
+     end form
+
+     jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var button
+        var result
+        function clicked(b){
+          button=b.value
+        }
+        //function confirm(){
+         //if(confirm('Are You Sure To Confirm')){
+         	//form.searchbutton.value = "Confirm"
+        // }else{
+          //   form.searchbutton.value = "Show"
+         //}
+        //}
+        function submitit(form){
+          result = true
+          if (button=="Detail"){
+            form.screen.value = "pogrndetailac"
+            form.searchbutton.value = "Top"
+          }
+		  if (button=="Confirm"){
+           if(confirm('Are You Confirm ?')){
+			form.searchbutton.value = "Confirm"
+			}else{
+			form.searchbutton.value = "Show"
+			}
+		}
+          return result
+        }
+        </script>
+     end jscript
+
+end screen

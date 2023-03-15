@@ -1,0 +1,10 @@
+//RSC.menu
+//---------------------------------------------------------------------------------------
+option                  |action                                          |modules|models
+//--------------------------------------------------------------------------------------- 
+RSC Transfer to AP         				|#classPath+"/login?screen=rscaptransfer"  
+Revenue Sharing Opening Entry           |#classPath+"/login?screen=arhedaprsc"   
+Doctor's Revenue Sharing Payment        |#classPath+"/login?screen=appaymentrsc"   
+//Reports                          		|#classPath+"/login?menu=rscreports"
+//-------------------------------------------------------------------
+

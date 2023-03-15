@@ -1,0 +1,20 @@
+product ZAB ERP
+
+table imtordetailrptviewclub
+  caption "Store Req View"
+  columns zid,xitem,xtornum,xrow,xqtyord,xunit,xlineamt,xqtyreq,xqtycom,xnote,xqtypor,xprepqty,xqtyalc
+
+   primary key zid,xtornum,xrow
+
+  foreign key
+        zid references zbusiness.zid
+  end foreign key
+
+	sql CREATE VIEW imtordetailrptviewclub(zid,xitem,xtornum,xrow,xqtyord,xunit,xlineamt,xqtyreq,xqtycom,xnote,xqtypor,xprepqty,xqtyalc) ~
+	AS ~
+	SELECT zid,xitem,xtornum,xrow,xqtyord,xunit,xlineamt,xqtyreq,xqtycom,xnote,xqtypor,xprepqty,xqtyalc ~
+	FROM imtordetail where left(xtornum,4)='SPR-'
+
+
+end table
+

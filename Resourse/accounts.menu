@@ -1,0 +1,35 @@
+//Accounts.menu
+//-------------------------------------------------------------------
+option                           |action
+//-------------------------------------------------------------------
+General Ledger                 |#classPath+"/login?menu=ac"                       |ac
+Accounts Payable                 |#classPath+"/login?menu=ap"                       |ap
+Accounts Receivable              |#classPath+"/login?menu=ar"                       |ar
+LC Costing 						 |#classPath+"/login?menu=commercialac" 
+GL Transfer Process  			 |#classPath+"/login?menu=acglprcs"
+
+
+RSC (Revenue Sharing Consultant)                 |#classPath+"/login?menu=rsc"   
+//Sales Reports                          |#classPath+"/login?menu=opsalesrpt"
+IPD Remain Charge Entry                 |#classPath+"/login?screen=opdoheaderipdorderrc"
+//IPD Charge Entry 			 |#classPath+"/login?screen=opdoheaderipdorderrcac"
+/////Fixed Asset		           	     |#classPath+"/login?menu=fa"                       |ar
+/////Budget 		           	     	 |#classPath+"/login?menu=acbudget" 
+/////Voucher Update  				 |#classPath+"/login?screen=acheaderupdate"
+Notifications             		 |#classPath+"/login?screen=acnotification"
+//Accounts Receivable            |#classPath+"/login?menu=ar"                       |ar
+		
+
+		//Tax Chalan Entry              |#classPath+"/login?screen=pdtaxchallan"
+		//Budget Entry              |#classPath+"/login?screen=acbudget"
+		//Accounts Dash Board              |#classPath+"/login?screen=acdashboard"
+//Export LC Voucher Entry          |#classPath+"/login?screen=acheaderexplc"
+//Import LC Voucher Entry          |#classPath+"/login?screen=acheaderimplc"
+//Export LC Realization            |#classPath+"/login?screen=acordlcreal"
+//Import LC Opening                |#classPath+"/login?screen=acimplcopening"
+//Import LC Invoice                |#classPath+"/login?screen=acimplcinv"
+//-------------------------------------------------------------------
+
+
+Patient's Write Off/Adjustment Entry			|#classPath+"/login?screen=oppatientadj"   
+Patient's Write Off/Adjustment Approval			|#classPath+"/login?screen=oppatientadjapv"  

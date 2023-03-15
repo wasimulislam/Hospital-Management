@@ -1,0 +1,15 @@
+product ZAB ERP
+
+table opipddoreqheaderarc
+  caption "DO Header"
+  columns ztime,zutime,zauserid,zuuserid,zid,xdocnum,xdocrow,xreqnum,xpatient,~
+          xnote,xcase,xvisittype,xvisitno,xstatusreq,xroom,xbedno,xfloor,xwing,xepisodetype,xepisodeno,~
+		  xfwh,xtwh,xdate,xadmissionno,xdoctor,xdeptname,xpharmacyreqtype,xcanceltime,xcancelid,xnote1,xcancelmdate,~
+		  xconfirmid,xconfirmdate,xstatusdisc,xage
+
+  primary key zid, xdocnum
+  foreign key
+        zid references zbusiness.zid
+        //zid,xreqnum references opipdpcreqheader.zid,xreqnum
+  end foreign key
+end table

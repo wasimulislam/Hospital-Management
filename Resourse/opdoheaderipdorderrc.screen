@@ -1,0 +1,1095 @@
+screen opdoheaderipdorderrc
+	 sidebar 
+     sections form one,list one,jscript myscript //list posheader,
+	 
+    	 
+	list one
+        caption "Order List For "+ #sesql(" select convert(varchar,GETDATE(), 106)")
+        table opdodetail
+        order xdornum,xrow desc
+        fixed xdornum
+		dtlengthmenu [100, -1], [100, "All"]
+		dtordering [0,"desc"]
+		maxwidth 1200
+        select "cast(xdate as date)='"+#date+"'"
+        rows 30
+        objects  xdornum,xrow attrib(link "login?screen=opdoheaderipdorderrc&command=Show&xdornum=?&xrow=?"),~
+                 ztime,xitem,desc equals((select '<span class="font-weight-bold">'+xdesc+'</span>' from caitem where zid=opdodetail.zid and xitem=opdodetail.xitem)),descunit equals((select xunitsel from caitem where zid=opdodetail.zid and xitem=opdodetail.xitem)),xqtyord,xrate,(xqtyord*xrate*xsign),xdisc,xdiscamt,(xvatamt*xsign),(xlineamt*xsign),~
+				 descdoc equals((select xname from pdmst where zid=opdodetail.zid and xstaff=opdodetail.xdoctor)),xwh,descwh equals((select xlong from branchview where zid=opdodetail.zid and xcode=opdodetail.xwh))
+        
+			field xdornum
+				display hide
+			end field
+			
+		field ztime
+			format dd-MMM-yyyy hh:mm:ss a
+			display const
+			
+		end field
+		
+		
+		
+			
+		
+		totals "","","Totals","","","","","","","","","",sum
+
+        headers "","Line No","Time","Item Code","Description","Unit","Qty","Rate","Sub Total","Discount(%)","Discount","VAT","Line Amt","Doctor Name","Store Code","Name"
+     end list
+	
+
+     
+
+
+	 
+	 form one
+         caption "IPD Remain Order Entry"
+        table opdodetail
+        order xdornum,xrow desc
+		
+        return "login"
+        layout 4
+        pstyle 3
+        objects Add,Show,Clear,Delete,~ //Collecion,Delete,Update,Delete,
+                xpatient attrib(local),xpatientdesc,xdornum display(hide),sex,xadmissionno,xgitem,xage,xbedno,xadmdateipd display(const),xrow display(hide),~
+				xstaff attrib(local) display(hide),~
+				xepisodetype display(hide),xepisodeno display(hide),~
+				,xitem,xqtyord,xrate display(hide),xcomplgiftitem display(hide),~
+				xdoctor ,xdoctordesc,xitemdesc,~
+				xcardtype display(hide) ,xcardno display(hide),~
+				total display(hide),xqtybonus display(h),xlineamt display(h),~
+				xrategrn display(hide),xgiftitem display(h),~ //xdesc display(hide)
+				xpricerow display(hide),xcost display(hide),xqtycrn display(h),~
+				xpaymentterm display(h),xcrngainamt display(h),xroundingval display(h),xterminal display(h),~
+				xremadd,xsign display(hide),xrsc display(hide),xrscf display(hide),~
+				xwh,xcostcenter display(hide),xdeptname display(hide),xurgent display(hide),xstatusord display(hide),xdotype display(hide),~			
+				//new added
+				xvatamt display(hide),xvatrate display(hide),xdiscdet display(hide),xdiscdetamt display(hide),xqtytr display(hide),xsprate display(hide),~
+				xnetamt display(hide),xqtybntr display(hide),xdiscdetamttr display(hide),xvatamttr display(hide),xnetamttr display(hide),xdocrow display(hide),~
+				xdorrow display(hide),xgcost display(hide),xcomm display(hide),xretqty display(hide),xdiscamt display(hide),xqty display(hide),xdisc display(hide),~
+				xbonuspoints display(hide),xsupptaxrate display(hide),xdiscf display(hide),xamount display(hide),xrscconamt display(hide),xrsctaxamt display(hide),~
+				xyear display(hide),xper display(hide),xqtydel display(hide),xratedisc display(hide),xitemrate display(hide),xqtyreq display(hide),xdate display(hide),~
+                xspecimen display(hide)
+				
+
+	  field xpatient
+		width 20
+        attrib local
+		 pick list xpatientipd
+        caption Patinet ID
+        event after
+          set xpatient = opdoheader.xpatient("xdornum = '"+xdornum+"'")
+		class careports(getReport{ipdorderentry;3;in,st,st;zid,dornum,type;xdornum,"Detail";Print Bill Transaction})
+	   end event
+      end field
+	  
+	  field xgitem
+	  attrib local
+	  caption Group
+		//display combo2
+		display hide
+		pick "select xcode,xlong from xcodes where xtype='Item Group' and zactive=1 and xlong like '%CHARGES%'"
+			event after
+				set globals(xgitem)=xgitem
+			end event
+	  end field
+	  
+	 
+
+		field sex
+	  	display const
+	  	attrib local
+		caption Gender
+		event after
+			set sex=mmpatient.xsex("xpatient='"+xpatient+"'")
+		end event
+      end field	 	  
+	  
+	  
+	  field xadmissionno
+		attrib local
+		display const
+		event after
+			set xadmissionno=opdoheader.xcase("xdornum='"+xdornum+"'")
+		end event
+	  end field
+	  
+	  field xadmdateipd
+          attrib local
+          display const
+          caption Date of Admission
+	    event after
+	
+		set xadmdateipd=#sesql("select convert(varchar, xadmdate, 106)+''+right(convert(varchar(32),xadmdate,100),8) from mmadmission where xadmissionno='"+xadmissionno+"'")
+		
+		
+	    end event		
+        end field
+		
+		
+		
+		field xbedno
+          attrib local
+          display const
+          caption Bed Description
+	    event after
+		set xbedno=mmadmission.xbedno("xadmissionno='"+xadmissionno+"'")
+		set roomno=caroomdetail.xroom("xbedno='"+xbedno+"'")
+		set roomdesc=caroomheader.xdesc("xroom='"+roomno+"'")
+		set xbedno="Bed No: "+xbedno+"</br>"+"Room No: "+roomno+"</br>"+roomdesc
+		
+	    end event		
+        end field
+		
+		field xbeddesc
+			attrib local
+			display const
+			caption Bed Description
+			event after
+				set roomno=caroomdetail.xroom("xbedno='"+xbedno+"'")
+				
+				set roomdesc=caroomheader.xdesc("xroom='"+roomno+"'")
+				
+				set xbeddesc="Room No.:"+roomno
+				set xbeddesc=xbeddesc+"<br>Room Description: "+roomdesc
+			end event
+		end field
+		
+		
+		field xage
+			attrib local
+			event after
+				set xage=mmadmission.xage("xadmissionno='"+xadmissionno+"'")
+			end event
+		end field
+
+ 	  
+
+	   field xpatientdesc
+          attrib local
+          display const
+          caption Patient's Name
+          event after
+              set xpatientdesc = mmpatient.xname("xpatient = '"+xpatient+"'")
+          end event
+        end field 
+		
+		
+		field xearnedbonuspoints
+			attrib local
+		end field
+		
+		field xtotamt
+			attrib local
+		end field
+		
+	field Show
+		event before
+		
+				
+			set dornum =opdoheader.xdornum("xpatient='"+xpatient+"' and xbillno='' and xstatusprint not in ('Cancel','Cancelled') and left(xdornum,2)='DO' and isnull(xdotype,'')<>'P'")
+		
+				set row =#sesql("select max(xrow) from opdodetail where zid ='"+#id+"' and xdornum='"+dornum+"'")
+		
+			if xpatient .ne. "" .and. xdornum .eq. "" .and. dornum .ne. ""
+			//if dornum .ne. "" 
+				//set xdornum=dornum
+				//set xrow=row
+			//end if
+			set xdornum=dornum
+				set xrow=row
+			end if 
+			
+			
+		end event
+		event after
+
+			//set globals(xdornum)=xdornum
+		end event
+	end field	
+
+
+	field xdornum
+		caption Transaction No.
+		pick 
+		event after
+			set globals(xdornum)=xdornum
+			set globals(xpatient)=xpatient
+			if xpatient .ne. ""
+			set #field(xpatient.attrib)="readonly"
+			end if 
+		end event
+	end field	
+	
+	field xwh
+	   //pick list xwhp
+	   pick "select xwh,xlong from patientstore where zid='"+#id+"' and xadmissionno='"+xadmissionno+"'"
+	   display combo2
+	end field
+
+		field xrow
+			default 1
+		end field
+
+      field xdoctor
+        caption Doctor ID
+        pick list ipdorderdoc
+      end field			
+		
+      field xdoctordesc
+        attrib local
+        display const
+        caption Doctors Name
+        event after
+          set xdoctordesc = pdmst.xname("xstaff = '"+xdoctor+"' and xempstatus in ('Normal','Inactive')")
+        end event
+      end field	
+	  
+	  field xcrnamt
+		attrib local
+	  end field
+	  
+	  field xvoucheramt
+		attrib local
+	  end field
+	  
+	  field xearnedbonusamt
+		attrib local
+	  end field
+	  
+	  field xroundingchange
+		attrib local
+	  end field
+	  
+	  field xcardtype
+		attrib local
+	  end field
+	  
+	  field xcardno
+		attrib local
+	  end field
+	  
+	  field xcardamt
+		attrib local
+	  end field
+	  
+	  field xpaid
+		attrib local
+	  end field
+	  
+	  field xgiftitem
+		attrib local
+	  end field
+	  
+	  field xprint
+		attrib local
+	  end field
+	  
+	  
+	  field total
+		attrib local
+	  end field
+	  
+	  field xroundingval
+		attrib local
+	 end field
+	  
+
+
+	field xitem
+		pick list xitemipdorder
+		caption Item Code
+		//pick list xitemipdordergroup
+		height 5
+		width 20
+		embed onfocus="buttoneanble()" autocomplete="off" 
+	end field
+	
+	field xitemdesc
+		column 2
+		attrib local
+			caption Description
+		display const
+		event after
+			set xitemdesc=caitem.xdesc("xitem='"+xitem+"'")
+		end event
+	end field
+
+  	  field xqtyord
+		default 1
+			embed tabindex="2" onfocus="buttoneanble()" autocomplete="off"
+	  end field	
+
+
+
+field xremadd
+			attrib local
+			caption 
+			display hide
+			event after
+				set xremadd=#getremadd
+			end event
+		end field
+
+
+	field add
+            event before
+				
+				set itemname=#trim(itemname)
+				set xstatusord="0"
+				set xepisodetype=mmpatientepisode.xepisodetype("xpatient='"+xpatient+"' and xstatus='Open'")
+				set xepisodeno=mmpatientepisode.xepisodeno("xpatient='"+xpatient+"' and xepisodetype='"+xepisodetype+"' and xstatus='Open'")
+				set xsign=1
+				set xrsc=0
+				set xrscf=0
+				set xterminal=#getposws
+				set checkerr=""
+				set xdate=#date
+				set xvatamt=0
+				set xvatrate=0
+				set xdiscdet=0
+				set xdiscdetamt=0
+				set xqtytr=0
+				set xsprate=0
+				set xnetamt=0
+				set xqtybntr=0
+				set xdiscdetamttr=0
+				set xvatamttr=0
+				set xnetamttr =0
+				set xdocrow=0
+				set xdorrow=0
+				set xgcost=0
+				set xcomm=0
+				set xretqty=0
+				set xdiscamt=0
+				set xqty=0
+				set xdisc=0
+				set xbonuspoints=0
+				set xsupptaxrate=0
+				set xdiscf=0
+				set xamount=0
+				set xrscconamt=0
+				set xrsctaxamt=0
+				set xyear=#sesql("SELECT YEAR('"+xdate+"')")
+				set xper=#sesql("SELECT MONTH('"+xdate+"')")
+				set xqtydel=0
+				set xratedisc=0
+				set xitemrate=0
+				set xqtyreq=0
+				
+				set gitems = caitemchargeview.xgitem("xitem='"+xitem+"'")
+				
+				if gitems .eq. "1021"
+					set xspecimen=caitem.xspecimen("xitem='"+xitem+"'")
+					
+				end if				
+				
+	
+				set gitem = caitemchargeview.xgitemdes("xitem='"+xitem+"'")
+				set xamount=0
+				set cus = cacus.xcus("xcus='"+xcus+"'")	
+				set patid = mmpatient.xpatient("xpatient='"+xpatient+"' and zactive='1'")
+				set doctor=mmadmission.xdoctor("xpatient='"+xpatient+"' and xstatus in ('Open','On Discharge')")
+				set room=mmadmission.xroom("xpatient='"+xpatient+"' and xstatus in ('Open','On Discharge')")
+				set acapprove=#sesql("select isnull(xacapprove,'') from mmadmission where zid='"+#id+"' and xpatient='"+xpatient+"' and xstatus in ('Open','On Discharge')")
+				
+				set signinstatus = oppossigninlog.xstatus("xterminal='"+#getposws+"' and zemail='"+#user+"' and xdate='"+#date+"'")
+				set dornum =opdoheader.xdornum("xpatient='"+xpatient+"' and xbillno='' and xdornum like 'DO%' and xstatusprint not in ('Cancelled','Cancel')")
+				set row =#sesql("select max(xrow) from opdodetail where zid ='"+#id+"' and xdornum='"+dornum+"'")
+				
+				set whname=#sesql("select xlong from xcodes where zid ='"+#id+"' and xtype='Branch' and xtypeobj='Store' and xcode='"+xwh+"'")
+				set product=#sesql("select x.xtypeobj from caitem c join xcodes x on c.zid=x.zid and c.xgitem=x.xcode where c.zid ='"+#id+"' and x.xtype='Item Group' and c.xitem='"+xitem+"'")
+				if product .eq. "Product"
+				double stock=0.00
+				set stock=#sesql("select xavail from imstockdetview where zid='"+#id+"' and xitem='"+xitem+"' and xwh='"+xwh+"' and xwh<>'' ")
+				set xcostcenter=#sesql("select xcostcenter from xcodes where zid ='"+#id+"' and xtype='Branch' and xtypeobj='Store' and xcode='"+xwh+"'")
+				end if
+			    
+			
+			
+			if xdoctor .eq. ""
+				set xdoctor=doctor
+			end if
+            set doctorid = pdmst.xstaff("xstaff='"+xdoctor+"' and xempstatus in ('Normal','Inactive')")	
+			set xdeptname=pdmst.xdeptname("xstaff='"+xdoctor+"'")	
+			if dornum .ne. "" //.and. xdornum .eq. ""
+					set xdornum=dornum 
+			end if
+				
+			 if xpatient .eq. "" 
+			   error "Cannot Proceed -- Select IPD Patient ID!"
+			 else if patid .ne. xpatient
+					error "Cannot Proceed -- Patient invalid!"
+			 else if xepisodetype .ne. "IPD"
+					error "This Patients Episode is not IPD"
+			else if acapprove .eq. "Approved"
+				error "Cannot Proceed--Accounts Already Approved For Discharge"
+			else if gitems .eq. "1021" .and. xqtyord>1
+					error "Cannot Proceed--Lab Test Item Qty Will be 1"
+			 else if xdoctor .eq. "" .or. doctorid .ne. xdoctor
+					error "Cannot Proceed -- Doctor ID invalid!"
+			else if  product .eq. "Product" .and. xwh .eq. ""
+					error "Cannot Proceed -- Please Select Store!"
+			else if mmadmission.xstatus("xpatient='"+xpatient+"' and xstatus='Open'") .ne. "Open" .and. mmadmission.xstatus("xpatient='"+xpatient+"' and xstatus='On Discharge'") .ne. "On Discharge"
+				   error "This Patients' Admission Status Is Not Open"
+		    else if product .eq. "Product" .and. xwh .eq. ""
+				error "Store ID Invalid. Please Input data from proper Location!"
+			 else if product .eq. "Product" .and. xqtyord > stock
+				error "Cannot Proceed-- Available Stock In The Warehouse "+whname+":"+stock
+				//*************IF NEW INVOICE*****************
+			else 
+			if xdornum .eq. ""
+				set div = xcodes.xwh("xtype='Branch' and xcode='"+#wh+"'")
+				set trn = "DO--"
+				set xdornum = #trn("Bill Transaction Number",trn,10)
+				set xdornum = "DO--"+#sub(#date,2,2)+#sub(xdornum,4,6)
+				set temp = #spsql(zabsp_POS_Invoice_Generate,#id,#user,xdornum,xpatient,xcus,#wh,#getposws,xdoctor,"",xstaff,"Invoice")
+				set globals(xdornum)=xdornum
+				//***************** insert barcode image
+				//class insertbarcodeimage(singlebarcodeInsert{oppos,xdornum})
+			end if	
+			end if	
+					//************* END NEW INVOICE*****************				
+	             if opdoheader.xstatusprint("xdornum='"+xdornum+"'") .eq. "Printed"
+					set checkerr="1"
+					set msg="Cannot Proceed -- Bill Already Printed"			
+				
+				else if opdoheader.xcrngainamt("xdornum='"+xdornum+"'") > 0
+					set checkerr="1"
+					set msg="Cannot Proceed -- Bill Already Settled By Early Settlement"
+			
+				else if opdoheader.xstatus("xdornum='"+xdornum+"'") .eq. "Approved"
+					set checkerr="1"
+					set msg="Cannot Proceed -- Bill Is Approved!"
+				
+				else if opdoheader.xstatusdisc("xdornum='"+xdornum+"'") .eq. "Applied" .or. opdoheader.xstatusdisc("xdornum='"+xdornum+"'") .eq. "Approved"		
+					set checkerr="1"
+					set msg="Cannot Proceed -- Already Applied for Discount!"
+				end if
+				
+				if checkerr .eq. "1"
+						error +msg
+					else
+					
+					set itemfound="False"
+					set code=xitem
+					set pricerow=0
+					
+					//*************HANDLING ITEM FROM ZAB ITEM CODE*****************
+					
+					
+					set test1 = #sql("select xitem from caitem where xitem='"+code+"' and zactive=1")
+					if #result .eq. "true"
+						set itemfound="True"
+						set xitem=code
+						set xrate = caitem.xipprice("xitem='"+xitem+"' and zactive=1")
+						set xcost = caitem.xcost("xitem='"+xitem+"' and zactive=1")
+						set xsup  = caitem.xcus("xitem='"+xitem+"' and zactive=1")
+						set xdesc = caitem.xdesc("xitem='"+xitem+"' and zactive=1")
+					end if
+					
+					if gitem .eq. "APPOINTMENT CHARGES"
+						double rate=0.00
+						set rate=#sesql("select isnull(b.xipprice,0) from pddocfees b join caitem a on a.zid=b.zid and  a.xitem=b.xitem where b.zid='"+#id+"' and b.xstaff='"+xdoctor+"' and '"+#date+"' between b.xfdate and b.xtdate")
+						set xrate=rate
+					end if
+					
+					
+					//************* ADDING Urgent Bill *****************
+					if xurgent .eq. "Yes"
+						set gitem=caitem.xgitem("xitem='"+xitem+"'")
+						double percentinc=xcodes.xpercent("xcode='"+gitem+"' and xtype='Item Group'")
+						double rate=xrate*percentinc
+						double incamt = rate/100
+						set xrate=xrate+incamt
+					end if
+					
+					//*************IF PRODUCT NOT FOUND*****************
+					
+					if itemfound .eq. "False"
+						error "Product Not Found."
+					end if
+					
+					
+					//*************END PRODUCT NOT FOUND*****************
+					set unititem = #sql("select xunit from caitem where xitem ='"+xitem+"'")
+					
+					if xqtyord <= 0
+						set xqtyord = 1
+					else if unititem .eq. "Pcs"
+					//	set xqtyord = #mathceil(xqtyord)
+						set xqtyord = #sesql("select ceiling('"+xqtyord+"')")
+					end if
+					
+					//************* ADDING GIFT ITEM *****************
+					
+					if xcomplgiftitem .eq. "Yes"
+						set xrate = 0
+						set xqtybonus=xqtyord
+						set xqtyord = 0						
+					end if
+					
+					//************* END GIFT ITEM *****************
+					
+					set xunitsel = caitem.xunitsel("xitem='"+xitem+"'")
+
+					//************* ADDING ROW *****************	
+					
+					if xrow == 0
+						set xrow = 1
+					else
+						int row = 0
+						set row = #sql(int,"select xrow from opdodetail where xdornum='"+xdornum+"' order by xrow desc")
+						set xrow = row+1
+					end if
+					//************* END ROW ********************
+				end if 
+				set xlineamt=xrate*xqtyord			
+			end event
+			event after
+				//print checkerr
+				set itemcount=#sql("select count(xitem) from opdodetail where xdornum='"+xdornum+"' and xitem='"+xitem+"' and xdate='"+xdate+"'")
+				if itemcount .gt. 1
+					print xdesc +" Already Added "+itemcount + "Times"
+				end if
+				if checkerr .eq. ""
+				set div = xcodes.xwh("xtype='Branch' and xcode='"+#wh+"'")
+				set temp = #spsql(zabsp_OP_ValidedAfterDetailPOS,#id,#user,xdornum,xitem,"",xrow,xpricerow,xqtyord,xrate,"add")
+				set temp = #spsql(zabsp_PRCS_Package_Process,#id,#user,xpatient,xadmissionno,xdornum,xrow,"opdoheaderipdorder")
+				set temp = #spsql(zabsp_PRCS_RSC_Transaction,#id,#user,xdornum,xdoctor,xrow)
+				//if product .eq. "Product"
+					//set temp = #spsql(zabsp_PRCS_insertConsumablesItem,#id,#user,"opdoheaderipdorder",xadmissionno,xpatient,xitem,xqtyord,wh,xdornum,xrow)
+				//end if
+				
+				
+				//*******/\/\/\/\************* BONUS CALCULATION *********/\/\/\/\*********
+				set chkbonus = ""
+				set hdisc = opdoheader.xdisc("xdornum='"+xdornum+"'")
+				if hdisc >= 2
+					set chkbonus = "1"
+				end if
+				if gitem .eq. "Gift Voucher"
+					set chkbonus = "1"
+				end if
+				
+				if chkbonus .eq. ""
+					set temp = #spsql(zabsp_OP_calculateDetailBonusPoint,#id,#user,xdornum,xitem)
+				else 	
+					set temp = #sql("update opdoheader set xbonuspoints=0 where xdornum='"+xdornum+"'")
+				end if	
+
+				//*******/\/\/\/\************* END BONUS CALCULATION *********/\/\/\/\*********
+					if caitem.xgitem("xitem='"+xitem+"'") .eq. "1021" .or. caitem.xgitem("xitem='"+xitem+"'") .eq. "1035"
+						set xqtyord =1
+					end if
+				//set temp = #spsql(zabsp_pos_ValidateTermsAndCondition,#id,#user,div,xdornum,xitem,"ad")
+				double val=0.00
+				set val=xqtyord*xrate
+				print xdesc+" , "+xqtyord //+" @ "+xrate+" = "+val
+					
+				set gtot = #sql(double,"select sum(isnull(xtotamt,0)-isnull(xvoucheramt,0)-isnull(xcrnamt,0)-isnull(xearnedbonusamt,0)-isnull(xdiscamt,0)+isnull(xvatamt,0)+isnull(xsupptaxamt,0)+isnull(xroundingchange,0)) from opdoheader where xdornum='"+xdornum+"'")
+				set xgtot = "<font color=blue size=+2>"+gtot+"</font>"
+				set total = gtot
+				
+				set item=xitem	
+				set xitem = ""
+				set xqtyord = 1
+				set xqtybonus = 0
+				set xcomplgiftitem = "No"
+				set xcardamt = 0
+				set xpaid = 0
+				set xchange = 0
+				set xcardno = ""
+				set xdoctor = mmadmission.xdoctor("xpatient='"+xpatient+"' and xstatus in ('Open','On Discharge')") //opdoheader.xdoctor("xdornum = '"+xdornum+"'")
+				if opdoheader.xcardtype("xdornum='"+xdornum+"'') .ne. "Multiple Card"
+					set xcardtype = ""
+				end if
+				
+				set row = #sql("select xrow from opdodetail where xdornum='"+xdornum+"' and xitem='"+item+"'")
+				set xrow = row
+				set temp = #spsql(zabsp_OP_POS_Rounding,#id,#user,xdornum,"Rounding")
+				end if
+				action show
+			end event
+        end field
+		
+		
+		field Delete
+          event before	  
+		  
+			set dornum =xdornum
+			set row=xrow
+			set item=xitem
+			set packitem=opdodetail.xparentitem("xdornum='"+xdornum+"' and xrow='"+xrow+"'") 
+			set patient=xpatient
+			set admissionno=xadmissionno
+			set titem=caitem.xtitem("xitem='"+xitem+"'")
+			if opdoheader.xstatusprint("xdornum='"+xdornum+"'") .eq. "Printed"
+				set checkerr = "1"
+				set msg="Cannot Proceed -- Bill Already Printed"
+			else if opdodetail.xsign("xdornum='"+xdornum+"' and xrow='"+xrow+"'") < 0
+				set checkerr="1"
+				set msg="Cannot Proceed -- Charge Return Can not Delete from Billing!"
+			else if opdoheader.xbillno("xdornum='"+xdornum+"'") .ne. ""
+				set checkerr="1"
+				set msg="Cannot Proceed -- Bill Already Confirmed"
+            else if titem .eq. "IPD-Package"
+				set checkerr="1"
+				set msg="IPD package cannot be deleted from billing! Please Cancel from Package assign option!"					
+			//else if opdodetail.xparentitem("xdornum='"+xdornum+"' and xrow='"+xrow+"'") .ne. ""
+				//set checkerr="1"
+				//set msg="Cannot Proceed -- Package Detail Can not Delete Indevidual!"	
+            else if opdodetail.xqtycrn("xdornum='"+xdornum+"' and xrow='"+xrow+"'") > 0
+				set checkerr="1"
+				set msg="Cannot Proceed -- Charge already Returned!"
+			else if xitem .eq. "145199"
+				set checkerr="1"
+				set msg="Cannot Proceed -- REGISTRATION FEE can not be delete!"
+			else if opdoheader.xstatus("xdornum='"+xdornum+"'") .eq. "Approved"
+				set checkerr="1"
+				set msg="Cannot Proceed -- Bill Is Approved!"
+			else if opdoheader.xstatusdisc("xdornum='"+xdornum+"'") .eq. "Applied" .or. opdoheader.xstatusdisc("xdornum='"+xdornum+"'") .eq. "Approved"		
+				set checkerr="1"
+				set msg="Cannot Proceed -- Already Applied for Discount!"	
+			else if opdoheader.xstatusprint("xdornum='"+xdornum+"'") .ne. "Open" .and. xdornum .ne. ""
+				set checkerr = "1"
+				set msg="Cannot Proceed -- Bill is not Opened"
+			else if caitem.xgitem("xitem='"+item+"'") .eq. "1021" .and. opdodetail.xcollectionstatus("xdornum='"+xdornum+"' and xrow='"+xrow+"'") .eq. "Confirmed"
+				set checkerr = "1"
+				set msg="Cannot Proceed -- This Test Already Collected"
+			else if caitem.xgitem("xitem='"+item+"'") .eq. "1035" .and. opdodetail.xcollectionstatus("xdornum='"+xdornum+"' and xrow='"+xrow+"'") .eq. "Confirmed"
+				set checkerr = "1"
+				set msg="Cannot Proceed -- Already Radiology Appointment Confirmed For This Test"
+			else if opdodetail.xconsumpstatus("xdornum='"+xdornum+"' and xrow='"+xrow+"'") .eq. "Confirmed" .or. opdodetail.xstatusord("xdornum='"+xdornum+"' and xrow='"+xrow+"'") .eq. "1"
+				set checkerr = "1"
+				set msg="Cannot Proceed -- Already This Item Already Consumed"
+			
+			end if 
+			
+			
+			if checkerr .eq. "1"
+				error +msg			
+			end if
+          end event
+          event after
+			if checkerr .ne. "1"
+					if caitem.xgitem("xitem='"+item+"'") .eq. "1030"
+						set temp = #spsql(zabsp_OP_PackageDetail,#id,#user,dornum,item,row,"Delete")
+					end if
+				//*******/\/\/\/\************* END BONUS CALCULATION *********/\/\/\/\*********
+				//set temp = #spsql(zabsp_PRCS_Package_Process,#id,#user,patient,admissionno,dornum,row,"Package Process")
+				set temp = #spsql(zabsp_Prcs_validate_Package,#id,#user,admissionno,packitem,item,dornum,row,"Delete")
+				set temp = #spsql(zabsp_OP_ValidedAfterDetailPOS,#id,#user,xdornum,xitem,"",xrow,xpricerow,xqtyord,xrate,"add")
+				
+				set gtot = #sql(double,"select sum(isnull(xtotamt,0)-isnull(xvoucheramt,0)-isnull(xcrnamt,0)-isnull(xearnedbonusamt,0)-isnull(xdiscamt,0)+isnull(xvatamt,0)+isnull(xsupptaxamt,0)+isnull(xroundingchange,0)) from opdoheader where xdornum='"+xdornum+"'")
+				set xgtot = "<font color=blue size=+2>"+gtot+"</font>"
+				set total = gtot
+				set xqtyord = 1
+				set xitem=""
+				set temp = #spsql(zabsp_OP_POS_Rounding,#id,#user,xdornum,"Rounding")
+				end if
+			   set dornum =opdoheader.xdornum("xpatient='"+xpatient+"' and xbillno='' and xdornum like 'DO%' and isnull(xdotype,'')<>'P'")
+		
+				set row =#sesql("select max(xrow) from opdodetail where zid ='"+#id+"' and xdornum='"+dornum+"' and cast(ztime as date)='"+#date+"'")
+				set xdornum=dornum
+				set xrow=row
+				action show
+          end event
+        end field	
+		
+		
+		
+
+		
+		
+
+        field update
+          event before
+			set checkerr = ""
+			set gitem = caitem.xgitem("xitem='"+xitem+"'")
+			set cus = cacus.xcus("xcus='"+xcus+"'")	
+			set patid = mmpatient.xpatient("xpatient='"+xpatient+"'")
+			set doctorid = pdmst.xstaff("xstaff='"+xdoctor+"'")			
+			//******/\/\/\******* GIFT VOUCHER UPDATE ********/\/\/\************
+					
+					if gitem .eq. "Gift Voucher"
+						//set temp = #sql("update caitem set xdornum='"+xdornum+"' where xitem='"+xitem+"'")
+						//set temp = #sql("update caitem set zactive='0' where xitem='"+xitem+"'")
+						set xqtyord = 1
+					end if
+					
+			//************* END GIFT VOUCHER UPDATE ********************
+			//***************/\/\/\******Item Update******/\/\/\**************
+			if xqtyord <= 0
+				set xqtyord = 1
+			end if
+
+			//************** CHECKING BILL AMOUNT WITH PAID AMOUNT **********************	
+			
+			double totpaid = 0.00
+			double cardamt = 0.00
+			set paymentterm = cacus.xpaymentterm("xcus='"+xcus+"'")
+			if opposmultiplecard.xcardtype("xdornum='"+xdornum+"'") .ne. ""
+				set cardamt=opdoheader.xcardamt("xdornum='"+xdornum+"'")
+			else 
+				set cardamt = xcardamt
+			end if	
+			set totpaid = cardamt+xpaid
+
+	  		
+			set signinstatus = oppossigninlog.xstatus("xterminal='"+#getposws+"' and zemail='"+#user+"' and xdate='"+#date+"'")
+		   if opdoheader.xstatusprint("xdornum='"+xdornum+"'") .eq. "Printed"
+				set checkerr = "1"
+				set msg="Cannot Proceed -- Bill Already Printed"
+			else if opdoheader.xstatusprint("xdornum='"+xdornum+"'") .ne. "Open" .and. xdornum .ne. ""
+				set checkerr = "1"
+				set msg="Cannot Proceed -- Bill is not Opened"
+			else if opdoheader.xcrngainamt("xdornum='"+xdornum+"'") > 0
+				set checkerr = "1"
+				set msg="Cannot Proceed -- Bill Already Settled By Early Settlement"
+			else if opdoheader.xearnedbonuspoints("xdornum='"+xdornum+"'") < xearnedbonusamt
+				set checkerr = "1"
+				set msg="Cannot Proceed -- Bonus Amount is greater than Earned Bonus Point"
+			else if cacus.zactive("xcus='"+xcus+"'") .eq. "0" .and. xcus .ne. ""
+					error "Cannot Proceed -- Customer is not Active"
+			else if xpatient .eq. "" .or. patid .ne. xpatient
+					error "Cannot Proceed -- Patient ID invalid!"
+			else if xcardamt > 0 .and. xcardtype .eq. ""
+				set checkerr = "1"
+				set msg="Cannot Proceed -- Please Select Card Type"
+				//print "<font size=+2 color=red>Cannot Proceed -- Please Select Card Type</font>"
+			else if xitem .ne. opdodetail.xitem("xdornum='"+xdornum+"' and xrow='"+xrow+"'")
+				set checkerr = "1"
+				set msg="Cannot Proceed -- Item Does Not Match"
+				set xitem=""
+				//print "<font size=+2 color=red>Cannot Proceed -- Item Does Not Match</font>"
+		
+			end if 
+			
+			if checkerr .eq. "1"
+				error +msg
+			else
+
+				set txitem=#sql("select xitem from caitem where xitem='"+xitem+"'")
+				if #result .ne. "true"
+					error "Cannot Proceed -- Product Not Found!"
+				end if
+				
+					//*************END PRODUCT NOT FOUND*****************
+					set unititem = #sql("select xunit from caitem where xitem ='"+xitem+"'")
+					
+					if xqtyord <= 0
+						set xqtyord = 1
+					else if unititem .eq. "Pcs"
+					//	set xqtyord = #mathceil(xqtyord)
+						set xqtyord = #sesql("select ceiling('"+xqtyord+"')")
+					end if				
+			
+				//************* UPDATING CUSTOMER INFORMATION *********************
+
+				if xcus .ne. "CUS-000000"
+
+					set disc = cacus.xdisc("xcus='"+xcus+"'")
+					set temp = #sql("update opdoheader set xcus='"+xcus+"' where xdornum='"+xdornum+"'")
+					set temp = #sql("update opdoheader set xsex='"+xsex+"' where xdornum='"+xdornum+"'")
+					set temp = #sql("update opdoheader set xexpetriot='"+xexpetriot+"' where xdornum='"+xdornum+"'")
+					set temp = #sql("update opdoheader set xpaymentterm='"+paymentterm+"' where xdornum='"+xdornum+"'")
+					//if disc > 0
+					set temp = #sql("update opdoheader set xdisc="+disc+" where xdornum='"+xdornum+"'")
+					//end if
+					
+					//*************** updating earned bonus points ************************
+					
+					if paymentterm .eq. "Cash"
+						double earnedbonuspoints = 0.00
+						set earnedbonuspoints = #sql("select xbonusbal from cacus where xcus='"+xcus+"'")
+						//print xcus
+						//print earnedbonuspoints
+						set temp = #sql("update opdoheader set xearnedbonuspoints="+earnedbonuspoints+" where xdornum='"+xdornum+"'")
+
+					end if
+				else
+					set temp = #sql ("update opdoheader set xearnedbonuspoints=0 where xdornum='"+xdornum+"'")
+				end if
+				
+			end if
+          end event
+          event after
+			if checkerr .ne. "1"
+				set temp = #spsql(zabsp_OP_ValidedAfterDetailPOS,#id,#user,xdornum,xitem,"",xrow,xpricerow,xqtyord,xrate,"add")
+
+				//*******/\/\/\/\************* BONUS CALCULATION *********/\/\/\/\*********
+				
+				set chkbonus = ""
+				set hdisc = opdoheader.xdisc("xdornum='"+xdornum+"'")
+				if hdisc >= 2
+					set chkbonus = "1"
+				end if
+				if gitem .eq. "Gift Voucher"
+					set chkbonus = "1"
+				end if
+				
+				if chkbonus .eq. ""
+					set temp = #spsql(zabsp_OP_calculateDetailBonusPoint,#id,#user,xdornum,xitem)
+				else 	
+					set temp = #sql("update opdoheader set xbonuspoints=0 where xdornum='"+xdornum+"'")
+				end if	
+				
+				set xrate=caitem.xipprice("xitem='"+xitem+"'")
+				double val=0.00
+				set val=xqtyord*xrate
+				set xdesc=caitem.xdesc("xitem='"+xitem+"'")
+				print xdesc+" , "+xqtyord +" @ "+xrate+" = "+val
+				//*******/\/\/\/\************* END BONUS CALCULATION *********/\/\/\/\*********
+				
+				set gtot = #sql(double,"select sum(isnull(xtotamt,0)-isnull(xvoucheramt,0)-isnull(xcrnamt,0)-isnull(xearnedbonusamt,0)-isnull(xdiscamt,0)+isnull(xvatamt,0)+isnull(xsupptaxamt,0)+isnull(xroundingchange,0)) from opdoheader where xdornum='"+xdornum+"'")
+				set xgtot = "<font color=blue size=+2>"+gtot+"</font>"
+				set total = gtot
+				set xqtyord = 1
+				set xitem=""
+				set temp = #spsql(zabsp_OP_POS_Rounding,#id,#user,xdornum,"Rounding")
+				end if
+				action show
+          end event
+        end field	
+	
+	field xpaymentterm
+		attrib local
+		caption 
+		event after
+			set xpaymentterm=opdoheader.xpaymentterm("xdornum='"+xdornum+"'")
+		end event
+	end field	
+
+					
+		
+		embed onsubmit="return submitit(this)"
+
+        field Return
+          embed onclick="clicked(this)"
+        end field
+
+        field Sales
+          embed onclick="clicked(this)"
+        end field
+		
+        field Gift
+          embed onclick="clicked(this)"
+        end field
+
+        field Multiple
+          embed onclick="clicked(this)"
+        end field
+		
+        field Collection
+          embed onclick="clicked(this)"
+        end field		
+
+
+end form
+
+     jscript myscript
+
+        <script language="javascript" type="text/javascript">
+  
+  
+  
+  //************** To disable back button***********************       
+  
+history.pushState(null, null, document.URL);
+window.addEventListener('popstate', function () {
+    history.pushState(null, null, document.URL);
+});
+		var but
+        var result
+        
+		function clicked(b){
+          but = b.value
+        }
+
+        function buttondis(){
+			document.getElementById("Add").disabled = true;
+        }
+        
+        function buttoneanble(){
+			document.getElementById("Add").disabled = "";
+        }
+        
+        function checkno(b){
+			var cardno = document.one.xcardtype.value
+			if(cardno != '' && b.value == '')
+				alert('Cannot Proceed - Please Provide Card No')
+        }
+        
+        function updatecardamt(b){
+			var cardtype = form.xcardtype.value
+			var paid = form.xpaid.value
+			var change = form.xchange.value
+
+
+			//************* calculation for card after card value *****************/
+			
+			var num =  Number(((document.getElementById("xgtot").textContent)).replace(",",""))
+			num = Number(num.toFixed(2))
+			change = Number(num-paid).toFixed(2)	
+
+			//if(change<0)
+			//	change = 0-change
+			if(cardtype=='Multiple Card'){
+				alert('Cannot Proceed -- Please Choose Proper Card Type')
+				document.getElementById("xcardtype").value=""
+			}
+			var cardval = b.value
+			var cardamt = (form.total.value)
+			if(cardval == ""){
+				document.getElementById("xcardamt").value=""+0
+			}else if(paid >0){
+				document.getElementById("xcardamt").value=""+change
+				//document.getElementById("xpaid").value=0
+				document.getElementById("xchange").value=0
+			}else{
+				document.getElementById("xcardamt").value=""+cardamt
+				document.getElementById("xpaid").value=0
+				document.getElementById("xchange").value=0
+			}
+        }  //str.substring(1, 4);
+		
+		function updatePaybleBpoint(b){
+
+			var bvalue = Number((b.value).replace(",",""))
+			var ebpoint = Number(((form.xearnedbonuspoints.value)).replace(",",""))
+
+			
+			if(ebpoint < bvalue){
+				alert('Cannot Proceed -- Redemption Amount Is Greater Than Earned Bonus Point')
+				document.one.xearnedbonusamt.value = 0
+			}
+			
+				var bvalue = Number((b.value).replace(",",""))
+				var totamt = Number(((form.xtotamt.value)).replace(",",""))
+				var discamt = Number(((form.xdiscamt.value)).replace(",",""))
+				var vatamt = Number(((form.xvatamt.value)).replace(",",""))
+				var supptaxamt = Number(((form.xsupptaxamt.value)).replace(",",""))
+				var crnamt = Number(((form.xcrnamt.value)).replace(",",""))
+				var voucheramt = Number(((form.xvoucheramt.value)).replace(",",""))
+
+				var num = Number(totamt)-Number(discamt)+Number(vatamt)+Number(supptaxamt)-Number(crnamt)-Number(voucheramt)-Number(bvalue)
+				num = Number(num.toFixed(2))
+				var index = num.toString().indexOf(".")
+				if(parseInt(index)>=0){
+					var rounding = num.toString().substring(parseInt(index),num.toString().length)
+					rounding = Number(rounding)
+					if(rounding >= .50)
+						rounding = Number(1-rounding).toFixed(2)
+					else	
+						rounding =  Number(0-rounding).toFixed(2)
+					//if(num<0)
+					//	rounding = 0-rounding
+					//num = Number(num)+Number(rounding)
+				}else{
+					rounding = Number(0.00)
+				}	
+				if(num<0)
+					rounding = 0-rounding
+				num = Number(num)+Number(rounding)
+				//num = addCommas(num)
+				document.getElementById("xroundingchange").textContent=Number(rounding)
+				document.getElementById("xgtot").textContent=""+addCommas(Number(num).toFixed(2))
+				document.getElementById("xgtot").style.fontSize="24px"
+				document.getElementById("xgtot").style.color="Red"
+				document.getElementById("total").value=Number(num).toFixed(2)
+				document.getElementById("xroundingval").value=Number(rounding)
+			//}
+        }
+
+		function addCommas(nStr)
+		{
+			nStr += '';
+			x = nStr.split('.');
+			x1 = x[0];
+			x2 = x.length > 1 ? '.' + x[1] : '';
+			var rgx = /(\d+)(\d{3})/;
+			while (rgx.test(x1)) {
+				x1 = x1.replace(rgx, '$1' + ',' + '$2');
+			}
+			return x1 + x2;
+		}
+
+		function test(b){
+			var bvalue = Number((b.value).replace(",",""))
+			var num =  Number((form.total.value).replace(",",""))
+			var cardamt = Number((form.xcardamt.value).replace(",",""))
+			var paid = Number((form.xpaid.value).replace(",",""))
+			num = num-cardamt
+			num = bvalue-num
+			num = Number(num.toFixed(2))
+			document.getElementById("xchange").value=""+num
+        }
+		function cardamtpaid(b){
+			var bvalue = Number((b.value).replace(",",""))
+			var num =  Number((form.total.value).replace(",",""))
+			var paidcash = Number((form.xpaid.value).replace(",",""))
+			var cardamt = Number((form.xcardamt.value).replace(",",""))
+			num = num-paidcash
+			num = bvalue-num
+			num = Number(num.toFixed(2))
+			document.getElementById("xchange").value=""+num
+        }		
+		
+		function earnpoint(b){
+			var bvalue = Number((b.value).replace(",",""))
+			var num =  Number((form.total.value).replace(",",""))
+			var cardamt = Number((form.xcardamt.value).replace(",",""))
+			var paidcash = Number((form.xpaid.value).replace(",",""))
+			var paid = Number((form.xearnedbonusamt.value).replace(",",""))
+			num = num+paid-cardamt
+			num = num-paidcash
+			num = bvalue-num
+			num = Number(num.toFixed(2))
+			document.getElementById("xchange").value=""+num
+        }	
+		function cardamt(b){
+			var bvalue = Number((b.value).replace(",",""))
+			var num =  Number((form.total.value).replace(",",""))
+			var cardamt = Number((form.xcardamt.value).replace(",",""))
+			var paidcash = Number((form.xpaid.value).replace(",",""))
+			var paid = Number((form.xearnedbonusamt.value).replace(",",""))
+			num = num+paid-cardamt
+			num = num-paidcash
+			num = bvalue-num
+			num = Number(num.toFixed(2))
+			document.getElementById("xchange").value=""+num
+        }
+		
+		window.onload = function() {
+			document.one.xitem.select();
+		}
+		
+        function submitit(form){
+			result = true
+			if (but == "Return"){
+				form.screen.value = "opdoheaderpos"
+				form.searchbutton.value = "Find xdornum=?"
+			}
+			if (but == "Complete"){
+				form.screen.value = "opdoheaderpos"
+				form.searchbutton.value = "Find xdornum=?"
+			}
+			if (but=="Sales Return Adjustment"){
+				form.screen.value = "opposcrn"
+				form.searchbutton.value = "Top"
+			}
+			if (but=="Gift Voucher"){
+				form.screen.value = "opposgiftv"
+				form.searchbutton.value = "Top"
+			}
+			if(but == "Collection"){
+				form.screen.value = "opposmultiplecard"
+				form.searchbutton.value = "Top"
+			}		
+        }
+		
+        </script>
+     end jscript
+
+end screen
+

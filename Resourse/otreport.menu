@@ -1,0 +1,14 @@
+option                           |action
+//-------------------------------------------------------------------
+//OT Schedule	   	   		   |#classPath+"/login?screen=*viewcrystal allotschedulelist(5;in,dt,dt,st,st;zid,xdate,tdate,fdept,tdept;xdate=From Date,xtdate=To Date,xdeptname=Department1,xdeptname=Department2,xviewtype=Report View)"
+//OT Schedule	   	   		   |#classPath+"/login?screen=*viewcrystal allotschedulelist(7;in,dt,dt,st,st,st,st;zid,xdate,tdate,dept,consultant,ot,type;xdate=From Date,xtdate=To Date,xdeptname=Department,xdoctor=Consultant,xroom1=OT,xtype1=Patient Type,xviewtype=Report View)"
+Daily OT Schedule Report	   	   		   |#classPath+"/login?screen=*viewcrystal dailyallotschedulelist(7;in,dt,st,st,st,st,st;zid,xdate,dept,consultant,ot,type,patient;xdate=Date,xdeptnameclinical=Department Name,xdoctor=Consultant,xroom1=OT,xtype1=Patient Type,xpatient=Patient ID,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+
+//OT Schedule	   	   		   |#classPath+"/login?screen=*viewcrystal allotschedulelist(8;in,dt,dt,st,st,st,st,st;zid,xdate,tdate,patient,dept,consultant,ot,type;xdate=From Date,xtdate=To Date,xpatient=Patient ID,xdeptnameclinical=Department Name,xdoctor=Consultant,xroom1=OT,xtype1=Patient Type,xviewtype=Report View)"
+//Consent Form of Anaesthesia	   	   		   |#classPath+"/login?screen=*viewcrystal cfanaesthesia(3;in,st,st;zid,xpatient,xdeptname;xpatient=Patient ID,xdeptname=Department ID,xviewtype=Report View)"
+//Consent Form of Operation	   	   		   |#classPath+"/login?screen=*viewcrystal consentforoperation(3;in,st,st;zid,xpatient,xdeptname;xpatient=Patient ID,xdeptname=Department ID,xviewtype=Report View)"
+//High Risk OT Form	   	   		   |#classPath+"/login?screen=*viewcrystal highriskot(3;in,st,st;zid,xpatient,xdeptname;xpatient=Patient ID,xdeptname=Department ID,xviewtype=Report View)"
+//OT Record Form	   	   		   |#classPath+"/login?screen=*viewcrystal otrecord(3;in,st,st;zid,xpatient,xdeptname;xpatient=Patient ID,xdeptname=Department ID,xviewtype=Report View)"
+//Surgical Check List	   	   		   |#classPath+"/login?screen=*viewcrystal mmsurgical(3;in,st,int;zid,xpatient,xrow;xpatient=Patient ID,xrow=Row,xviewtype=Report View)"
+																			
+//Orthopaedic OT Schedule  |#classPath+"/login?screen=*bocrystal 3376(xpatientcategory=From Category,xpatientcategory=to Category,xdate=From Date,xdate=To Date)" //mmorthoschedule

@@ -1,0 +1,19 @@
+product ZAB ERP
+
+table mmlabphview
+	caption "Caitem View"
+	columns zid,xrow,xcase,xitem,xrem
+
+	primary key zid,xcase,xrow
+
+	foreign key
+        zid references zbusiness.zid
+	end foreign key
+	
+
+	sql CREATE VIEW mmlabphview (zid,xrow,xcase,xpatient,xitem,xrem,xdesc,xdate) AS SELECT a.zid,a.xrow,a.xcase,p.xpatient,a.xitem,a.xrem,c.xdesc,isnull(convert(VARCHAR,b.xdate, 106),'') as xdate from mmlaborder a  ~
+	JOIN caitem c on a.zid=c.zid and a.xitem=c.xitem ~
+	JOIN mmprescription p on a.zid=p.zid and a.xpatient=p.xpatient ~
+	JOIN mmappointment b on a.zid=b.zid and a.xcase=b.xcase
+	
+end table

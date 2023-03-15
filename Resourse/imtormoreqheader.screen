@@ -1,0 +1,473 @@
+screen imtormoreqheader
+     	sidebar list imtor,list imtorassetissue,list imspr,list imtor2
+	sections form one,list imstockcheck,jscript myscript
+     
+	 list imtor
+        caption "Product Requisition "
+        table imtorheader
+        order xtornum desc
+        //select "xstatustor in ('Partial Issue','Checked','Approved') and left(xtornum,4)='SR--' and xstatusreq ='Open' and xfwh='"+#wh+"' and xreqtype<>'Store Requisition'"
+		select "xstatustor in ('Partial Issue','Checked','Approved') and left(xtornum,4)in ('SR--') and xstatusreq ='Open' and xfwh in (select xwh from userstoreview where zid='"+#id+"' and xposition='"+#position+"') and '"+#wh+"'<>'' and '"+#position+"'<>''"
+		statesave true
+		rows 30
+        objects  xtornum  attrib(link "login?screen=imtormoreqheader&command=Show&xtornum=?"),~
+                 xdate,twhdesc equals((select xlong from branchview where zid=imtorheader.zid and xcode=imtorheader.xfwh)),xstatustor,xtypesr
+				 
+        headers "Requisition No","Date","Plant/Store","Status","Requisition Type"
+     end list
+	 
+	 
+	 list imtorassetissue
+        caption "Asset Issue List"
+        table imtorheader
+        order xtornum desc
+        //select "xstatustor in ('Partial Issue','Checked','Approved') and left(xtornum,4)='SR--' and xstatusreq ='Open' and xfwh='"+#wh+"' and xreqtype<>'Store Requisition'"
+		select "xstatustor in ('Partial Issue','Checked','Approved') and left(xtornum,4)in ('ASTI') and xstatusreq ='Open' and xfwh in (select xwh from userstoreview where zid='"+#id+"' and xposition='"+#position+"') and '"+#wh+"'<>'' and '"+#position+"'<>''"
+		rows 30
+        objects  xtornum  attrib(link "login?screen=imtormoreqheader&command=Show&xtornum=?"),~
+                 xdate,twhdesc equals((select xlong from branchview where zid=imtorheader.zid and xcode=imtorheader.xfwh))
+				 
+        headers "Requisition No","Date","Plant/Store"
+     end list	 
+	 
+	 list imspr
+        caption "Store Purchase Requisition List"
+        table imtorheader
+        order xtornum desc
+		select "zauserid='"+#user+"' and left(xtornum,3)='SPR' and xstatustor=''"
+        statesave true
+		rows 10
+        objects  xtornum  attrib(link "login?screen=imsprheader&command=Show&xtornum=?"),~
+                 xdate,xstatustor
+        headers "Requisition No","Date","SPR Status"
+    end list
+	
+	
+	 list imtor2
+        caption "Purchase Requisition "
+        table imtorheader
+        order xtornum desc
+         //select "xstatustor in ('Partial Issue','Checked','Approved') and left(xtornum,4)='SR--' and xstatusreq in ('SPR Created',,'Create PO','PR Created') and xfwh='"+#wh+"' and xreqtype<>'Store Requisition'"
+		select "xstatustor in ('Partial Issue','Checked','Approved') and left(xtornum,4) in ('SR--','ASTI') and xstatusreq in ('SPR Created','Create PO','PR Created') and xfwh in (select xwh from userstoreview where xposition='"+#position+"') and '"+#wh+"'<>'' and '"+#position+"'<>''"
+		rows 7
+        objects  xtornum  attrib(link "login?screen=imtormoreqheader&command=Show&xtornum=?"),~
+                 xdate,twhdesc equals((select xlong from branchview where zid=imtorheader.zid and xcode=imtorheader.xfwh))//,xstatusreq
+				 
+        headers "Requisition No","Date","Plant/Store"
+     end list
+	 
+	 
+	 	list imstockcheck
+        caption "Item List For SR No.  "+xtornum
+        table imstockcheckview
+        order xtornum,xrow
+		fixed xtornum
+        //select "(xitem like '%"+zvalue+"%' or xdesc like '%"+zvalue+"%') and xfwh='"+xfwh+"' and xqtyreq>0 "
+        //searchselect " xfwh='"+xfwh+"'"
+		rows 30
+        objects xrow, ~
+        xitem,xdesc,xpartno,~
+        xqtyreq,xunitsel,xavail,xqtyord,xstatus
+		
+		
+		
+		totals "","","Total","",sum		
+	
+	headers "row","Item","Description","Part No.","Quantity Required","UOM","Available Quantity","Quantity Delivered ","Stock Check Status"
+     end list
+
+
+   list one
+        caption "Item List For SR No "+xtornum
+        table imtordetail
+        order xtornum,xrow desc
+        fixed xtornum
+		select "xqtyreq-xqtyalc>0"
+		rows 30
+        objects ~
+        xrow,~//attrib(link "login?screen=imtormoreqdetail&command=Show&xtornum=?&xrow=?"), ~
+        xitem,desc equals((select xdesc from caitem where zid=imtordetail.zid and xitem=imtordetail.xitem)),~
+		partno equals((select xtheircode from caitem where zid=imtordetail.zid and xitem=imtordetail.xitem)),~
+        (xqtyreq-xqtyalc),xunit,xqtycom,xqtyord,xstype
+
+		totals "","","Total","",sum
+		
+        headers "Serial No","Item","Description","Part no","Qunatity Required","UOM","Available Quantity","Quantity Delivered","Stock Check Status"
+     end list
+
+     form one
+        caption "Issue/PR By Store Officer "
+        table imtorheader
+        primarykey xtornum
+        order xtornum 
+        //select "(xstatustor='Checked' OR xstatustor='Approved' OR xstatustor='Partial Issue') and left(xtornum,4)='SR--'"// and xstatusreq <> 'Create PO'"//" and left(zauserid,2)='"+#sub(#user,0,2)+"'"
+        select "xstatustor in ('Partial Issue','Checked','Approved') and left(xtornum,4) in ('SR--','ASTI') and xfwh in (select xwh from userstoreview where xposition='"+#position+"') and '"+#wh+"'<>'' and '"+#position+"'<>''"
+		return "login"
+        pstyle 3
+        layout 3
+        objects Show,Clear,Check_And_Hold,Details,Issue_From_Stock,Dismiss,Create SPR,Release_Hold,~//Receive Stock,
+        "<p>" ,~
+        xtornum ,xdate display(const),xdateexp,xdatecom display(hide),~
+        xfwh display(const),xfbrname,xref,xproject display(const),xprojectdesc,xregi display(hide),xregidesc display(const),xtwh,~
+		xtbrname,xassetcode,xassetcodedesc,xstatustor display(constant),~
+		xdocrow display(hide),xstatusreq display(hide),xlong display(const),xpreparer display(hide),preparer display(const),~
+		xpkey display(hide) attrib(local),xtype display(hide),xtypesr display(const),xstatussr display(hide)
+				
+			
+       field xfbrname
+        attrib local
+        caption Plant/Store Name
+        display const
+        event after
+          set xfbrname=xcodes.xlong("xtype='Branch' and xcode='"+xfwh+"'")
+        end event
+       end field
+		
+		field xregidesc
+		pick list xcardept
+			caption Department Name
+			event before
+				set xregidesc = xcodes.xlong("xcode='"+xregi+"' and xtype='Department Name'")
+			end event
+		end field
+		
+		field xassetcode
+			caption Asset Code
+			display const
+		end field		
+		
+		field xassetcodedesc
+			attrib local
+			caption Asset Name
+			display const
+			event after
+				set xassetcodedesc=famst.xname("xcode='"+xassetcode+"'")
+			end event
+		end field		
+		
+       field xtbrname
+        attrib local
+        caption Store Name
+        //display hide
+        event after
+          set xtbrname=xcodes.xlong("xtype='Branch' and xcode='"+xtwh+"'")
+        end event
+       end field
+	   
+       field xprojectdesc
+        attrib local
+		display const
+        caption Project Name
+        event after
+          set xprojectdesc=projectallview.xlong("xcode='"+xproject+"'")
+        end event
+       end field	   
+
+        field xtornum
+		caption Requisition No.
+          event after
+			set globals(xtornum)=xtornum
+			set globals(xfwh)=xfwh
+			set st = #sql("select xstatussr from imtorheader where xtornum = '"+xtornum+"'")
+           class careports(getReport{imtranissueprint;2;in,st;zid,tornum;xtornum;Print SR})
+		   class careports(getReport{imsrsummery;2;in,st;zid,tornum;xtornum;View SR Summary})
+			if imtorheader.xstatustor("xtornum='"+xtornum+"'") .eq. "Approved"
+              set #field(Issue_From_Stock.attrib)="disabled"
+			  set #field(Create.attrib)="disabled"
+			  set #field(Details.attrib)="disabled"
+			  set #field(Receive.attrib)="disabled"
+			end if
+			
+			if st .eq. "Transferred"
+				set #field(Details.attrib)="disabled"
+			end if 
+			
+			if #sub(xtornum,0,4) .eq. "ASTI"
+			  set #field(Create.attrib)="disabled"
+			  set #field(Details.attrib)="disabled"
+			  set #field(Receive.attrib)="disabled"
+			end if			
+			if xstatusreq .eq. "Create PO"
+			  set #field(Create.attrib)="disabled"
+			end if
+				if imtorheader.xstatustor("xtornum='"+xtornum+"'") .eq. "Dismissed"
+					set #field(Dismiss.attrib)="disabled"
+				end if
+			if xtypesr .eq. "Transfer"
+				set #field(xtwh.display)="const"
+				set #field(xtbrname.display)="const"
+			else	
+				set #field(xtwh.display)="hide"
+				set #field(xtbrname.display)="hide"
+			end if
+			
+			if xstatustor .ne. "Checked"
+				set #field(Issue_From_Stock.attrib)="disabled"
+			end if
+			
+           end event
+        end field
+
+		 field xporeqnum
+          caption Purchase Requisition No.
+        end field
+		
+        field preparer
+          caption Preparer
+		  attrib local
+		  event after
+		   set preparer=pdmst.xname("xstaff='"+xpreparer+"'")+"<br><font SIZE=2>"+pdmstview.designationname("xstaff='"+xpreparer+"'")+", "+pdmstview.departmentname("xstaff='"+xpreparer+"'")+"</font>"
+		  end event
+        end field
+
+		  field xdate
+          caption SR Date
+        end field
+
+        field xdatecom
+          caption Issue Date
+        end field
+		
+        field xdateexp
+		  attrib local
+		  display const
+          caption Issue Date
+		  default #date
+        end field
+		
+		 field xdum
+		 attrib local
+          display constant
+          caption
+        end field
+
+
+        field xlong
+		caption Note
+          height 3
+          width 70
+          column 2
+        end field
+		
+		field show
+		event after
+          set xpkey=xtornum
+		  end event
+        end field		
+		
+		  field Dismiss
+            event before
+			double alcqty=#sql(double,"select sum(xqtyalc) from imtordetail where xtornum='"+xtornum+"'")
+			double prno=#sql(double,"select count(xporeqnum) from poreqheader where xtornum='"+xtornum+"' and xstatusreq<>'Dismissed'")
+			if xpkey .ne. xtornum
+				error "Please Show First!"
+			else if xtornum .eq. ""
+				error "Please Select SPR No!"
+			else if imtorheader.xstatustor("xtornum='"+xtornum+"'") .eq. "Dismissed"
+				error "Already Dismissed!"
+			else if prno>0 .or. alcqty>0
+				error "Can not Proceed -- SPR Already Created or Product Already Issued!"
+			end if
+			end event
+			event after
+				set temp =  #spsql(zabsp_Dismissed_Request,#id,#user,#position,"",xtornum,"SR_SPR Dismissed")
+			end event
+			end field
+
+
+        field CreateOld
+          event before
+            if xstatustor .eq. "Confirmed" .or. #sub(xtornum,0,4) .eq. "ASTI"
+              error "Cannot Proceed -- Requisition Already Checked"
+			else if xstatusreq .ne. "Open"
+			error "Cannot Proceed -- PR Already Created"
+            end if
+          end event
+          event after
+		   set temp = #spsql(zabsp_SR_Create_SPR,#id,#user,#position,xtornum,xstatustor,"Create SPR")
+		   //set temp = #spsql(zabsp_DATETIME_Update,#id,#user,#position,xtornum,"imtorheader","xdateso","xsofficer","xstatusreq","xtornum","Create PO")
+            action Show
+          end event
+        end field
+		
+		field Release_Hold
+            event before
+			if xpkey .ne. xtornum
+				error "Please Show First!"
+			else if xtornum .eq. ""
+				error "Please Select SPR No!"
+			else if imtorheader.xstatustor("xtornum='"+xtornum+"'") .eq. "Dismissed"
+				error "Already Dismissed!"
+			end if
+			end event
+			event after
+				set temp =  #sql("update imtordetail set xqtyord=0 where xtornum='"+xtornum+"'")
+				//set temp =  #sql("update imtordetail set xqtycom=0 where xtornum='"+xtornum+"'")
+				set temp =  #sql("update imtordetail set xstype='' where xtornum='"+xtornum+"'")
+			end event
+			end field			
+		
+		
+		
+        field Check_And_Hold
+          event before
+		  	if xpkey .ne. xtornum
+				error "Please Show First!"
+			else if imtorheader.xstatustor("xtornum='"+xtornum+"'") .eq. "Dismissed" .or. imtorheader.xstatustor("xtornum='"+xtornum+"'") .eq. "Confirmed"
+				error "Already Confirmed !"
+			else if xstatussr .eq. "Transferred"
+				error "Cannot Proceed--Product Didn't Received Yet"
+			end if 
+		   //if xstatustor .ne. "Approved"
+              //error "Cannot Proceed -- Requisition not Approved"
+            //else 
+			//if xstatustor .eq. "Checked"
+              //error "Cannot Proceed -- Requisition Already Checked"
+            //end if
+          end event
+          event after
+            set temp = #spsql(zabsp_IM_CheckMORequisition,#id,#user,xtornum,xdate,xfwh,xstatustor)
+            action show
+          end event
+        end field
+
+        field Issue_From_Stock
+          event before
+		  set backdate=#sql("select xdateexp from acdef")
+		  set backentry=#sql("select xbacklock from acdef")
+		  double prepqty=#sql("select sum(xqtyord) from imtordetail where xtornum='"+xtornum+"'")
+			
+		  
+		  
+			if xpkey .ne. xtornum
+				error "Please Show First!"
+			else if xstatustor .ne. "Checked"
+				error "Cannot Proceed -- Please Check Store"
+			else if prepqty <0.01
+				error "Cannot Proceed -- Please Give Delivery Quantity in Detail"
+			else if backentry .eq. "No" .and. xdateexp .le. backdate
+				error "Back Lock Entry does not allow!"
+		    else 
+			 set dt=xdateexp
+            end if
+          end event
+          event after
+		   set srinc=pdmst.xstaff("xposition='"+#position+"'")
+		   set temp =  #sql("update imtorheader set xsofficer='"+srinc+"' where xtornum='"+xtornum+"'")
+		   if xtypesr .eq. "Transfer"
+			set temp = #spsql(zabsp_Admin_confirmSR,#id,#user,xtornum,dt,xfwh,xtwh,xstatustor,6)
+		    //set temp = #spsql(sp_Admin_confirmSR,#id,#user,xtornum,dt,xfwh,xtwh,xstatustor,6)
+			//set temp = #spsql(zabsp_PROC_Loan_To_Pricing,#id,#user,xtornum,xfwh) 
+		   else 
+           // set temp = #spsql(sp_Admin_confirmTO,#id,#user,xtornum,dt,xfwh,xtwh,xstatustor,6)
+		   set temp = #spsql(zabsp_Admin_confirmTO,#id,#user,xtornum,dt,xfwh,xtwh,xstatustor,6)
+		   end if
+		  // if xassetcode .eq. "" .and. xtypesr .ne. "Transfer"
+			//set temp = #spsql(zabsp_PROC_Issue_Pricing,#id,#user,xtornum,xfwh) 
+		   //end if
+		   // set temp = #spsql(sp_confirmTO,#id,#user,xtornum,xdate,xfwh,xtwh,xstatustor,"imtormoreqheader",6)
+			print "<font size=+2 color=white>Process Done! </font>"	
+			action show
+          end event
+        end field
+		
+		 field Receive
+          event before
+		    if xstatustor .ne. "Checked"
+             error "Cannot Proceed -- Please Check Store"
+           //else if xstatustor .eq. "Checked"
+           //   error "Cannot Proceed -- TO Already Confirmed"
+            end if
+          end event
+          event after
+		   set srinc=pdmst.xstaff("xposition='"+#user+"'")
+		   set temp =  #sql("update imtorheader set xsofficer='"+srinc+"' where xtornum='"+xtornum+"'")
+		   if xtype .eq. "Transfer"
+			set temp = #spsql(sp_Admin_confirmSR,#id,#user,xtornum,xdate,xfwh,xtwh,"Received",6)
+		   else
+           set temp = #spsql(sp_Admin_confirmTO,#id,#user,xtornum,xdate,xfwh,xtwh,"Received",6)
+		   end if
+		   // set temp = #spsql(sp_confirmTO,#id,#user,xtornum,xdate,xfwh,xtwh,xstatustor,"imtormoreqheader",6)
+			action show
+          end event
+        end field
+		
+		
+        embed onsubmit="submitit(this)"
+
+		field Issue_From_Stock
+          embed onclick="clicked(this)"
+        end field
+        field Details
+          embed onclick="clicked(this)"
+        end field
+		
+        field Create
+          embed onclick="clicked(this)"
+        end field		
+		
+        field Dismiss
+          embed onclick="clicked(this)"
+        end field		
+     end form
+
+     jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+
+        function clicked(b){
+          detail=b.value
+        }
+// Issue
+        function submitit(form){
+          if (detail=="Details"){
+            form.screen.value = "moreqdetailstore"
+            form.searchbutton.value = "Find xtornum=?"
+          }
+		if (detail=="Create SPR"){
+			form.screen.value = "moreqheaderclub"
+			form.searchbutton.value = "Find xtornum=?"
+        }		  
+		   if (detail=="Dismiss"){
+           if(confirm('Are You Confirm ?')){
+			form.searchbutton.value = "Dismiss"
+			}else{
+			form.searchbutton.value = "Show"
+			}
+          }	
+		if (detail=="Issue_From_Stock"){
+           if(confirm('Are You Confirm ?')){
+			form.searchbutton.value = "Issue_From_Stock"
+			//document.getElementById("Confirmed").style.visibility = "disable";
+			document.getElementById("Issue_From_Stock").disabled = true;
+			document.getElementById("Check_And_Hold").disabled = true;
+			document.getElementById("Release_Hold").disabled = true;
+			document.getElementById("Dismiss").disabled = true;
+			document.getElementById("Detail").disabled = true;
+			document.getElementById("Create SPR").disabled = true;
+			//alert( "To complete this operation, \n Please wait for a while. \n After Completion,\nPress the OK button\n------------\nThank You");
+			}else{
+			form.searchbutton.value = "Show"
+			}
+          }
+			
+        }
+		function pickItem(link){
+          if (navigator.appName.indexOf("Netscape") >= 0){
+            document.one.xcur.value=link.text
+            document.one.xexch.value=exch.text
+          }else{
+          link.innerText
+            document.one.xtornum.value=link.innerText
+          }
+          return false
+        }
+
+
+        </script>
+     end jscript
+
+
+
+end screen

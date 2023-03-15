@@ -1,0 +1,18 @@
+product ZAB ERP
+
+table caitemallview
+
+    caption "Items Master"
+	columns zid,xitem,xdesc,xgitem
+    primary key zid,xitem
+  
+  foreign key
+        zid references zbusiness.zid
+  end foreign key  
+  
+	sql create view caitemallview(zid,xitem,xdesc,xgitem,xitemold,xtypeobj)~	
+	as select c.zid , c.xitem,isnull(c.xdesc,''),c.xgitem,isnull(c.xitemold,''),cc.xtypeobj from caitem(NOLOCK) c ~
+			join xcodes(NOLOCK) cc on c.zid=cc.zid and c.xgitem=cc.xcode where cc.xtype='Item Group'		  
+
+
+end table

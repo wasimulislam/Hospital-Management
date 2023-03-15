@@ -1,0 +1,178 @@
+screen mmproappshift
+
+     sidebar list one
+     sections  form one,list detail, jscript myscript
+
+     list one
+        caption "To Appointment For "+caitem.xdesc("xitem='"+xitem+"'")+" "+xdate
+        table procedureplanview 
+        order xyearperdate,xitem,xrow
+        fixed xyearperdate,xitem
+		select "xapptype='Procedure' and xstatus in ('Open')"
+		dtlengthmenu [100, -1], [100, "All"]
+		maxheight 2000
+        rows 80
+        objects xrow attrib(link "abc" embed onclick="return pickItem(this:#)"),~
+               xapptime,xpatient,xname,~
+                xstatus,xnote
+
+        header "Serial No","Time","Patient ID","Patient's Name","Status","Note"
+     end list
+	 
+	 
+	 list detail
+        caption "From Appointment For "+caitem.xdesc("xitem='"+xitem+"'")+" "+xdate
+        table procedureplanview
+        order xyearperdate,xitem,xrow
+        fixed xyearperdate,xitem
+		select "xapptype='Procedure' and xstatus in ('Booked','Confirmed')"
+		dtlengthmenu [100, -1], [100, "All"]
+       
+		rows 30
+		maxheight 20000
+        objects xrow attrib(link "login?screen=mmproappshift&command=Show&xyearperdate=?&xitem=?&xrow=?"),~
+              xapptime,xpatient,xname,~
+                xmobile,xstatus,xnote,xyearperdate
+		field xyearperdate
+			display hide
+        end field		
+
+        header "Serial No","Time","Patient ID","Patient's Name","Mobile No.","Current Status","Note"
+     end list
+
+
+     form one
+        caption "Shifting For<br>"+caitem.xdesc("xitem='"+xitem+"'")
+        table mmappointmentprocedure
+	    primarykey xyearperdate,xitem,xrow
+        order xyearperdate,xitem,xrow
+        fixed xyearperdate,xitem//,xrow
+        select "xstatus in ('Booked','Confirmed')"
+        return "login"
+        layout 2
+        pstyle 3
+        objects Back,Shift,"<p>" ,~
+                xapptimelocal,xapptime display(hide),xrow display(const),xdate display(hide),xtrow attrib(readonly),xnote,xtype display(hide),xcase display(hide),xpatient display(hide),xrate display(hide)
+                
+       
+
+		field xrow
+			caption From Serial
+			event after
+			set globals(xrow)=xrow
+			end event
+		end field
+		
+		field xapptimelocal
+				display const
+				attrib local
+				column 2
+				caption <span class=sheader style="	BACKGROUND:#563d7c;color:white;PADDING-BOTTOM: 2px;PADDING-LEFT: 7px; PADDING-RIGHT: 50px; 	PADDING-TOP: 2px;">Appointment Date & Times</span>
+				event after
+					set appdate=#sql(varchar,"select convert(VARCHAR,xdate, 106)  from mmappointmentprocedure where xcase='"+xcase+"' ")
+					set apptimelocal=#sesql("select FORMAT(CAST(xapptime AS datetime), 'hh:mm tt') from mmappointmentprocedure where zid='"+#id+"' and xcase='"+xcase+"'")
+					set xapptimelocal=appdate+"  "+apptimelocal
+				end event
+			
+			end field
+
+	   field xtrow
+          //attrib local
+          display text
+          width 5
+          caption To Serial
+        end field
+		
+		field xnote
+		column 2
+		end field
+
+
+        field Shift
+		customclass Shift
+			width 100
+			height 40
+          event before
+			if xnote .eq. ""
+				error "Cannot Proceed--Please Write Shiftting Reason"
+			else if xrow .eq. ""
+				error "Please Select From Serial"
+			else if xrow .eq. 0
+				error "Please Select From Serial"
+			else if xtrow .eq. ""
+				error "Please Select To Serial"
+			else if xtrow .eq. 0
+				error "Please Select To Serial"
+			else if mmappointmentprocedure.xstatus("xapptype='Procedure' and xyearperdate='"+xyearperdate+"' and xitem='"+xitem+"' and xrow='"+xtrow+"'") .ne. "Open"
+				error "Cannot Procedure--Your Selected To Serial is not Open"
+			else if mmappointmentprocedure.xstatus("xapptype='Procedure' and xyearperdate='"+xyearperdate+"' and xitem='"+xitem+"' and xrow='"+xrow+"'") .ne. "Booked" .and. mmappointmentprocedure.xstatus("xapptype='Procedure' and xyearperdate='"+xyearperdate+"' and xitem='"+xitem+"' and xrow='"+xrow+"'") .ne. "Confirmed"
+				error "Cannot Procedure--Your Selected From Serial is not Booked or Confirmed"
+			end if
+          end event	
+          event after
+			set temp=#sql("update mmappointmentprocedure set xnote='"+xnote+"' where xcase='"+xcase+"'")
+            set temp = #spsql(zabsp_MMAPP_validateAfterAppointment_procedure,#id,#user,"mmappshift",xdate,xyearperdate,xtype,xitem,xrow,xtrow,xcase,xpatient,xrate,"Shift")
+			set xrow=0
+			set xtrow=""
+            action show
+          end event
+        end field
+
+        field Back
+			width 100
+			height 40
+          embed onclick="clicked(this)"
+        end field
+		
+		field Shift
+			width 100
+			height 40
+          embed onclick="clicked(this)"
+        end field
+
+
+
+        embed onsubmit="submitit(this)"
+
+     end form
+
+     jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+        function submitit(form){
+
+	        if (detail=="Back"){
+            form.screen.value = "proceduredetails"
+            form.searchbutton.value = "Find xyearperdate=?&xitem=?&xrow=xrow"
+          }
+		  if (detail=="Shift"){
+            form.searchbutton.value = "Shift"
+			document.getElementById("Shift").disabled = true;
+			document.getElementById("Back").disabled = true;
+			
+			
+         }
+		
+	       
+        }
+		
+		function pickItem(link){
+          if (navigator.appName.indexOf("Netscape") >= 0){
+            document.one.xtrow.value=link.text
+            
+          }else{
+            document.one.xtrow.value=link.innerText
+            
+          }
+          return false
+        }
+        </script>
+     end jscript
+
+
+
+end screen

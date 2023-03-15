@@ -1,0 +1,13 @@
+product ZAB ERP
+
+table smsconfig
+  caption "smsconfig"
+  columns ztime,zutime,zauserid,zuuserid,zid,~
+          xuserid,xapitoken,xsid,xcsmsid,xqtypur,xcqtyuse,zactive
+
+  primary key zid,xuserid
+  foreign key
+        zid references zbusiness.zid
+  end foreign key
+  
+end table

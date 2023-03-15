@@ -1,0 +1,57 @@
+screen opdef
+     caption "GL Defaults"
+     sections form one
+
+	form one
+		caption "Sales Default Setting"
+		table opdef
+		return "login"
+		layout 2
+		pstyle 3
+		objects Show,Clear,Add, Update, *next,Top,Bottom,"<p>" ,~//Delete,
+						//xcusserial,xsupserial,xinvserial,xyesno,xvatrate,xservicecharge,xdisc,~
+						xdiscstatus,xoverdelivery,xcrnapproval,xdiscapproval,xallowduesipd,xallowduesopd,~
+						xallowcorporate,xregbillsettle,xwhopd,xwhipd,xwhem,xwhdc,xwhpharma,xipdpharmacy,~
+						xsignonoff,xsignonoffdt,xupdateuser,xstaffrequired,xwhpharmamain,xepisodetype,xotstore,xnum display(hide)
+			
+	field xyear
+	   caption IN Number
+	end field
+	
+	field xepisodetype
+		display combo
+	   caption Bill Not Modift?
+	   pick ",IPD,All"
+	end field
+		
+	
+	field xdiscstatus
+	   caption Receivable of Corporate Discount
+	end field	
+	
+	field xyesno
+	   caption Delivery Over Stock
+	end field	
+	field xipdpharmacy
+		pick xwhall
+	end field
+	
+	field Add
+		event before
+		set xnum = 1
+		end event
+	end field
+	
+	
+	field update
+		event before
+		if xnum < 1
+			error "Please press Top Button frist!"
+		end if
+		end event
+	end field
+
+	
+	end form	
+
+end screen

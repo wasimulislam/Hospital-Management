@@ -1,0 +1,22 @@
+product ZAB ERP
+
+table branchview2
+  caption "Branch View"
+  columns zid,xtype,xlong,xcode
+
+  primary key zid,xcode
+
+  foreign key
+        zid references zbusiness.zid
+  end foreign key
+
+	sql CREATE VIEW branchview2(zid,xtype,xlong,xcode,xmadd,xphone,xfax,xemail,xtypeobj,zactive,xwh,xacc,zbid,xtypestore,xfwh,xacwh,xplaning,xcostcenter) ~
+	AS ~
+	SELECT a.zid,b.xtype,b.xlong,b.xcode,b.xmadd,b.xphone,b.xfax,b.xemail,b.xtypeobj,b.zactive,b.xwh,cast(a.zid as varchar(50)),CAST(a.zid as varchar(50)),isnull(xtypestore,''), ~
+	(CASE WHEN b.xlong like '%QC%' then '' ELSE b.xwh END),(CASE when isnull(b.xwh,'')='' then '01' else isnull(b.xwh,'') END),b.xplaning,b.xcostcenter  ~
+	FROM zbusiness a JOIN ~
+	xcodes(NOLOCK) b ON a.zid=b.zid ~
+	WHERE b.xtype='Branch'	
+
+end table
+

@@ -1,0 +1,720 @@
+screen mmdocapp
+
+     sidebar list one,list imtoreject,list hold,list patient//,list allPrescription
+     sections form one,list prescription,jscript myscript 
+
+
+
+     list one
+        caption "Today's Patient Appointment List "+pdmst.xname("xposition='"+#position+"'")
+        table mmappointmentview
+        order xcase
+        //dtlengthmenu [100, -1], [100, "All"]
+		select "xapptype='doctor'  and xstatus in ('Reported','Attended') and xyearperdate in (select xyearperdate from zabsysdateview where zid='"+#id+"') and xdoctor=(select xstaff from pdmst where zid='"+#id+"' and xposition='"+#position+"')"
+        rows 30
+		maxwidth 710
+		maxheight 2000
+        objects xcase attrib(link "login?screen=mmdocapp&command=Show&xcase=?"),~
+                xapptime,xpatient,xname,xage,xstatus,xtype//,bimage equals((select 'images\carimg\'+xpatient))
+        header "Case No","Time","Patient ID","Patient's Name","Age","Status","Appointment Type"//,"Patient Image"
+		
+     end list
+	 
+	list imtoreject
+        caption "OPD Re-evaluation prescription List"
+        table mmdocappview
+        order xcase desc
+		collapse yes
+		select "xstatus='On_Review'"
+		select "xapptype='doctor'  and xstatus in ('On_Review') and xyearperdate in (select xyearperdate from zabsysdateview where zid='"+#id+"')  and xdoctor=(select xstaff from pdmst where zid='"+#id+"' and xposition='"+#position+"')"
+        rows 30
+		maxwidth 710
+		maxheight 2000
+        objects  xcase  attrib(link "login?screen=mmdocapp&command=Show&xcase=?"),~
+                 xdate,xstatus,xrejnote//,bimage equals((select 'images\carimg\'+xpatient))
+        headers "Requisition No","Date","Pharmacy Status","Note"//,"Patient Image"
+    end list
+	
+	
+	list patient
+        caption "History of "+xpatient+"-"+mmpatient.xname("xpatient='"+xpatient+"'")
+        table mmappointmentview
+        order xcase
+		fixed xpatient
+        //dtlengthmenu [100, -1], [100, "All"]
+		select "xapptype='doctor' and xposition='"+#position+"' and xstatus ='Completed'"
+        rows 50
+		maxwidth 710
+		maxheight 2000
+        objects xcase attrib(link "login?screen=mmdocapp&command=Show&xcase=?"),~
+                xfdate,xapptime,xpatient,xname,xorg//,xpatient,xname,xorg//,xcase display(hide)
+        header "Case No","Date","Time","Patient ID","Patient's Name","Doctor Name"//,"Patient ID","Patient's Name","Doctor Name"//,"Status"
+     end list
+	
+	list hold
+        caption "OPD On_Hold prescription List"
+        table mmdocappview
+        order xcase desc
+		collapse yes
+		select "xstatus='On_Hold'"
+		select "xapptype='doctor'  and xstatus in ('On_Hold') and xyearperdate in (select xyearperdate from zabsysdateview where zid='"+#id+"')  and xdoctor=(select xstaff from pdmst where zid='"+#id+"' and xposition='"+#position+"')"
+        rows 30
+		maxwidth 710
+		maxheight 2000
+        objects  xcase  attrib(link "login?screen=mmdocapp&command=Show&xcase=?"),~
+                 xdate,xpatient,xstatus//,bimage equals((select 'images\carimg\'+xpatient))
+        headers "Requisition No","Date","Pharmacy Status","Note"//,"Patient Image"
+    end list
+	
+	list prescription
+        caption "Prescription of " +mmpatient.xname("xpatient='"+xpatient+"'")
+        table mmprescription
+        order xcase,xrow
+        fixed xcase
+        rows 30
+		maxwidth 750
+        objects xrow,~ //attrib(link "login?screen=mmprescriptionobsflw&command=Show&xcase=?&xrow=?"),~
+                xfdate,xgenericdesc,xinst,xroute,xrem
+
+        header "Serial No","Starting Date","Generic Name of Drug","Instruction","Route","Medicine Advice"//,"Duration","","Strength"
+     end list
+	 
+	 list allPrescription
+        caption "Previous Prescription History in UHL of " +xpatient+"-"+mmpatient.xname("xpatient='"+xpatient+"'") 
+        table mmappointmentview
+        order xcase
+		fixed xpatient
+        //dtlengthmenu [100, -1], [100, "All"]
+		select "xapptype='doctor' and xstatus ='Completed' and xstatuspharma <> '' and xposition<>'"+#position+"'"
+        rows 50
+		maxwidth 710
+		maxheight 2000
+        objects xcase attrib(link "login?screen=mmdocapp&command=Show&xcase=?"),~
+                xfdate,xapptime,xpatient,xname,xorg//,xpatient,xname,xorg//,xcase display(hide)
+        header "Case No","Date","Time","Patient ID","Patient's Name","Doctor Name"//,"Patient ID","Patient's Name","Doctor Name"//,"Status"
+     end list
+
+
+     form one
+        caption "United Hospital Limited <br> Personal Details"//+pdmst.xname("xposition='"+#position+"'")
+        table mmappointment
+		primarykey xcase
+        order xcase //xyearperdate,xrow
+        select "xapptype='doctor'
+        return "login"
+        layout 2
+        pstyle 3
+        objects ~
+                Show,~//,Top, Previous, Next, Bottom,*next,~Update,
+                Clear,History,General Examinations,Physical Examination,Investigation,Diagnosis,Medications,Diet & Advice,*next,On_Hold,Modify_Prescription,Completed,"<p>",~//Completed,Presenting Symptoms,Medical History,History,Follow-up,History,Radiology Investigation,Lab Result,Radiology Result
+                xrow display(hide),~
+                xdoctor  display(hide),xpatient,~
+                xname display(const),xage display(const),xsex display(const),xnextvisit display(hide),~
+				xtype display(hide),xuser display(const),xuserdept display(const),xdept display(hide),~//xadvice,xfollowupadvice,
+                xcase display(hide),xyearperdate display(hide),xstatus display(hide),xapptype display(hide),xdummy,Prescription_Preview
+				
+		
+		field xrow
+		event after
+            //class careports(getReport{mmprescription;2;in,st;zid,xcase;xcase;Preview})
+		end event
+		end field
+		
+		field xdummy
+			caption 
+			attrib local
+			display text
+			default "mmdocapp"
+		end field
+		
+		field Modify_Prescription
+			width 130
+			height 40
+			event after
+			set temp = #spsql(zabsp_OPD_followup_All,#id,#user,xcase,xpatient,xdoctor)
+			//print #id
+			//print #user
+			//print xcase
+			//print xpatient
+			//print xdoctor
+			action show
+			end event
+		end field
+		
+		field xpatient
+			attrib readonly	
+			caption UHID
+			width 18
+        end field
+
+        field xname
+			attrib local
+			display const
+			caption Patient Name
+		event after
+			set xname = mmpatient.xname("xpatient='"+xpatient+"'") //<br/> ""Age: "xage+"<br/> Gender: "xsex//+"<br/> Blood Group: "xbloodgroup
+		end event
+        end field
+
+ 
+
+        field xsex
+			attrib local          
+			caption Gender
+		event after
+			set xsex=mmpatient.xsex("xpatient='"+xpatient+"'")
+		end event
+        end field
+		
+		field xuser
+			caption Consultant Name
+			attrib local
+			event after
+			set xuser=pdmst.xname("xposition='"+#position+"'")
+			end event
+		end field
+		
+		field xuserdept
+			caption Department
+			attrib local
+			event after
+				set xuserdept=pdmstview.departmentname("xposition='"+#position+"'")
+			end event
+		end field
+		
+		field xdept
+			caption Department Code
+			attrib local
+			event after
+				set xdept=pdmstview.xdeptname("xposition='"+#position+"'")
+			end event
+			 
+		end field
+        
+	
+
+        field xcase
+		event before
+			set xyear=#sub(#date,0,4)
+			set year=#sub(#date,0,4)
+			set per=#sub(#date,5,2)
+			set day=#sub(#date,8,2)
+			set xper=#sub(#date,5,2)
+			set xyearperdate1 = year+per+day 
+		end event
+		event after
+			set globals(xpatient)=xpatient
+			set globals(xdoctor)=xdoctor
+			set globals(xcase)=xcase
+			set docname = pdmst.xname("xstaff='"+#user+"'")			
+		
+		if xyearperdate .ne. xyearperdate1
+			//set #field(Modify_Prescription.attrib)="disabled"
+			set #field(Medications.attrib)="disabled"
+			set #field(Physical.attrib)="disabled"
+			set #field(General.attrib)="disabled"
+			set #field(Diagnosis.attrib)="disabled"
+			set #field(Patient.attrib)="disabled"
+			set #field(Investigation.attrib)="disabled"
+			set #field(Completed.attrib)="disabled"
+			set #field(History.attrib)="disabled"
+			set #field(Diet.attrib)="disabled"
+			set #field(Send.attrib)="disabled"
+			set #field(On_Hold.attrib)="disabled"
+		end if
+		
+		if xstatus .eq. "Completed"
+			//set #field(Modify_Prescription.attrib)="disabled"
+			set #field(Medications.attrib)="disabled"
+			set #field(Physical.attrib)="disabled"
+			set #field(General.attrib)="disabled"
+			set #field(Diagnosis.attrib)="disabled"
+			set #field(Patient.attrib)="disabled"
+			set #field(Investigation.attrib)="disabled"
+			set #field(Completed.attrib)="disabled"
+			set #field(History.attrib)="disabled"
+			set #field(Diet.attrib)="disabled"
+			set #field(Send.attrib)="disabled"
+			set #field(On_Hold.attrib)="disabled"
+		end if
+		
+		if xstatus .eq. "Booked" 
+			set #field(Modify_Prescription.attrib)="disabled"
+			set #field(Medications.attrib)="disabled"
+			set #field(Physical.attrib)="disabled"
+			set #field(General.attrib)="disabled"
+			set #field(Diagnosis.attrib)="disabled"
+			set #field(Patient.attrib)="disabled"
+			set #field(Investigation.attrib)="disabled"
+			set #field(Completed.attrib)="disabled"
+			set #field(History.attrib)="disabled"
+			set #field(Diet.attrib)="disabled"
+			set #field(On_Hold.attrib)="disabled"
+		end if
+		
+		if xstatus .eq. "Confirmed" 
+			//set #field(Modify_Prescription.attrib)="disabled"
+			set #field(Medications.attrib)="disabled"
+			set #field(Physical.attrib)="disabled"
+			set #field(General.attrib)="disabled"
+			set #field(Diagnosis.attrib)="disabled"
+			set #field(Patient.attrib)="disabled"
+			set #field(Investigation.attrib)="disabled"
+			set #field(Completed.attrib)="disabled"
+			set #field(History.attrib)="disabled"
+			set #field(Diet.attrib)="disabled"
+			set #field(On_Hold.attrib)="disabled"
+		end if
+		
+		if xstatus .eq. "On_Hold"
+			//set #field(Modify_Prescription.attrib)="disabled"
+			set #field(On_Hold.attrib)="disabled"
+			//set #field(Investigation.attrib)="disabled"
+			//set #field(Update.attrib)="disabled"
+			//set #field(Completed.attrib)="disabled"
+		end if
+		
+		if xstatus .eq. "Completed" .and. xposition<>'"+#position+"'
+			set #field(Modify_Prescription.attrib)="disabled"
+			set #field(On_Hold.attrib)="disabled"
+			//set #field(Investigation.attrib)="disabled"
+			//set #field(Update.attrib)="disabled"
+			//set #field(Completed.attrib)="disabled"
+		end if
+		end event
+        end field
+		
+		field xtype
+			caption Appointment Type
+			width 60
+		end field
+		
+	
+       
+		
+		field On_Hold
+			height 40
+			width 100
+			embed onclick="clicked(this)"
+			event before
+			if xstatus .ne. "Attended" .and. xstatus .ne. "On_Review" //.and. xstatus .ne. "On_Hold" 
+				error "Cannot Proceed -- Hold Is  Allowed In Attended Slot"
+			end if
+			
+			end event
+			event after
+			
+			set temp= #sql("update mminitappointment set xstatus='On_Hold' where zid='"+#id+"' and xapptype='"+xapptype+"' and xcase='"+xcase+"' ")
+			set temp =#sesql("update mmappointment set xstatus='On_Hold',xcompleteid='"+#user+"' where zid='"+#id+"' and xapptype='"+xapptype+"' and  xcase='"+xcase+"'")
+			//set temp = #spsql(zabsp_PRCS_getAge,#id,#user,"mmappdetail",xcase,xdate)
+			//set temp = #sql("update mmappointment set xappend=getdate() where xcase='"+xcase+"'")
+			set xcase=""
+
+			action show
+			end event
+        end field
+		
+		field Completed
+			width 130
+			height 40
+			embed onclick="clicked(this)"
+			event before
+				
+			if xnextvisit .eq. ""
+				set xnextvisit=mmappointment.xnextvisit(xcase='"+xcase+"')
+			end if
+			if xfollowupadvice .eq. ""
+				set xfollowupadvice=mmappointment.xfollowupadvice(xcase='"+xcase+"')
+			end if
+			
+			if xstatus .ne. "Attended" .and. xstatus .ne. "On_Review" .and. xstatus .ne. "On_Hold" 
+				error "Cannot Proceed -- Completed Is  Allowed In Attended Slot"
+			else 
+				set xedspecialist=mmappointment.xedspecialist(xcase='"+xcase+"')
+				set xrefdoctor=mmappointment.xrefdoctor(xcase='"+xcase+"')
+			end if
+			end event   
+			event after
+			if xstatus .eq. "On_Review" //.and. xstatuspharma .eq. "Confirmed"
+			set temp= #sesql("update mminitappointment set xstatus='Completed',xappcompleted=GETDATE(),xcompleteid='"+#user+"' where zid='"+#id+"' and xapptype='"+xapptype+"' and xcase='"+xcase+"' ")
+			//set temp =#sesql("update mmappointment set xstatus='Completed',xstatuspharma='Billed',xsendpharmadt=GETDATE(),xappend=getdate(),xsendpharmaid='"+#user+"',xcompleteid='"+#user+"' where zid='"+#id+"' and xapptype='"+xapptype+"' and  xcase='"+xcase+"'")
+			set temp = #sql("update mmappointment set xstatus='Completed' where zid='"+#id+"' and xapptype='"+xapptype+"' and  xcase='"+xcase+"'")
+			set temp = #sql("update mminitappointment set xstatus='Completed' where zid='"+#id+"' and xapptype='"+xapptype+"' and  xcase='"+xcase+"'")
+			set temp = #sql("update mmappointment set xstatuspharma='Billed' where zid='"+#id+"' and xapptype='"+xapptype+"' and  xcase='"+xcase+"'")
+			set temp = #sql("update mmappointment set xsendpharmaid='"+#user+"' where zid='"+#id+"' and xapptype='"+xapptype+"' and  xcase='"+xcase+"'")
+			set temp = #sql("update mmappointment set xcompleteid='"+#user+"' where zid='"+#id+"' and xapptype='"+xapptype+"' and  xcase='"+xcase+"'")
+			set temp = #sql("update mmappointment set xappcompleted=GETDATE() where zid='"+#id+"' and xapptype='"+xapptype+"' and  xcase='"+xcase+"'")
+			
+			set xcase=""
+			
+			else 
+			
+			set temp = #sql("update mmappointment set xstatus='Completed' where zid='"+#id+"' and xapptype='"+xapptype+"' and  xcase='"+xcase+"'")
+			set temp = #sql("update mminitappointment set xstatus='Completed' where zid='"+#id+"' and xapptype='"+xapptype+"' and  xcase='"+xcase+"'")
+			set temp = #sql("update mminitappointment set xappcompleted=GETDATE() where zid='"+#id+"' and xapptype='"+xapptype+"' and  xcase='"+xcase+"'")
+			set temp = #sql("update mmappointment set xstatuspharma='In Process' where zid='"+#id+"' and xapptype='"+xapptype+"' and  xcase='"+xcase+"'")
+			set temp = #sql("update mmappointment set xsendpharmaid='"+#user+"' where zid='"+#id+"' and xapptype='"+xapptype+"' and  xcase='"+xcase+"'")
+			set temp = #sql("update mmappointment set xcompleteid='"+#user+"' where zid='"+#id+"' and xapptype='"+xapptype+"' and  xcase='"+xcase+"'")
+			set temp = #sql("update mmappointment set xappcompleted=GETDATE() where zid='"+#id+"' and xapptype='"+xapptype+"' and  xcase='"+xcase+"'")
+			set xcase=""
+			end if
+			
+			action show
+			end event
+        end field
+
+        field History
+			caption History
+			height 40
+			width 100
+			embed onclick="clicked(this)"
+        end field
+		
+		field Diet & Advice
+			caption Diet & Advice
+			height 40
+			//width 100
+			embed onclick="clicked(this)"
+        end field
+
+        field Investigation
+			height 40
+			width 140
+			embed onclick="clicked(this)"
+        end field
+
+     
+        field Medications
+		    width 100
+			height 40
+			embed onclick="clicked(this)"
+        end field
+
+		field Physical Examination
+			height 40
+			width 130
+			embed onclick="clicked(this)"
+        end field
+		
+		field General Examinations
+		  height 40
+		  width 130
+          embed onclick="clicked(this)"
+        end field
+		
+		
+		field Diagnosis
+			height 40
+		  //width 100
+			embed onclick="clicked(this)"
+        end field
+		
+		field Modify_Prescription
+		  
+          embed onclick="clicked(this)"
+        end field
+		
+		field Prescription_Preview
+			height 40
+			width 140
+			embed onclick="clicked(this)"
+        end field
+
+    embed onsubmit="submitit(this)"
+    end form
+
+      jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+        function submitit(form){
+		var prcstype = document.one.xuserdept.value
+		//alert(prcstype)
+		
+		if (detail=="Completed"){
+			if(confirm('Are You Sure ? Press "OK" to Completed')){
+			form.searchbutton.value = "Completed"
+			}else{
+			form.searchbutton.value = "Show"
+			}
+          }
+		  
+		if (detail=="History"){
+          if (prcstype=="ENT" ){
+            form.screen.value = "mmentpatientassessment"
+            form.searchbutton.value = "Top"
+          }
+		  
+		  else if (prcstype=="Pediatric Surgery"  || prcstype=="Neonatology" || prcstype=="Paediatrics"){
+            form.screen.value = "mmpaedneunpatassessment"
+            form.searchbutton.value = "Top"
+          }
+
+		 else if (prcstype=="Obstetrics & Gynaecology" ){
+           form.screen.value = "mmobsandgynpatientassessment"
+           form.searchbutton.value = "Top"
+         }
+		 else if (prcstype=="Cardiology"){
+			form.screen.value = "mmcardpatassessment"
+			form.searchbutton.value = "Top"
+			}
+		else if (prcstype=="Endocrinology"){
+			form.screen.value = "mmendropatassessment"
+			form.searchbutton.value = "Top"
+			}
+		else if (prcstype=="Oncology"){
+			form.screen.value = "mmoncopatassessment"
+			form.searchbutton.value = "Top"
+			}
+		else if (prcstype=="Dentistry"){
+			form.screen.value = "mmdentalpatassessment"
+			form.searchbutton.value = "Top"
+			}
+		else if (prcstype=="Nephrology"){
+			form.screen.value = "mmnephropatassessment"
+			form.searchbutton.value = "Top"
+			}
+		else if (prcstype=="Internal Medicine"){
+			form.screen.value = "mminternalpatassessment"
+			form.searchbutton.value = "Top"
+		}
+		else if (prcstype=="Ophthalmology"){
+			form.screen.value = "mmopthpatassessment"
+			form.searchbutton.value = "Top"
+		}
+		
+		else{
+           form.screen.value = "mmpatassessment"
+           form.searchbutton.value = "Top"
+		   
+			}
+         		 
+        }
+		  
+		 if (detail=="General Examinations"){
+			if (prcstype=="ENT" ){
+            form.screen.value = "mmentgeneralexam"
+            form.searchbutton.value = "Clear"
+			}
+			else {
+            form.screen.value = "mmgeneralexam"
+            form.searchbutton.value = "Clear"
+			}
+		}
+		  	
+		//Physical Examination
+		
+		if (detail=="Physical Examination"){
+		if (prcstype=="ENT"){
+            form.screen.value = "mmentexamination"
+            form.searchbutton.value = "Find xcase=?"
+          }
+		 else if (prcstype=="Internal Medicine"){
+			form.screen.value = "mmhistorycardiac"
+			form.searchbutton.value = "Find xcase=?"
+			}
+						
+		else if (prcstype=="General Surgery"){
+			form.screen.value = "mmhistoryexamgene"
+			form.searchbutton.value = "Find xcase=?"
+			}
+			
+		 else if (prcstype=="Obstetrics & Gynaecology" ){
+			form.screen.value = "mmhistoryexmobs"
+			form.searchbutton.value = "Find xcase=?"
+			}
+		else if (prcstype=="Urology"){
+           form.screen.value = "mmhistoryexamuro"
+           form.searchbutton.value = "Find xcase=?"
+			}
+		else if (prcstype=="Gastroenterology"){
+           form.screen.value = "mmhistoryexamgas"
+           form.searchbutton.value = "Find xcase=?"
+			}	
+		else if (prcstype=="Nephrology"){
+            form.screen.value = "mmhistoryexamnep"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+			
+		else if (prcstype=="Orthopaedic"){
+            form.screen.value = "mmhistoryexamort"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+		else if (prcstype=="Neuro Medicine"){
+            form.screen.value = "mmhistoryexamneu"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+		else if (prcstype=="Neuro Surgery"){
+            form.screen.value = "mmhistoryexamneuro"
+			form.searchbutton.value = "Find xcase=?"
+		    }
+		else if (prcstype=="Respiratory Medicine"){
+            form.screen.value = "mmhistoryexamres"
+			form.searchbutton.value = "Find xcase=?"
+		    }				
+	    else if (prcstype=="Pediatric Surgery"  || prcstype=="Neonatology" || prcstype=="Paediatrics"){
+            form.screen.value = "mmhistorypediatric"
+            form.searchbutton.value = "Find xcase=?"
+			}
+		 else if (prcstype=="Cardiac Surgery"){
+            form.screen.value = "mmhistorycardiac"
+            form.searchbutton.value = "Find xcase=?"
+			}
+		 else if (prcstype=="Cardiology"){
+            form.screen.value = "mmhistoryexamcardsurg"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+		else if (prcstype=="Ophthalmology"){
+			form.screen.value = "mmhistoryoptham"
+			form.searchbutton.value = "Find xcase=?"
+		}
+		 else if (prcstype=="Oncology" || prcstype=="Endocrinology" || prcstype=="Dentistry"){
+            form.screen.value = "mmhistoryoncology"
+			form.searchbutton.value = "Find xcase=?"
+		    }	 
+		 else if (prcstype=="Dermatology"){
+            form.screen.value = "mmhistoryexamiderm"
+			form.searchbutton.value = "Find xcase=?"
+		    }
+		 else if (prcstype=="Thoracic Surgery"){
+            form.screen.value = "mmhistoryexamithor"
+			form.searchbutton.value = "Find xcase=?"
+		    }	 			
+		} 
+		 	   
+				  			
+
+	      if (detail=="Investigation"){
+            form.screen.value = "mmlaborder"
+            form.searchbutton.value = "Clear"
+          }
+		  
+		  if (detail=="Diagnosis"){
+		  if (prcstype=="ENT"){
+            form.screen.value = "mmentdiagnosisnew"
+			//form.screen.value = "mmopddiagnosis"
+            form.searchbutton.value = "Top"
+          }
+		  
+		  else {
+           form.screen.value = "mmdiagnosisnew"
+           form.searchbutton.value = "Top"
+		   
+			}
+		  }	
+        
+    	   
+          if (detail=="Medications"){
+            form.screen.value = "mmprescription"
+            form.searchbutton.value = "xpatient=?"
+          }
+		  
+		  
+		  ///Diet&Advice
+		 
+		if (detail=="Diet & Advice"){
+		   if (prcstype=="ENT" ){
+            form.screen.value = "mmentadvice"
+            form.searchbutton.value = "Top"
+          }
+		  
+		   else if (prcstype=="Pediatric Surgery"  || prcstype=="Neonatology" || prcstype=="Paediatrics"){
+            form.screen.value = "mmpaedneoadvice"
+            form.searchbutton.value = "Top"
+          }
+		  
+		   else if (prcstype=="Ophthalmology"){
+			form.screen.value = "mmopthadvice"
+			form.searchbutton.value = "Top"
+		 }
+		  
+		   else if (prcstype=="Obstetrics & Gynaecology" ){
+            form.screen.value = "mmobsgynadvice"
+            form.searchbutton.value = "Top"
+         }
+		 
+		   else if (prcstype=="Cardiology"){
+			form.screen.value = "mmcardadvice"
+			form.searchbutton.value = "Top"
+		 }
+			
+		   else if (prcstype=="Endocrinology"){
+			form.screen.value = "mmendroadvice"
+			form.searchbutton.value = "Top"
+		 }
+		   else if (prcstype=="Oncology"){
+			form.screen.value = "mmoncoadvice"
+			form.searchbutton.value = "Top"
+		 }
+		   else if (prcstype=="Dentistry"){
+			form.screen.value = "mmdentaladvice"
+			form.searchbutton.value = "Top"
+		 }
+		  
+		   else {
+            form.screen.value = "mmadvice"
+            form.searchbutton.value = "Top"
+         }
+         }
+		  
+		if (detail == "Prescription_Preview"){
+			form.screen.value = "*zabscreenmmprescription"
+			form.searchbutton.value = "Find xcase=?"
+		}
+          
+		  
+		  
+		}
+		
+		
+
+		
+	$(function() {
+	  $("#oneListTable td").each(function() {
+		if ($(this).text() == 'Blocked') {
+		  $(this).css('background', 'red');
+		  $(this).css('color', 'White');
+		}
+		else if ($(this).text() == 'Open') {
+		  $(this).css('background', '#ffeb3b');
+		}
+		else if ($(this).text() == 'Report Review') {
+		  $(this).css('background', 'lightsalmon');
+		//  $(this).css('color', 'White');
+		}
+		else if ($(this).text() == 'Booked') {
+		  $(this).css('background', 'deepskyblue');
+		//  $(this).css('color', 'White');
+		}
+		else if ($(this).text() == 'New') {
+		  $(this).css('background', 'purple');
+		  $(this).css('color', 'White');
+		}
+		else if ($(this).text() == 'Attended') {
+		  $(this).css('background', 'cornflowerblue');
+		  $(this).css('color', 'White');
+		}
+		else if ($(this).text() == 'Follow-up') {
+		  $(this).css('background', 'green');
+		  $(this).css('color', 'White');
+		}
+	  });
+	  $("#imtorejectListTable td").each(function() {
+		if ($(this).text() == 'On_Review') {
+		  $(this).css('background', 'red');
+		  $(this).css('color', 'White');
+		}
+	  });
+	  console.log(oneListTable)
+	});
+		
+
+        </script>
+     end jscript
+
+
+
+end screen

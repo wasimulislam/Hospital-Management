@@ -1,0 +1,21 @@
+product ZAB ERP
+
+table departmentview
+  caption "Department View"
+  columns zid,xtype,xlong,xcode
+
+  primary key zid,xcode
+
+  foreign key
+        zid references zbusiness.zid
+  end foreign key
+
+	sql CREATE VIEW departmentview(zid,xtype,xlong,xcode,zactive,xdeptname,xcostcenter) ~
+	AS ~
+	SELECT a.zid,b.xtype,b.xlong,b.xcode,b.zactive,b.xcode,b.xcostcenter ~
+	FROM zbusiness a JOIN ~
+	xcodes(NOLOCK) b ON a.zid=b.zid ~
+	WHERE b.xtype='Department Name'
+
+end table
+

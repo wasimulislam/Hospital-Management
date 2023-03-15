@@ -1,0 +1,78 @@
+//AR opbillreports.menu
+//-------------------------------------------------------------------
+option                           |action
+//-------------------------------------------------------------------
+
+////----Due Detail								|#classPath+"/login?screen=*viewcrystal opmonthlyduedetails(8;in,dt,dt,st,st,st,st,st;zid,fdate,tdate,patient,cus,item,statusprint,episode;xdate=From Date=#date,xdate=To Date=#date,xpatient=Patient ID,xcus=Payer,xitem=Item,xstatusrep=Invoice Status,xepisodetyperep= Episode Type,xviewtype=Report View)"
+////----Item Groupwise Doctor's Referral Report |#classPath+"/login?screen=*viewcrystal opdoctorgroupwisereferral(6;in,dt,dt,st,st,st;zid,fdate,tdate,item,gitem,doctor;xdate=From Date=#date,xdate=To Date=#date,xitem4=Item Code,xgitem=Item Group,xdoctor1=Doctor ID,xviewtype=Report View)"
+//Daily Collection Summary    		   |#classPath+"/login?screen=*viewcrystal opcollectionallusersummary(4;in,st,dt,st;zid,user,date,userp;xuserhide=User,xdate=Date<span>*</span>=#date,xbillinguser=User ID,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/;rptproc=zabsp_RPT_opposmanagerSignOffallusersummary)"
+Daily Collection Summary  				|#classPath+"/login?screen=dailycollsumary"  
+
+//Daily Collection Report Detail         |#classPath+"/login?screen=*viewcrystal opposcardcollalluser(4;in,st,st,st;@zid,@date,@user,@collectiontype;xdate=Date<span>*</span>=#date,xbillinguser=User ID,xcollectiontype=Collection Type,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+Daily Collection Report Detail         |#classPath+"/login?screen=*viewcrystal opposcardcollalluser(5;in,st,dt,st,st;zid,user,date,userp,collectiontype;xuserhide=User,xdate=Date<span>*</span>=#date,xbillinguser=User ID,xcollectiontype=Collection Type,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/;rptproc=zabsp_RPT_opposcardCollectionuser)"
+
+Patient Transit History           		|#classPath+"/login?screen=*viewcrystal patienttransit(2;in,st;zid,admno;admissionno=Admission No<span>*</span>,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+//Product Wise Patient Charge   			|#classPath+"/login?screen=*viewcrystal patientledgerinv(5;in,dt,dt,st,st;zid,fdate,tdate,item,patient;xdate=From Date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xitem=Item<span>*</span>,xpatient=Patient,xviewtype=Report View)"
+Patient Charge Detail       			|#classPath+"/login?screen=*viewcrystal patientchrgesdbytype(5;in,st,st,dt,dt;zid,dornum,chargetype,fdate,tdate;xdornumrep=Bill Number<span>*</span>,xgitem=Charge Type,xdate=From Date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xviewpdftype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+Package Detail                   		|#classPath+"/login?screen=*viewcrystal packagedetail(2;in,st;zid,package;xitempackage=Package Code<span>*</span>,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+//Payer Discount Detail	     	 		|#classPath+"/login?screen=cacuscorporate"
+//Corporate Discount           			|#classPath+"/login?screen=*viewcrystal payerdiscountdetail(2;in,st;zid,cus;xcus=Customer<span>*</span>,xviewtype=Report View)"
+Bill Report 	        				|#classPath+"/login?screen=*viewcrystal patientchrges(3;in,st,st;zid,dornum,type;xdornumrep=Bill No<span>*</span>,xreptype=Report Type<span>*</span>,xviewpdftype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+//Datewise Due Report              		|#classPath+"/login?screen=*viewcrystal opsalesdue(7;in,st,st,st,st,st,st;@zid,@fdate,@tdate,@user,@patient,@cus,@episodetype;xdate=From date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xbillinguser=User=,xpatient=Patient ID,xcus=Payer,xepisodetyperep= Episode Type,xviewtype=Report View)"
+///Date Wise Sales Return          |#classPath+"/login?screen=*viewcrystal opslrproc(9;in,st,dt,dt,st,st,st,st,st;zid,user,fdate,tdate,patient,cus,status,episodetype,preparedby;xuserhide=User ID,xdate=From Date=#date,xdate=To Date=#date,xpatient=Patient ID,xcus=Payer ID,xstatusrep=Invoice Status,xepisodetyperep= Episode Type,xstaff=Prepared By,xviewtype=Report View;rptproc=zabsp_RPT_SalesReturn)"
+
+//Datewise Sales Return Report 			|#classPath+"/login?screen=*viewcrystal opslr(9;in,dt,dt,st,st,st,st,st,st;zid,fdate,tdate,patient,cus,episodetype,status,dornum,reptype;xdate=From Date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xpatient=Patient ID,xcus=Payer,xepisodetyperep= Episode Type,xstatusrep=Invoice Status,xslrnum=Invoice Number,xreptype=Report Type<span>*</span>,xviewtype=Report View)"
+//Inpatient Charge Report              	|#classPath+"/login?screen=*viewcrystal opipdcharges(5;in,st,st,st,st;@zid,@fdate,@tdate,@patient,@dept;xdate=From date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xpatient=Patient ID,xdeptname=Department,xviewtype=Report View)"
+//Discharged Patient Charge Report 		|#classPath+"/login?screen=*viewcrystal opipddischarges(5;in,st,st,st,st;@zid,@fdate,@tdate,@patient,@dep;xdate=From date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xpatient=Patient ID,xdeptname=Department,xviewtype=Report View)"
+///Datewise Collection Report Summary      |#classPath+"/login?screen=*viewcrystal opcollectionallsum(5;in,st,dt,dt,st;zid,zauserid,fdate,tdate,user;xuserhide=User ID,xdate=From date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xbillinguser=User ID=,xviewtype=Report View;rptproc=zabsp_RPT_opposmanagerSignOffAllsum)"
+
+//Current Patient List For IPD EM DC      |#classPath+"/login?screen=*viewcrystal mmpatinetliststatuswise(7;in,st,st,st,st,st,st;@zid,@episodetype,@wing,@floor,@deptnamep,@staffp,@roomp;xpatientstatus= Episode Type<span>*</span>,xwing=Wing,xfloor=Floor,xdeptnameclinical=Department Name,xdoctor=Doctor,xroom=Room No,xviewtype=Report View)"
+//Datewise Collection Report Summary      |#classPath+"/login?screen=*viewcrystal opcollectionallsum(4;in,st,st,st;@zid,@fdate,@tdate,@user;xdate=From date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xbillinguser=User ID=,xviewtype=Report View)"
+Patient Ledger					 		|#classPath+"/login?screen=*viewcrystal oppatientbillsummary(5;in,dt,dt,st,st;zid,fdate,tdate,patient,type;xdate=From Date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xpatient=Patient<span>*</span>,xreptype=Report Type<span>*</span>,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+//Patient Ageing Report Detail      		|#classPath+"/login?screen=*viewcrystal oppatientagingdetail(3;in,st,st;@zid,@tdate,@patient;xdate=Date<span>*</span>,xpatient=Patient Id<span>*</span>,xviewtype=Report View)"
+//Userwise Daily Bill Report       		|#classPath+"/login?screen=*viewcrystal opuserwisedailybillreport(4;in,st,st,st;@zid,@tdate,@user,@billstatus;xdate=Date<span>*</span>,xbillinguser=User ID,xbillstatusall= Bill Status<span>*</span>,xviewtype=Report View)"
+
+////Patient Ageing Report Details      		|#classPath+"/login?screen=*viewcrystal patientagingdetailbybilldate(2;in,st;zid,patient;xpatient=Patient Id,xviewtype=Report View)"
+////Patient Ageing Report Summary      		|#classPath+"/login?screen=*viewcrystal patientagingsumbybilldate(2;in,st;zid,patient;xpatient=Patient Id,xviewtype=Report View)"
+
+
+
+
+
+////Datewise Advance Report 			|#classPath+"/login?screen=*viewcrystal opadv(4;in,dt,dt,st;zid,fdate,tdate,patient;xdate=From Date=#date,xdate=To Date=#date,xpatient=Patient ID,xviewtype=Report View)"
+/////Patient/Corporate Ledger Summary		|#classPath+"/login?screen=*viewcrystal opreceivablesum(5;in,st,st,st,st;@zid,@fdate,@tdate,@patient,@action;xdate=From Date=#date,xdate=To Date=#date,xpatient=Patient,xreceivablerep=Receivable For,xviewtype=Report View)"
+//Daily Collection Report Summary      |#classPath+"/login?screen=*viewcrystal opcollectionuser(3;in,st,st;@zid,@date,@user;xdate=Date=#date,xbillinguser=User ID,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+
+//All Collection Summary (Report Server)    |#classPath+"/login?screen=*viewcrystal opcollectionall2(7;in,st,st,st,st,st,st; ~
+//										 @zid,@fdate,@tdate,@pdiv,@pfterminal,@ptterminal,@puser;xdate=From date=#date,xdate=To Date=#date,xhide=Hide=#div,xterminal=From Terminal,xterminal=To Terminal,xbillinguser=User=,xviewtype=Report View)"
+
+//Collection Report Detail            	|#classPath+"/login?screen=*viewcrystal opposcardcollall2(8;in,st,st,st,st,st,st,st; ~
+//										@zid,@fdate,@tdate,@pdiv,@pfterminal,@ptterminal,@puser,@collectiontype;xdate=From date=#date,xdate=To Date=#date,xhide=Hide=#div,xterminal=From Terminal,xterminal=To Terminal,xbillinguser=User=,xcollectiontype=Collection Type,xviewtype=Report View)"
+
+////Sales Report By Product       			|#classPath+"/login?screen=*viewcrystal opsalesreportbyproduct(6;in,dt,dt,st,st,st,;zid,fdate,tdate,item,doctor,dept;xdate=From Date=#date,xdate=To Date=#date,xdornum=Invoice Number,xdoctor=Doctor Name,xdeptname=Department Name,xviewtype=Report)"
+
+//Current Date Reports                          |#classPath+"/login?menu=opbillreportscurdate"     				 |       |      |120
+
+//Previous Date Reports                          |#classPath+"/login?menu=opbillreportsprevdate"   
+
+//Statement of Sales Detail	|#classPath+"/login?screen=*viewcrystal opmonthlysalesdetail(8;in,dt,dt,st,st,st,st,st;zid,fdate,tdate,patient,cus,item,statusprint,episode;xdate=From Date=#date,xdate=To Date=#date,xpatient=Patient ID,xcus=Payer,xitem=Item,xstatusrep=Invoice Status,xepisodetyperep= Episode Type,xviewtype=Report View)"
+
+/////Statement of Sales Detail |#classPath+"/login?screen=*viewcrystal opmonthlysalesdetail(9;in,dt,dt,st,st,st,st,st,st;zid,fdate,tdate,patient,cus,item,statusprint,episode,reptype;xdate=From Date=#date,xdate=To Date=#date,xpatient=Patient ID,xcus=Payer,xitem=Item,xstatusrep=Invoice Status,xepisodetyperep= Episode Type,xreptype=Report Type,xviewtype=Report View)"
+
+//-------------------------------------------------------------------
+//Cashier Sign Off Slip                	|#classPath+"/login?screen=*viewcrystal opposmngsingoffall(5;in,st,st,st,st;@zid,@div,@user,@terminal,@date;xdiv=Outlet=#div,zemail=POS User,xterminal=POS Terminal,xdate=Date=#date,xviewtype=Report View)"
+
+//Credit Card Collection Daily       	|#classPath+"/login?screen=*viewcrystal opposcardcollall(5;in,st,st,st,st;@zid,@div,@user,@terminal,@date;xdiv=Outlet=#div,zemail=User,xterminal=POS Terminal,xdate=Date=#date,xviewtype=Report)"
+
+//Collection Report Detail          	|#classPath+"/login?screen=*viewcrystal opcollection(7;in,st,st,st,st,st,st; ~
+//										 @zid,@fdate,@tdate,@pdiv,@puser,@pfterminal,@ptterminal;xdate=From date=#date,xdate=To Date=#date,xdiv=Outlet=#div,zemail=User=,xterminal=From Terminal,xterminal=To Terminal,xviewtype=Report View)"
+
+//Collection Report Summary           	|#classPath+"/login?screen=*viewcrystal opcollectionall(7;in,st,st,st,st,st,st; ~
+//										 @zid,@fdate,@tdate,@pdiv,@pfterminal,@ptterminal,@puser;xdate=From date=#date,xdate=To Date=#date,xhide=Hide=#div,xterminal=From Terminal,xterminal=To Terminal,xbillinguser=User=,xviewtype=Report View)"
+
+//Collection Report Detail            	|#classPath+"/login?screen=*viewcrystal opposcardcollall(8;in,st,st,st,st,st,st,st; ~
+//											@zid,@fdate,@tdate,@pdiv,@pfterminal,@ptterminal,@puser,@collectiontype;xdate=From date=#date,xdate=To Date=#date,xhide=Hide=#div,xterminal=From Terminal,xterminal=To Terminal,xbillinguser=User=,xcollectiontype=Collection Type,xviewtype=Report View)"
+
+///Patient Ledger Summary				|#classPath+"/login?screen=*viewcrystal oppatientledgarsummary(4;in,dt,dt,st;zid,fdate,tdate,patient,type;xdate=From Date=#date,xdate=To Date=#date,xpatient=Patient,xviewtype=Report View)"
+
+////Patient Transit History             |#classPath+"/login?screen=*viewcrystal patienttransit(2;in,st;zid,id;xpatient=Patient ID,xviewtype=Report View)"

@@ -1,0 +1,122 @@
+screen xcodesdose
+
+     sidebar list one
+     sections form one, jscript myscript
+
+     list one
+		 caption "Instuction Dose Master"
+        table xmedidose
+        order xcode
+        select "xtype='Dose'"
+        rows 20
+        objects  xtype display(hide),xcode attrib(link "login?screen=xcodesdose&command=Show&xcode=?"),~
+                xdose,xfrequency,~
+				
+				zactive
+
+        headers "" ,"Code","FREQUENCY","Dosage","Status"
+     end list
+
+     form one
+
+     caption "<ACRONYM>Instuction Dose Master</ACRONYM>"
+        table xmedidose
+        order xcode
+        select "xtype='Dose'"
+        return "login"
+        layout 2
+        pstyle 3
+        objects Show,Clear,Add,Update, Delete,*next,~
+                Top,Previous,Next,Bottom,"<p>" ,~
+                xtype,xcode width(10),~
+                xfrequency display(combo),xdose,zactive
+
+        field xtype
+          display hide
+          caption Type
+          default "Dose"
+			event after
+				set globals(xtype)=xtype
+			end event
+        end field
+		
+    field xdose
+		width 30
+		default 1
+		list mmdrug
+		caption Dose
+    end field		
+		
+	
+		
+	field xcode
+    pick list xdose
+	event after 
+		set globals(xcode)=xcode
+	end event
+	end field		
+
+	
+
+	field xfrequency
+	  width 40
+	  height 2
+	  pick "select xcode from xcodes where xtype='FREQUENCY' and zactive=1"
+	  //column 2
+	end field
+
+	field add
+	  event before
+		 set xtype="Dose"
+		set deptname=#sql("select xcode from xmedidose where xtype='Dose' and xcode='"+xcode+"'")
+		if deptname .eq. xcode
+			error "Dose Name Already Exists!"
+		else
+			
+			set xtype="Dose"		
+			
+		end if
+	  end event
+	end field
+		
+	field update
+	  event before
+	   set xcode=#trim(xcode)
+	   set xdose=#trim(xdose)
+	   
+	  end event
+	end field		
+		
+        
+    embed onsubmit="submitit(this)"
+    end form
+
+
+
+
+
+     jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+        function budgeted(b){
+          detail="budgeted"
+        }
+        function submitit(form){
+
+    	    if (detail=="Budget"){
+            form.screen.value = "acbudget"
+            form.searchbutton.value = "Top"
+            //return false
+          }
+        }
+
+        </script>
+     end jscript
+
+
+
+end screen

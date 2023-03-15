@@ -1,0 +1,68 @@
+//Medical Records.menu
+//-------------------------------------------------------------------
+option                           |action                                 |modules|models|width
+//-------------------------------------------------------------------
+//Doctor patient count 	    |#classPath+"/login?screen=*viewcrystal mmdoctorpatientcount(4;in,st,st,st,st;@zid,@fdate,@tdate,@doctor;xdate=From date,xdate=To date,xdoctor=Consultat,xviewtype= Report View)"
+//Patient Transit History           	 |#classPath+"/login?screen=*viewcrystal patienttransit(2;in,st;zid,admno;admissionno=Admission No,xviewtype=Report View)"
+//Patient Transit History All       |#classPath+"/login?screen=*viewcrystal mmpatienttransitall(4;in,st,dt,dt;zid,patient,fdate,tdate;xpatient=Patient ID,xdate=From Admission Date,xdate=To Admission Date,xviewtype=Report View)"
+
+//Procedure Wise Appointment Summary   |#classPath+"/login?screen=*viewcrystal procedurereport(6;in,dt,dt,st,st,st;zid,fdate,tdate,doc,status,procedure;xdate=From Date,xdate=To Date,xdoctor=Doctor ID,xapstatus=Appointment Status,xproced=Procedure ID ,xviewtype=Report View)"
+Daily Admitted Patient List          |#classPath+"/login?screen=*viewcrystal dailypatientlist(3;in,dt,st;zid,fdate,doctor;xdate=From Date=#date,xdoctor=Doctor ID,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+
+Daily Emergency Patient List         |#classPath+"/login?screen=*viewcrystal dailyempatientlist(2;in,dt;zid,fdate;xdate=Date,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+Daily Emergency Patient Convert List |#classPath+"/login?screen=*viewcrystal dailyemconvertpatientlsit(2;in,dt;zid,fdate;xdate=Date,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+//OPD App Detail Confirm       	     |#classPath+"/login?screen=*viewcrystal mmappdetailopdconspres(6;in,dt,st,st,st,st;zid,fdate,fdept,fdoc,status,apptype;xdate=Date,xdeptnameclinical=Department,xdoctor=Doctor,xapstatus=Appointment Status,xappslottype=Slot Type,xviewtype=Report View)"
+OPD Appointment Detail        	     |#classPath+"/login?screen=*viewcrystal mmappdetailopdconspres2(6;in,dt,st,st,st,st;zid,fdate,fdept,fdoc,status,apptype;xdate=Date,xdeptnameclinical=Department,xdoctor=Doctor,xapstatus=Appointment Status,xappslottype=Slot Type,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+
+////Employee Information Report	     |#classPath+"/login?screen=*viewcrystal pddoctinfo(13;in,st,st,st,st,st,st,st,st,st,dt,dt,st;zid,dept,desi,reli,gendr,blodg,empstatus,emptype,section,location,fdate,tdate,jobtitle;xdeptname=Department Name,xdesignation=Designation,xreligion=Religion,xsexrep=Gendar,xbloodgroup=Blood Group,xempstatus=Employee Status,xemptype=Employment Type,xsection=Section,xlocation=Location Name,xdate=From Joining Date,xdate=To Joining Date,xjobtitle=Job Title,xviewtype=Report View)"
+////Service Length Wise Employee List|#classPath+"/login?screen=*viewcrystal pdpmstperinfo(7;in,st,st,st,st,st,in;zid,empcate,empstatus,designation,section,department,serviceyear;xempcategory=Concern Name,xempstatus=Employee Status,xdesignation=Designation,xsection=Section Name,xdeptname=Department Name,xnum=Service Year,xviewtype=Report View)"
+//Opd Consultation Status         	 |#classPath+"/login?screen=*viewcrystal mmopdconsultstat(6;in,st,dt,st,st,st;zid,dept,fdate,fdoc,status,user;xdeptname=Department,xdate=Date,xdoctor=Doctor's Name,xapstatus=Appointment Status,xrepuser=User=#user,xviewtype=Report View)"
+//Appointment Report         	    	 |#classPath+"/login?screen=*viewcrystal mmappdeptpatientcon(7;in,dt,dt,st,st,st,st;zid,fdate,tdate,dept,fdoc,status,user;xdate=From Date,xdate=To Date,xdeptname=Department Name,xdoctor=Doctor's Name,xapstatus=Appointment Status,xrepuser=User=#user,xviewtype=Report View)"
+//Missed Appointment Report        	 |#classPath+"/login?screen=*viewcrystal mmappmissedlist(6;in,dt,dt,st,st,st;zid,fdate,tdate,dept,fdoc,user;xdate=From Date,xdate=To Date,xdeptname=Department Name,xdoctor=Doctor's Name,xrepuser=User=#user,xviewtype=Report View)"
+
+Room Details Report        	    	 |#classPath+"/login?screen=*viewcrystal mmroomdetails(6;in,st,st,st,st,st;zid,roomtype,floor,wing,room,status;xroomtype=Room Type,xfloor=Floor,xwing=Wing,xroom=Room No,xaroomstatus=Room Status,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+//Emergency Patient List        	     |#classPath+"/login?screen=*viewcrystal empatientlist(5;in,dt,dt,st,st;zid,fdate,tdate,patient,cause;xdate=From Date,xdate=To Date,xpatient=Patient ID,xcauseadm=Cause of Admission,xviewtype=Report View)"
+//Emergency Patient Convert List       |#classPath+"/login?screen=*viewcrystal emconvertpatientlsit(5;in,dt,dt,st,st;zid,fdate,tdate,patient,cause;xdate=From Date,xdate=To Date,xpatient=Patient ID,xcauseadm=Cause of Admission,xviewtype=Report View)"
+
+//Emergency Patient Convert List     |#classPath+"/login?screen=*viewcrystal emconvertpatientlsit(3;in,st,st;@zid,@fdate,@tdate;xdate=From Date,xdate=To Date,xviewtype=Report View)"
+//Day Care Patient Convert List        |#classPath+"/login?screen=*viewcrystal mmdaycarepatientconvrtlist(3;in,st,st;@zid,@fdate,@tdate;xdate=From Date,xdate=To Date,xviewtype=Report View)"
+Current Patient List For IPD EM DC   |#classPath+"/login?screen=*viewcrystal mmpatinetliststatuswise(7;in,st,st,st,st,st,st;@zid,@episodetype,@wing,@floor,@deptnamep,@staffp,@roomp;xpatientstatus= Episode Type,xwing=Wing,xfloor=Floor,xdeptnameclinical=Department Name,xdoctor=Doctor,xroom=Room No,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+//Patient Contact Info         	     |#classPath+"/login?screen=*viewcrystal mmpatientcontactinfo(7;in,dt,dt,st,st,st,st;zid,fdate,tdate,fdoc,tdoc,dept,user;xdate=From Date,xdate=To Date,xdoctor=From Doctor,xdoctor=To Doctor,xdeptname=Department Name,xrepuser=User=#user,xviewtype=Report View)"
+Opd Appointment Status Summary       |#classPath+"/login?screen=*viewcrystal mmopdsum(3;in,st,dt;zid,dept,fdate;xdeptnameclinical=Department,xdate=Date,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+
+Opd Appointment Status Summary new       |#classPath+"/login?screen=*viewcrystal mmopdsum3(7;in,st,st,st,st,st,st;@zid,@fdate,@tdate,@ftime,@ttime,@dept,@xstatus;xdate=From Date,xdate=To Date,xapptime=From Time,xapptime=To Time,xdeptname=Department,xapstatus=Status,xviewtype=Report View)"
+
+//BED Occupancy Details List    		 |#classPath+"/login?screen=*viewcrystal mmbedoccupancydetailsrpt(3;in,st,st;@zid,@indate,@outdate;xdate=In Date,xdate=Out Date,xviewtype=Report View)"
+//Occupancy Report Summary    		 |#classPath+"/login?screen=*viewcrystal bedoccupancyreport(3;in,st,st;@zid,@indate,@outdate;xdate=In Date,xdate=Out Date,xviewtype=Report View)"
+//Revenue Sharing Consulting Details   |#classPath+"/login?screen=*viewcrystal mmrscreport(4;in,dt,dt,st;zid,fdate,tdate,fdoctor;xdate=From Date,xdate=To Date,xdoctor=Doctor,xviewtype=Report View)"
+//Visitor Logbook list         	     |#classPath+"/login?screen=*viewcrystal mmlogbookrpt(2;in,dt;zid,date;xdate=Date,xviewtype=Report View)"
+//User Wise Registration Patient List  |#classPath+"/login?screen=*viewcrystal regpatientlist(4;in,st,dt,dt;zid,userid,fdate,tdate;xuser=User,xdate=From Date,xdate=To Date,xviewtype=Report View)"
+//Registration Patient List    |#classPath+"/login?screen=*viewcrystal newregpatientlist(4;in,dt,dt,st;zid,fdate,tdate,pid;xdate=From Date,xdate=To Date,xpatient=Patient ID,xviewtype=Report View)"
+//Emergency Patient List 3 times    	 |#classPath+"/login?screen=*viewcrystal mmpatientemergency(4;in,st,dt,dt;zid,episode,fdate,tdate;xpatientstatus= Episode Type,xdate=From Date,xdate=To Date,xviewtype=Report View)"
+
+//IPD Patients LOS List        	     |#classPath+"/login?screen=*viewcrystal ipdpatientloslist(3;in,st,st;@zid,@fdate,@tdate;xdate=From Date,xdate=To Date,xviewtype=Report View)"
+//EM Patients LOS List        	     |#classPath+"/login?screen=*viewcrystal Empatientloslist(3;in,st,st;@zid,@fdate,@tdate;xdate=From Date,xdate=To Date,xviewtype=Report View)"
+//Return to Emergency within 72 hours  |#classPath+"/login?screen=*viewcrystal mmpatientemergency2(3;in,dt,dt;zid,fdate,tdate;xdate=From Date,xdate=To Date,xviewtype=Report View)"
+//Return to ICU within 48 hours   	 |#classPath+"/login?screen=*viewcrystal mmpatienticu(3;in,st,st;@zid,@fdate,@tdate;xdate=From Date,xdate=To Date,xviewtype=Report View)"
+//Fortnightly Test Report				 |#classPath+"/login?screen=*viewcrystal investigationarea(3;in,st,st;@zid,@fdate,@tdate;xdate=From Date,xdate=To Date,xviewtype=Report View)"
+//Package wise summary Report			 |#classPath+"/login?screen=*viewcrystal packwisesummary(3;in,st,st;@zid,@fdate,@tdate;xdate=From Date,xdate=To Date,xviewtype=Report View)"
+
+Discharge Patient List				 |#classPath+"/login?screen=*viewcrystal mmdischargepatientlist(4;in,dt,dt,st;zid,fdate,tdate,episode;xdate=From Date,xdate=From Date,xpatientstatus= Episode Type,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+//Appointment with Charges Report      |#classPath+"/login?screen=*viewcrystal mmappprocedurewithcharges(4;in,dt,st,st;zid,fdate,item,status;xdate=Date,xproced=Item code,xapstatus=Appointment Status,xviewtype=Report View)"
+//Appointment Without Charges Details  |#classPath+"/login?screen=*viewcrystal mmappmachine(4;in,dt,st,st;zid,fdate,fdoc,status;xdate=Date,xmachine=Machine Code,xapstatus=Appointment Status,xviewtype=Report View)"
+//e-prescription Summary  Report 	     |#classPath+"/login?screen=*viewcrystal mme-prescription(5;in,st,st,st,st;@zid,@fdate,@tdate,@doctor,@department;xdate=From date,xdate=To date,xdoctor=Consultat,xdeptnameclinical=Department,xviewtype= Report View)"
+
+//-------------------------------------------------------------------
+//Package Summary       	   			 |#classPath+"/login?screen=*viewcrystal mmpackage(4;in,st,dt,dt;zid,xitem,fdate,tdate;xpackageid=Package ID,xdate=From Date,xdate=To Date,xviewtype=Report View)"
+
+//Duration of patient Stay           |#classPath+"/login?screen=*viewcrystal durationofpatstay(4;in, dt,dt,st;zid,fdate,tdate,patient;xdate=From Date,xdate=To Date,xpatient=Patient Id,xviewtype=Report View)"
+//Duration of patient Stay             |#classPath+"/login?screen=*viewcrystal durationofpatstay(5;in,st,st,st,st;@zid,@fdate,@tdate,@patient,@episodetype;xdate=From Date,xdate=To Date,xpatient=Patient Id,xpatientstatus=Episode Type,xviewtype=Report View)"
+//IPD Summary Report Dept wise  		 |#classPath+"/login?screen=*viewcrystal ipdsummarydeptwiserpt(3;in,st,st;@zid,@fdate,@tdate;xdate=From Date,xdate=TO Date,xviewtype=Report View)"
+//IPD Summary Report Doctor wise   	 |#classPath+"/login?screen=*viewcrystal ipdsummarydoctorwiserpt(3;in,st,st;@zid,@fdate,@tdate;xdate=From Date,xdate=TO Date,xviewtype=Report View)"
+Inpatient Count    					 |#classPath+"/login?screen=*viewcrystal ipdpatientcount(3;in,st,st;@zid,@fdate,@tdate;xdate=From Date,xdate=To Date,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+Patient Admission Card For F&B 	     |#classPath+"/login?screen=*viewcrystal mmadmissioncardfloorwise(5;in,st,st,st,st;@zid,@admissionno,@wing,@floor,@note;xadmissionno=Admission No,xwing=Wing,xfloor=Floor,xnote=Note,xviewtype= Report View;zremip=http://172.16.0.48:32786/zab/)"
+//Patient Statistics Report 	    	 |#classPath+"/login?screen=*viewcrystal mmpatientstatistic(3;in,st,st;@zid,@fdate,@tdate;xdate=From Date,xdate=To Date,xviewtype= Report View)"
+//Home sample collection report        |#classPath+"/login?screen=*viewcrystal mmappmachinehsc(3;in,dt,st;zid,fdate,status;xdate=Date,xapstatus=Appointment Status,xviewtype=Report View)"
+//Patient list of Oncology Day Care    |#classPath+"/login?screen=*viewcrystal dcpatientlist(5;in,dt,dt,st,st;zid,fdate,tdate,patient,cause;xdate=From Date,xdate=To Date,xpatient=Patient ID,xcauseadm=Cause of Admission,xviewtype=Report View)" 
+//Electronic Health Record        	 |#classPath+"/login?screen=*viewcrystal ehealthrecordAll(8;in,st,st,st,st,st,st,st;@zid,@fdate,@tdate,@patient,@psex,@selectdt,@fdateofbirth,@tdateofbirth;xdate=From Date,xdate=To Date,xpatient=Patient ID,xsex=Gender,xselectdt=DOB,xdate=From,xdate=T0,xviewtype=Report View)"
+//Weekly Revenue   					 |#classPath+"/login?screen=*viewcrystal opdeptwiserevenue(3;in,st,in;@zid,@fdate,@tday;xdate=From Date,xday=To Day,xviewtype=Report View)"

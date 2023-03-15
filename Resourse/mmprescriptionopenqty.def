@@ -1,0 +1,20 @@
+product ZAB ERP
+
+table mmprescriptionopenqty
+  caption "Do Detail Arc View"
+  columns zid,xrow,xcase,xpatient,xgenericdesc,xqty,xitem1,xqtyord,xwh,xstatuspharma,xstatus
+
+
+  primary key zid,xcase
+
+  foreign key
+        zid references zbusiness.zid
+  end foreign key
+
+	sql create view mmprescriptionopenqty(zid,xcase,xwh,xitem1,xqty) ~
+	 as select d.zid,d.xcase,d.xwh,d.xitem1,isnull(d.xqty,0) ~
+	 from mmprescription d WITH (NOLOCK) join mmappointment h WITH (NOLOCK) on d.zid =h.zid and d.xcase =h.xcase   where h.xstatuspharma = 'In Process' and isnull(d.xqty,0)>0
+	 
+								 
+								  
+end table							  

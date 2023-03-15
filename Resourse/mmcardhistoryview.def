@@ -1,0 +1,27 @@
+product ZAB ERP
+
+table mmcardhistoryview
+  caption 	"Appointment View"
+  columns 	zid,xrow,xcase,xpatient,xlong,xrem,xcode,xnote
+  
+primary key zid,xcase,xrow
+
+	foreign key
+        zid references zbusiness.zid
+	end foreign key
+
+sql create view mmcardhistoryview (zid,xrow,xcase,xpatient,xlong,xrem,xcode,xnote,xchodt,xdate,xlprofiledt,xlprofiletc,xlprofileldl,xlprofilehdl,xlprofiletg,xlprofilealt,xlprofilech,xlprofilecpk,xechola,xecholvidd,xecholvids,xechoef,xecholvef,xechorwma,xk,xcl,xmgdl,xfdate,xcreatininedt,xna,xhco3,xunacr,xcxrpa,xecg,~
+		  xcbc,xfbs,xhb1ac,xesr,xpbf,xcreatinine,xett,xtroponin,xca,xmg,xtroponindt,xcreatinineunit,xtroponindtunit,xother,xresultval,xlprofileunit,xechopasp,xhstroponin,~
+		  xhstroponindtunit,xhstroponindt,xserumelecdt,xnt,xtc,xhb,xplatelate,xast,xvitaminD3,xtsh,xechounit,xett1,xett2,xettdate) ~
+  as select m.zid,isnull(b.xrow,''),isnull(m.xcase,''),isnull(m.xpatient,''),isnull(b.xlong,''),isnull(b.xrem,''),isnull(b.xcode,''),isnull(b.xnote,''),isnull(convert(VARCHAR, b.xchodt, 103),''),isnull(convert(VARCHAR, m.xdate, 106),'') as xdate, ~
+  isnull(convert(VARCHAR, b.xlprofiledt, 103),''),isnull(b.xlprofiletc,''),isnull(b.xlprofileldl,''),isnull(b.xlprofilehdl,''),isnull(b.xlprofiletg,''),isnull(b.xlprofilealt,''),isnull(b.xlprofilech,''),~
+  isnull(b.xlprofilecpk,''),isnull(b.xechola,''),isnull(b.xecholvidd,''),isnull(b.xecholvids,''),isnull(b.xechoef,''),isnull(b.xecholvef,''),isnull(b.xechorwma,''),isnull(b.xk,''),isnull(b.xcl,''),~
+  isnull(b.xmgdl,''),isnull(convert(VARCHAR, b.xfdate, 103),''),isnull(convert(VARCHAR, b.xcreatininedt, 103),''),isnull(b.xna,''),isnull(b.xhco3,''),isnull(b.xunacr,''),isnull(b.xcxrpa,''),isnull(b.xecg,''),~
+		  isnull(b.xcbc,''),isnull(b.xfbs,''),isnull(b.xhb1ac,''),isnull(b.xesr,''),isnull(b.xpbf,''),isnull(b.xcreatinine,''),isnull(b.xett,''),isnull(b.xtroponin ,''),isnull(b.xca,''),isnull(b.xmg,''),~
+		  isnull(convert(VARCHAR, b.xtroponindt, 105),''),isnull(b.xcreatinineunit,''),isnull(b.xtroponindtunit,''),isnull(b.xother,''),xresultval,isnull(b.xlprofileunit,''),isnull(b.xechopasp,''),isnull(b.xhstroponin,''),~
+		  isnull(b.xhstroponindtunit,''),isnull(convert(VARCHAR, b.xhstroponindt, 103),''),isnull(convert(VARCHAR, b.xserumelecdt, 103),''),isnull(b.xnt,''),isnull(b.xtc,''),isnull(b.xhb,''),isnull(b.xplatelate,''),isnull(b.xast,''),~
+		  isnull(b.xvitaminD3,''),isnull(b.xtsh,''),isnull(b.xechounit,''),isnull(b.xett1,''),isnull(b.xett2,''),isnull(convert(VARCHAR, b.xettdate, 103),'') ~
+  FROM mmappointment (NOLOCK) m join mminvesthistory (NOLOCK) b on m.zid=b.zid and m.xcase=b.xcase  ~
+  JOIN mmprescription p on m.zid=p.zid and m.xpatient=p.xpatient 
+
+end tablea

@@ -1,0 +1,749 @@
+screen mmappdetail 
+     caption "Customer master"
+     sidebar list two,list one//,medicalpatient
+     sections  form one, jscript myscript
+
+     list one
+        caption "Appointment For "+pdmst.xname("xstaff='"+xdoctor+"'")+" "+xdate
+        table mminitappointmentrptview
+        order xyearperdate,xdoctor,xrow
+        fixed xyearperdate,xdoctor
+		select "xapptype='doctor'"
+		dtlengthmenu [100, -1], [100, "All"]
+       
+		rows 100
+		maxheight 20000
+        objects xrow attrib(link "login?screen=mmappdetail&command=Show&xyearperdate=?&xdoctor=?&xrow=?"),~
+              
+				xapptime,xpatient,xname,~
+                xmobile,xstatus,xnote,xyearperdate,xappslottype,xappstatus
+		field xyearperdate
+			display hide
+        end field		
+
+        header "Serial No","Time","Patient ID","Patient's Name","Mobile No.","Current Status","Note","","Slot Type","Patient Type"
+     end list
+	 
+	 list two
+        caption "Package Details For "+xpatient
+        table mmapppackgview
+        order xdornum,xrow desc
+        fixed xpatient
+		dtlengthmenu [100, -1], [100, "All"]
+		//maxheight 2000
+		//maxwidth 800
+		dtordering [0,"desc"]
+        rows 100
+		select "'"+xappstatus+"'='Package'"
+        objects xdornum attrib(link "abc" embed onclick="return pickrow(this:xrow#:xpatient#:xbillno#)"),xbillno attrib(name xbillno#),xrow attrib(name xrow#),xpatient attrib(name xpatient#),xname,ztime,xitem,xdesc,xepisodetype
+		
+		field ztime
+			format dd-MMM-yyyy hh:mm:ss a
+			display const
+		end field
+		
+        header "Invoice No","Bill No","Row","Patient ID","Patient's Name","Date","Test Code","Test Name","Episode Type"
+     end list
+	 
+	 list medicalpatient
+        caption "Medical History of "+mmpatient.xname("xpatient='"+xpatient+"'")
+        table mminitappointmentrptview
+        order xcase
+		fixed xpatient
+        //dtlengthmenu [100, -1], [100, "All"]
+		select "xapptype='doctor' and xposition <>'"+#position+"' and xstatus in ('Confirmed','Reported','Attended','Completed') "
+		//select "xapptype='doctor'  and xstatus in ('Confirmed','Reported','Attended','Completed') "
+        rows 100
+		maxheight 2000
+        objects xcase,~
+                xyearperdate,xapptime,xpatient,xname,xorg//,xcase display(hide)
+        header "Case No","Date","Time","Patient ID","Patient's Name","Doctor Name"//,"Status"
+     end list
+
+
+     form one
+        caption "Appointment For "+pdmst.xname("xstaff='"+xdoctor+"'")
+      	table mminitappointment
+		primarykey xcase
+        order xyearperdate,xdoctor,xrow
+        fixed xyearperdate,xdoctor
+		select "xapptype='doctor'"
+        return "login"
+        layout 2
+        pstyle 3
+        objects Show,Clear,Booked,Confirmed,Open,Cancel,Manual_Slot_Create,*next,Back,Patient_Registration,Shifting,Slot_Manage,"<p>" ,~ //Refresh
+		Note_Update,*next,BillCheck,~
+		//Show,Add,Multiple_Block,Show,,Update,Visit,Show,Reported,Attended,Completed,Manage,
+               xrow attrib(readonly),xapptimelocal,xapptime display(hide),~
+                xpatient width(30),xpatientdesc,xmobile,xdate display(hide),~
+                xage display(const),xtype,xstatuslocal,xfees,xrate display(hide),~
+                xstatus display(hidden),xdoctorprofile,~
+                xappslottype,xappstatus,xnote,xclinictype display(hide),~
+                xcase display(const),xcanceltype,~
+                xroom display(hide),xapptype display(hide),~
+				xbillno attrib(readonly),xdornum attrib(readonly),xdorrow attrib(readonly)
+				
+				
+			field xcanceltype
+				  caption <span class=sheader style="	BACKGROUND:#563d7c;color:white;PADDING-BOTTOM: 2px;PADDING-LEFT: 7px; PADDING-RIGHT: 50px; 	PADDING-TOP: 2px;">Cancel Type</span>
+				  width 60
+				  attrib local
+				  display combo
+				  pick "Patient,Doctor"
+			end field
+				
+			field xdornum
+				pick 
+			end field
+			
+			field xdorrow
+				caption Invoice Row 
+			end field
+			
+			
+
+			field Note_Update
+				witdth 135
+				height 40
+				event before
+					set temp= #sql("update mminitappointment set xappslottype='"+xappslottype+"' where zid='"+#id+"' and xapptype='"+xapptype+"' and xcase='"+xcase+"'")
+					set temp= #sql("update mmappointment set xappslottype='"+xappslottype+"' where zid='"+#id+"' and xapptype='"+xapptype+"' and xcase='"+xcase+"'")
+				end event
+				event after
+					set temp= #sql("update mminitappointment set xnote='"+xnote+"' where zid='"+#id+"' and xapptype='"+xapptype+"' and xcase='"+xcase+"'")
+					set temp= #sql("update mmappointment set xnote='"+xnote+"' where zid='"+#id+"' and xapptype='"+xapptype+"' and xcase='"+xcase+"'")
+				 action show
+				end event
+			end field
+		
+			field xappstatus
+				//col 2
+				default "General"
+				display combo
+			end field
+			
+			field xappslottype
+				//col 2
+				default "OPD"
+				display combo
+			end field
+
+			field xmobile
+				caption Contact No.
+				width 32
+				embed placeholder="01XXXXXXXXX"  onblur="validateMobile()"
+			end field
+			
+			field xage
+				width 70
+			end field
+			
+			field Refresh
+				witdth 135
+				height 40
+				event before
+					set xrow=0
+					action show
+				end event
+			end field			
+
+			field xapptimelocal
+				display const
+				attrib local
+				
+				caption <span class=sheader style="	BACKGROUND:#563d7c;color:white;PADDING-BOTTOM: 2px;PADDING-LEFT: 7px; PADDING-RIGHT: 50px; 	PADDING-TOP: 2px;">Appointment Date & Times</span>
+				event after
+					set appdate=#sql(varchar,"select convert(VARCHAR,xdate, 106)  from mminitappointment where xcase='"+xcase+"' ")
+					set apptimelocal=#sesql("select FORMAT(CAST(xapptime AS datetime), 'hh:mm tt') from mminitappointment where zid='"+#id+"' and xcase='"+xcase+"'")
+					set xapptimelocal=appdate+"  "+apptimelocal
+				end event
+			
+			end field
+
+			field xrow
+				caption Serial No.
+				event after
+					if xstatus .eq. "Booked"
+						set #field(Booked.attrib)="disabled"
+						set #field(Open.attrib)="disabled"
+						
+					end if
+					
+					if xstatus .eq. "Confirmed"
+						set #field(Booked.attrib)="disabled"
+						set #field(Open.attrib)="disabled"
+						set #field(Confirmed.attrib)="disabled"
+						set #field(Cancel.attrib)="disabled"
+						set #field(Add_Patient.attrib)="disabled"
+						
+					end if
+					
+					if xstatus .eq. "Reported"
+						set #field(Booked.attrib)="disabled"
+						set #field(Open.attrib)="disabled"
+						set #field(Confirmed.attrib)="disabled"
+						set #field(Cancel.attrib)="disabled"
+						set #field(Add_Patient.attrib)="disabled"
+						
+					end if
+					
+					if xstatus .eq. "Attended"
+						set #field(Booked.attrib)="disabled"
+						set #field(Open.attrib)="disabled"
+						set #field(Confirmed.attrib)="disabled"
+						set #field(Cancel.attrib)="disabled"
+						set #field(Add_Patient.attrib)="disabled"
+						
+					end if
+					
+					if xstatus .eq. "Completed"
+						set #field(Booked.attrib)="disabled"
+						set #field(Open.attrib)="disabled"
+						set #field(Confirmed.attrib)="disabled"
+						set #field(Cancel.attrib)="disabled"
+						set #field(Add_Patient.attrib)="disabled"
+					end if
+					
+					if xstatus .eq. "Open"
+						set #field(Patient_Registration.attrib)="disabled"
+						set #field(Shifting.attrib)="disabled"
+					end if
+					
+					if xstatus .eq. "Open" .or. xstatus .eq. "Blocked"
+						set #field(Open.attrib)="disabled"
+						set #field(Patient_Registration.attrib)="disabled"
+					end if
+					
+					if xstatus .eq. "Blocked"
+						//set #field(Patient_Registration.attrib)="disabled"
+						set #field(Shifting.attrib)="disabled"
+					end if
+					
+					if xpatient .eq. mmpatient.xpatient("xpatient='"+xpatient+"'") .and. xpatient .ne. ""
+						set #field(Add_Patient.attrib)="disabled"
+					end if
+					
+					if xstatus .eq. ""
+						set #field(Confirmed.attrib)="disabled"
+						set #field(Open.attrib)="disabled"
+						set #field(Cancel.attrib)="disabled"
+						set #field(Note_Update.attrib)="disabled"
+					end if
+					if mminitappointment.xstatus("xcase='"+xcase+"'") .ne. "Open" .and. mminitappointment.xstatus("xcase='"+xcase+"'") .ne. ""
+						//set #field(xpatient.display)="const"
+					end if
+					
+				end event
+				
+			end field
+
+			field xcase
+				width 150
+				event after
+     				set globals(xyearperdate)=xyearperdate
+					set globals(xdoctor)=xdoctor
+					set globals(xrow)=xrow
+					set globals(xcase)=xcase
+					set globals(xpatient)=xpatient
+				end event
+			end field
+			
+			field xpatient
+			
+				event after
+					if xstatus .eq. "Confirmed" .or. xstatus .eq. "Reported" .or. xstatus .eq. "Attended" .or. xstatus .eq. "Completed"
+					class careports(getReport{mmappoitmentcardopd;2;in,st;zid,case;xcase;Attended Card})
+					class careports(getReport{mmappoitmentcard2;2;in,st;zid,case;xcase;Attended Card Prescription})
+					class careports(getReport{patientwristbandopd;2;in,st;zid,case;xcase;Wristband})
+					end if
+				end event
+				embed required 
+			end field
+			
+			field xpatientdesc
+			  attrib local
+			  display const
+			  caption Patient's Name
+			  event after
+				set xpatientdesc = mmpatient.xname("xpatient='"+xpatient+"'")
+			  end event
+			end field
+			
+			
+			field xfees
+        	attrib local
+			caption <span class=sheader style="	BACKGROUND:#563d7c;color:white;PADDING-BOTTOM: 2px;PADDING-LEFT: 7px; PADDING-RIGHT: 50px; 	PADDING-TOP: 2px;">Consultation Fees</span>
+        	display const
+				event after
+				
+					int cfee=0
+					set cfee=#sesql("select cast(xopprice as int) from pddocfees where zid='"+#id+"' and xstaff='"+xdoctor+"' and '"+xdate+"' between xfdate and xtdate ")
+					int tfee=0
+					set tfee=#sesql("select cast(xtmrate as int) from pddocfees where zid='"+#id+"' and xstaff='"+xdoctor+"' and '"+xdate+"' between xfdate and xtdate ")
+					int ffee=0
+					set ffee=#sesql("select cast(xrate as int) from pddocfees where zid='"+#id+"' and xstaff='"+xdoctor+"' and '"+xdate+"' between xfdate and xtdate ")					
+					set xfees = "Initial consultation : "+cfee
+					set xfees = xfees+"<br>Telemedicine consultation: "+tfee
+					set xfees = xfees+"<br>Follow-up visits : "+ffee
+					set xfees = xfees+"<br>Duration For Follow-up : "+pdmst.xday("xstaff='"+xdoctor+"'")+" Days"
+					set xfees = xfees+"<br>Duration For Report Review : "+pdmst.xreportday("xstaff='"+xdoctor+"'")+" Days"
+				end event
+            end field
+		
+			
+			field xstatuslocal
+				attrib local
+				//caption <font size=+2 color=red>Current Status</font>
+				caption <span class=sheader style="	BACKGROUND:#563d7c;color:white;PADDING-BOTTOM: 2px;PADDING-LEFT: 7px; PADDING-RIGHT: 50px; 	PADDING-TOP: 2px;">Current Status</span>
+				display const
+				event after
+					set xstatuslocal=xstatus
+						set xstatuslocal="<font size=+2 color=green>"'+xstatuslocal+'</font>"
+					end if
+					
+				end event
+			end field
+			
+
+			
+		field xdoctorprofile
+        	attrib local
+			caption <span class=sheader style="	BACKGROUND:#563d7c;color:white;PADDING-BOTTOM: 2px;PADDING-LEFT: 7px; PADDING-RIGHT: 50px; 	PADDING-TOP: 2px;">Doctor Profile</span>
+        	display const
+        	width 250
+        	event after
+				
+				set name =pdmst.xname("xstaff='"+xdoctor+"'")
+        		set designation=pdmstview.designationname("xstaff='"+xdoctor+"'")
+				set deptname = "<br>"+pdmstview.departmentname("xstaff='"+xdoctor+"'")
+				set profdegree=pdmst.xprofdegree("xstaff = '"+xdoctor+"'")
+				
+				if xdoctor .eq. ""
+					set roomno=""
+					set deptname=""
+					set floor=""
+					set wing=""
+				else
+					set roomno=", Room No."
+					set room=pdmst.xroom("xstaff = '"+xdoctor+"'")
+					//set deptname ="-"+pdmst.xdeptname("xstaff='"+xdoctor+"'")
+					set floor =", "+caroomheader.xfloor("xroom='"+room+"'")
+					set wing =", "+caroomheader.xwing("xroom='"+room+"'")
+					set clinictyp=caroomheader.xclinictype("xroom='"+room+"'")
+				end if
+				set xdoctorprofile="<b>"+name+"<br>"+designation+deptname+"</b>"+"<br> "+profdegree+"<br> "+clinictyp+roomno+room+floor+wing
+        	end event
+        end field
+			
+			field xtype
+			  caption <span class=sheader style="	BACKGROUND:#563d7c;color:white;PADDING-BOTTOM: 2px;PADDING-LEFT: 7px; PADDING-RIGHT: 50px; 	PADDING-TOP: 2px;">Appointment Type</span>
+			  width 60
+			  //pick code Visit Type
+			  display combo
+			  pick "New,Follow-up,Report Review"
+			  embed required
+			end field
+			
+			
+			
+			
+			field xnote
+				width 80
+				column 2
+				height 4
+			end field
+			
+			
+			field Manual_Slot_Create
+				width 137
+				height 40
+				event before
+			    set position=pdmst.xposition("xstaff='"+xdoctor+"'")
+				set xapptime="00:00:00"
+				set doctor =#trim(xdoctor)
+				set xstatus="Open"
+				set xdate=#sql("select distinct xdate from mminitappointment where xdoctor='"+doctor+"' and xyearperdate='"+xyearperdate+"' and xapptype='doctor'")
+				//set xtype=""
+				set workingday=pdmst.xworkingday("xstaff='"+doctor+"'")
+				set workingday=#trim(workingday)
+				
+				set xsat=#sub(workingday,0,1)
+				set xsun=#sub(workingday,1,1)
+				set xmon=#sub(workingday,2,1)
+				set xtue=#sub(workingday,3,1)
+				set xwed=#sub(workingday,4,1)
+				set xthu=#sub(workingday,5,1)
+				set xfri=#sub(workingday,6,1)
+				
+				
+				set dayname=#sesql("select left(DATENAME(weekday,'"+xdate+"'),3)")
+				set dayname=#trim(dayname)
+				set curpatient = mminitappointment.xpatient("xyearperdate="+xyearperdate+" and xdoctor='"+xdoctor+"' and xpatient='"+xpatient+"'")
+				
+				if dayname .eq. "Sat" .and. xsat .eq. "1"
+					set plan=pdmst.xapptplsat("xstaff='"+doctor+"'")
+				else if dayname .eq. "Sun" .and. xsun .eq. "1"
+					set plan=pdmst.xapptplsun("xstaff='"+doctor+"'")
+				else if dayname .eq. "Mon" .and. xmon .eq. "1"
+					set plan=pdmst.xapptplmon("xstaff='"+doctor+"'")
+				else if dayname .eq. "Tue" .and. xtue .eq. "1"
+					set plan=pdmst.xapptpltue("xstaff='"+doctor+"'")
+				else if dayname .eq. "Wed" .and. xwed .eq. "1"
+					set plan=pdmst.xapptplwed("xstaff='"+doctor+"'")
+				else if dayname .eq. "Thu" .and. xthu .eq. "1"
+					set plan=pdmst.xapptplthu("xstaff='"+doctor+"'")
+				else if dayname .eq. "Fri" .and. xfri .eq. "1"
+					set plan=pdmst.xapptplfri("xstaff='"+xdoctor+"'")
+				end if
+				if xpatient.ne. "" .and. xpatient .eq. curpatient
+					error "Patient Already Exist in the another Slot"
+				else if plan .eq. ""
+					error "Plan Cannot be blank"
+                else
+				 int row=0
+				 set row=#sesql("select isnull(max(xrow),0)+1 from mminitappointment where zid='"+#id+"' and xyearperdate='"+xyearperdate+"' and xdoctor='"+doctor+"' and xapptype='doctor'")
+				 set xcase="OPD-"+xyearperdate+position+row
+				end if
+			end event
+			event after
+				
+				set temp = #spsql(zabsp_PRCS_ManualSlotCreate,#id,#user,"doctor",xyearperdate,xdoctor,plan)
+				action show
+			end event
+			end field
+			
+			field Booked
+			width 135
+			height 40
+				event before
+					set xpatient=#trim(xpatient)
+					set curpatient = mminitappointment.xpatient("xyearperdate="+xyearperdate+" and xdoctor='"+xdoctor+"' and xpatient='"+xpatient+"' and xcase<>'"+xcase+"' and xapptype='"+xapptype+"'")
+					
+					 set year=#sub(#date,0,4)
+					 set per=#sub(#date,5,2)
+					 set day=#sub(#date,8,2)
+					 set curyearperdate = year+per+day
+					 
+					 if xmobile .eq. ""
+					   set xmobile=mmpatient.xmobile("xpatient='"+xpatient+"'")
+					 end if
+					 	 int cfee=0
+					set cfee=#sesql("select cast(xopprice as int) from pddocfees where zid='"+#id+"' and xstaff='"+xdoctor+"' and '"+xdate+"' between xfdate and xtdate ")
+					
+					
+					if xyearperdate<curyearperdate
+						error "Appointment date is invalid!"
+					//else if curyearperdate .eq. xyearperdate //.and. xapptime .lt. #time
+						//error "Appointment Time Is Invalid!"
+					else if xpatient .eq. ""
+						error "Patient is blank"
+					else if cfee<1 
+						error "Cannot Proceed--Please Setup Doctor Fees"
+					else if mminitappointment.xstatus("xcase='"+xcase+"'") .ne. "Open"
+						error "Book is only allowed for open slot"
+					else if mmpatientepisode.xstatus("xpatient='"+xpatient+"' and xepisodetype='IPD'") .eq. "Open"
+						error "IPD episod is already open for this patient"
+					else if xpatient .eq. curpatient .and. xpatient .eq. mmpatient.xpatient("xpatient='"+xpatient+"'")
+						error "The patient already had and appointment on the same day"
+					else if xmobile .eq. ""
+						error "Please give the contact number"
+					else if xappstatus .eq. "Package" .and. xbillno .eq. ""
+						error "Bill Number is blank"
+					else if xappstatus .eq. "General" .and. xbillno .ne. ""
+						error "Please Deselect the Bill Number"
+					
+					end if
+				end event
+			  
+				event after
+					set temp =#sesql("update mminitappointment set xstatus='Booked',xpatient='"+xpatient+"',xmobile='"+xmobile+"',xappbooked=GETDATE(),xbookid='"+#user+"',xappslottype='"+xappslottype+"',xnote='"+xnote+"',xappstatus='"+xappstatus+"',xbillno='"+xbillno+"',xdornum='"+xdornum+"',xdorrow='"+xdorrow+"' where zid='"+#id+"' and xapptype='"+xapptype+"' and xcase='"+xcase+"'")
+					//set temp =#sesql("update mminitappointment set xstatus='Booked',xpatient='"+xpatient+"',xmobile='"+xmobile+"',xappbooked=GETDATE(),xbookid='"+#user+"',xappslottype='"+xappslottype+"',xappstatus='"+xappstatus+"',xnote='"+xnote+"' where zid='"+#id+"' and xapptype='"+xapptype+"' and xcase='"+xcase+"'")
+					set temp = #spsql(zabsp_MMAPP_validateAfterAppointment,#id,#user,"mmappdetail",xdate,xyearperdate,xtype,xdoctor,xrow,0,xcase,xpatient,0,"booked")
+					set temp = #spsql(zabsp_CREATE_SMS_TEXT,#id,#user,xpatient,xmobile,xcase,"New Appointment",xdoctor,apptimelocal,xdate)
+				action show
+				end event
+			end field
+			
+			
+			field Confirmed
+			width 135
+			height 40
+				event before
+					set year=#sub(#date,0,4)
+					set per=#sub(#date,5,2)
+					set day=#sub(#date,8,2)
+					set curyearperdate = year+per+day
+					set xpatient=#trim(xpatient)
+					set curpatient = mminitappointment.xpatient("xyearperdate="+xyearperdate+" and xdoctor='"+xdoctor+"' and xpatient='"+xpatient+"' and xcase<>'"+xcase+"' and xapptype='"+xapptype+"'")
+					
+					 if xmobile .eq. ""
+					   set xmobile=mmpatient.xmobile("xpatient='"+xpatient+"'")
+					 end if
+					set bookedpatient=mminitappointment.xpatient("xcase='"+xcase+"'")
+					 
+					int cfee=0
+					set cfee=#sesql("select cast(xopprice as int) from pddocfees where zid='"+#id+"' and xstaff='"+xdoctor+"' and '"+xdate+"' between xfdate and xtdate ")
+					if xtype .eq. ""
+						set xtype="New"
+					end if
+					 
+					if xyearperdate<curyearperdate
+						error "Appointment not allowed for previous date"
+					//else if curyearperdate .eq. xyearperdate .and. xstatus .ne. "Booked" //.and. xapptime .lt. #time
+						//error "Appointment time is invalid!"
+					else if xdoctor .eq. ""
+						error "Cannot Proceed--Please Doctor From OPD Appointment Screen"
+					else if mminitappointment.xstatus("xcase='"+xcase+"'") .ne. "Open" .and. mminitappointment.xstatus("xcase='"+xcase+"'") .ne. "Booked"
+						error "Slot should be open or booked"+xstatus
+					else if xpatient .eq. ""
+						error "Patient is blank"
+					else if cfee<1 
+						error "Cannot Proceed--Please Setup Doctor Fees"
+					else if mmpatientepisode.xstatus("xpatient='"+xpatient+"' and xepisodetype='IPD'") .eq. "Open"
+						error "IPD episod is already open for this patient"
+					else if xpatient .ne. mmpatient.xpatient("xpatient='"+xpatient+"' and zactive='1'")
+						error "Patient ID is invalid!"
+					else if xpatient .eq. curpatient
+						error "The patient already had an appointment on the same day"
+					//else if xtype .eq. ""
+						//error "Please Select Appointment Type"
+					else if xmobile .eq. ""
+						error "Please give the contact number"
+					else if xappstatus .eq. "Package" .and. xbillno .eq. ""
+						error "Bill Number is blank"
+					else if xappstatus .eq. "General" .and. xbillno .ne. ""
+						error "Please Deselect the Bill Number"
+					else if bookedpatient .ne. "" .and. bookedpatient .eq. mmpatient.xpatient("xpatient='"+bookedpatient+"'") .and. bookedpatient .ne. xpatient
+						error "Cannot Proceed--Patient ID Missmatch With Booked Patient ID Please Show"
+					end if
+				end event
+			
+				event after
+					if xdoctor .ne. ""
+					set temp= #sql("update mminitappointment set xtype='"+xtype+"' where zid='"+#id+"' and xapptype='"+xapptype+"' and xcase='"+xcase+"' ")
+					set temp= #sql("update mminitappointment set xappstatus='"+xappstatus+"' where zid='"+#id+"' and xapptype='"+xapptype+"' and xcase='"+xcase+"'")
+					if xappstatus .eq. "Package"
+						set temp= #sql("update opdodetail set xcollectionstatus='Confirmed' where zid='"+#id+"' and xdornum='"+xdornum+"' and xrow='"+xdorrow+"'")
+					end if 
+					if xstatus .eq. "Open"
+						set temp =#sesql("update mminitappointment set xstatus='Booked',xpatient='"+xpatient+"',xmobile='"+xmobile+"',xappbooked=GETDATE(),xbookid='"+#user+"',xnote='"+xnote+"', xappslottype='"+xappslottype+"',xappstatus='"+xappstatus+"',xbillno='"+xbillno+"',xdornum='"+xdornum+"',xdorrow='"+xdorrow+"' where zid='"+#id+"' and xapptype='"+xapptype+"' and xcase='"+xcase+"'")
+						set temp = #spsql(zabsp_MMAPP_validateAfterAppointment_Confirm,#id,#user,"mmappdetail",xdate,xyearperdate,xtype,xdoctor,xrow,0,xcase,xpatient,0,"booked")
+					end if 
+					set temp = #spsql(zabsp_PRCS_appointment_all,#id,#user,"opdappointment","Confirmed",xpatient,xdate,"OPD",xdoctor,xcase,xrow)
+					end if 
+				action show
+				end event
+			end field
+			
+			
+			
+			field Cancel
+			width 135
+			height 40
+				event before
+				    set year=#sub(#date,0,4)
+					set per=#sub(#date,5,2)
+					set day=#sub(#date,8,2)
+					set curyearperdate = year+per+day
+					
+					//if curyearperdate .eq. xyearperdate .and. xapptime .lt. #time
+					//	error "Appointment time is invalid!"
+				  if mminitappointment.xstatus("xcase='"+xcase+"'") .ne. "Booked"
+						error "Cancel only allowed for booked slot"
+					else if xpatient .eq. ""
+						error "Patient is blank"
+					else if xnote .eq. ""
+						error "Please write cancel note"
+					else if xcanceltype .eq. ""
+						error "Please Select Cancel Type"
+					end if			
+				end event
+				event after
+					set temp=#sesql("Update mminitappointment set xnote='"+xnote+"' where zid='"+#id+"' and xapptype='"+xapptype+"' and xcase='"+xcase+"'")
+				    set temp = #spsql(zabsp_MMAPP_validateAfterAppointment,#id,#user,"mmappdetail",xdate,xyearperdate,xtype,xdoctor,xrow,0,xcase,xpatient,0,"cancel")
+					set temp = #spsql(zabsp_CREATE_SMS_TEXT,#id,#user,xpatient,xmobile,xcase,xcanceltype,xdoctor,apptimelocal,xdate)
+				action show
+				end event
+			end field
+			
+			field Open
+			width 135
+			height 40
+				event before
+					set year=#sub(#date,0,4)
+					set per=#sub(#date,5,2)
+					set day=#sub(#date,8,2)
+					set curyearperdate = year+per+day
+					
+					if curyearperdate .eq. xyearperdate .and. xapptime .lt. #time
+						error "Appointment Time is invalid!"
+					else if mminitappointment.xstatus("xcase='"+xcase+"'") .ne. "Blocked"
+						error "Open is only allowed in blocked slot"
+					end if
+				end event
+				
+				event after
+				   set temp =#sesql("update mminitappointment set xstatus='Open',xpatient='' where zid='"+#id+"' and xapptype='"+xapptype+"' and xcase='"+xcase+"'")
+				 //  print #result
+				   action show
+				end event
+			end field
+
+			field Back
+			width 135
+			height 40
+			embed onclick="clicked(this)"
+			end field
+
+			field Patient_Registration
+			width 135
+			height 40
+			embed onclick="clicked(this)"
+			end field
+			
+			field Shifting
+			width 135
+			height 40
+			embed onclick="clicked(this)"
+			end field
+			
+
+
+		field Slot_Manage
+		 width 135
+		 height 40
+          embed onclick="clicked(this)"
+        end field
+		
+		field BillCheck
+		   	width 135
+			height 40
+		end field
+		
+        embed onsubmit="submitit(this)"
+
+
+
+     end form
+
+     jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+		
+	
+        function submitit(form){
+
+	    if (detail=="Back"){
+            form.screen.value = "mmappheader"
+            form.searchbutton.value = "Find xyearperdate=?&xdoctor=?"
+          }
+          
+		  
+		   if (detail=="Patient_Registration"){
+            form.screen.value = "mmpatientapp"
+            form.searchbutton.value = "Find xpatient=?"
+          }
+		  
+		  if (detail=="Shifting"){
+            form.screen.value = "mmappshift"
+            form.searchbutton.value = "Find xyearperdate=?&xdoctor=?&xrow=?"
+          }
+		  
+		   if (detail=="Slot_Manage"){
+            form.screen.value = "mmappmblock"
+            form.searchbutton.value = "Clear"
+            //return false
+          }
+		  
+         
+        }
+		
+		function pickrow(link,row,patient,billno){
+          if (navigator.appName.indexOf("Netscape") >= 0){
+            document.one.xdornum.value=link.text
+			document.one.xdorrow.value=row.text 
+			document.one.xpatient.value=patient.text  
+            document.one.xbillno.value=billno.text  			
+			
+          }else{
+            document.one.xdornum.value=link.innerText
+			document.one.xdorrow.value=row.innerText
+			document.one.xpatient.value=patient.innerText
+			document.one.xbillno.value=billno.innerText
+            
+          }
+		  return false
+		}
+		
+		
+		
+		function validateMobile()
+        {
+            var x = document.one.xmobile.value;
+           if (x==""){
+		   
+		   }
+		   
+		   else if(isNaN(x)|| x.indexOf(" ")!=-1)
+           {
+              alert("Mobile number should be numeric");
+			  setTimeout(function() { one.xmobile.focus(); });
+           }
+		   
+		  
+           else if (x.charAt(0)!="0")
+           {
+              alert("Mobile number should be start with 0");
+			  setTimeout(function() { one.xmobile.focus(); });
+           }
+		   else if (x.length<11 || x.length>11)
+           {
+              alert("Mobile number should be 11 digit");
+			  setTimeout(function() { one.xmobile.focus(); });
+           }
+        }
+		
+	$(function() {
+	  $("#oneListTable td").each(function() {
+		if ($(this).text() == 'Blocked') {
+		  $(this).css('background', 'red');
+		  $(this).css('color', 'White');
+		}
+		else if ($(this).text() == 'Open') {
+		  $(this).css('background', '#ffeb3b');
+		}
+		else if ($(this).text() == 'Confirmed') {
+		  $(this).css('background', 'lightsalmon');
+		//  $(this).css('color', 'White');
+		}
+		else if ($(this).text() == 'Booked') {
+		  $(this).css('background', 'deepskyblue');
+		//  $(this).css('color', 'White');
+		}
+		else if ($(this).text() == 'Reported') {
+		  $(this).css('background', 'purple');
+		  $(this).css('color', 'White');
+		}
+		else if ($(this).text() == 'Attended') {
+		  $(this).css('background', 'cornflowerblue');
+		  $(this).css('color', 'White');
+		}
+		else if ($(this).text() == 'Completed') {
+		  $(this).css('background', 'green');
+		  $(this).css('color', 'White');
+		}
+	  });
+	  console.log(oneListTable)
+	});
+		
+
+        </script>
+     end jscript
+
+
+
+end screen

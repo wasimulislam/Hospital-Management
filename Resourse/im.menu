@@ -1,0 +1,90 @@
+//im.menu
+//-------------------------------------------------------------------
+option                           |action
+//-------------------------------------------------------------------
+Notifications             		  |#classPath+"/login?screen=imnotification"
+Requisition						  |#classPath+"/login?menu=imreq"
+
+//// CWIP 					      |#classPath+"/login?menu=imcwip"
+//// Loan Transaction			  |#classPath+"/login?menu=imloan"
+Transfer Transaction			  |#classPath+"/login?menu=imtransfer"
+GRN & SQC Transaction			  |#classPath+"/login?menu=imgrnsqc"
+Stock Take                        |#classPath+"/login?menu=imst"       			|       |      |120
+
+Damage Entry              		  |#classPath+"/login?screen=imtorheaderdam"
+/////Inventory Transaction (Issue)|#classPath+"/login?screen=imtrnis"
+Receive Return From User          |#classPath+"/login?screen=imreceived"        |     |      |120
+//Reports                           |#classPath+"/login?menu=imreports"           |     |      |120
+
+Current Product Stock  				 |#classPath+"/login?screen=*viewcrystal imstockbalcurrentp(6;in,st,st,st,st,st;zid,user,wh,gitem,item,zero;xuserhide=User,xwh=Store,xgitemrpt=Item Group,xitem=Item Code,xstockshowtype=Show Type,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/;rptproc=zabsp_RPT_IM_Currentstockqty)"
+
+
+//Current Product Stock 			  |#classPath+"/login?screen=*viewcrystal imcurrentstock(4;in,st,st,st;@zid,@wh,@gitem,@item;xwh=Store,xgitemrpt=Item Group,xitem=Item Code,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+
+//Current Product Stock  				 |#classPath+"/login?screen=*viewcrystal imcurrentstock(5;in,st,st,st,st;@zid,@wh,@gitem,@item,@zero;xwh=Store,xgitemrpt=Item Group,xitem=Item Code,xstockshowtype=Show Type,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+///Current Product Stock  				 |#classPath+"/login?screen=*viewcrystal imstockbalcurrent(5;in,st,st,st,st;@zid,@wh,@gitem,@item,@zero;xwh=Store,xgitemrpt=Item Group,xitem=Item Code,xstockshowtype=Show Type,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+
+Item Ledger Detail (Live Server)     |#classPath+"/login?screen=*viewcrystal imtrndetailstorelive(4;in,st,st,dt;zid,wh,item,tdate;xwh=Store=,xitem=Item,xdate=To Date=#date,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+//Current Product Stock(Report Server) |#classPath+"/login?screen=*viewcrystal imstockbal(5;in,st,st,st,st;zid,wh,gitem,item,xzero;xwh=Store,xgitemrpt=Item Group,xitem=Item,xzero=Display With Zero,xviewtype=Report View)"
+
+
+//Product Wise Product Stock 	  |#classPath+"/login?screen=*viewcrystal imstockbystorewithval(3;in,st,st;@zid,@gitem,@item;xgitem=Item Group,xitem=Item,xviewtype=Report View)"
+//Product Wise Product Stock 	  |#classPath+"/login?screen=*viewcrystal imstockbystorewithval(2;in,st;@zid,@item;xitem=Item,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+//Current Product Stock(Report Server)|#classPath+"/login?screen=*viewcrystal imstockbal(6;in,st,st,st,st,st;zid,acdiv,wh,gitem,catitem,item;xproject = Plant,xwh=Store,xgitemrpt=Item Group,xcatitem=Item Category,xitem=Item,xviewtype=Report View)"
+
+Product Wise Product Stock 		  |#classPath+"/login?screen=*viewcrystal imstockbystorewithval(3;in,st,st;@zid,@whp,@item;xwh=Store,xitem=Item,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+Booked Item Check 				  |#classPath+"/login?screen=*viewcrystal bookeditem(3;in,st,st;@zid,@wh,@item;xwh=Store,xitem=Item,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+Hazmat Product            |#classPath+"/login?screen=*viewcrystal imhazmat(5;in,st,st,st,st;@zid,@wh,@gitem,@item,@zero;xwh=Store,xgitemrpt=Item Group,xitem=Item Code,xstockshowtype=Show Type,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+
+//Patient Transit History           		|#classPath+"/login?screen=*viewcrystal patienttransit(2;in,st;zid,admno;admissionno=Admission No,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+//Row/Location Entry  			  |#classPath+"/login?menu=imstorebin"              
+//Product Location update			  |#classPath+"/login?screen=caitemshelfupdate"
+
+//Create Quality Certificate      |#classPath+"/login?screen=poqualitycertifi"
+//Row/Location Entry			  |#classPath+"/login?screen=xcodes(xtype=Rack No)"
+//Opening Balance Entry             |#classPath+"/login?screen=imtrnre"
+///Transfer Order Entry              |#classPath+"/login?screen=imtorheader"
+///Transfer Order(HSFO) Entry        |#classPath+"/login?screen=imtorheaderhsfo"
+///Transfer Order(Workshop) Entry    |#classPath+"/login?screen=imtorheaderws"
+///Transfer & Receive Confirmation   |#classPath+"/login?screen=imtransfer"
+///(HSFO) Receive Confirmation   	  |#classPath+"/login?screen=imtransferhsfo"
+///Create GRN                        |#classPath+"/login?screen=poordheaderim"
+///View GRN                          |#classPath+"/login?screen=pogrnheader"
+///Create SQC                        |#classPath+"/login?screen=poqualitycertifi"
+///View SQC                          |#classPath+"/login?screen=poqtcheader"
+
+//Create GRN /QC (Direct)           |#classPath+"/login?screen=pogrndirect"
+///GRN Confirm Against LC            |#classPath+"/login?screen=pogrnim"
+///Goods Inspection           		  |#classPath+"/login?screen=imtorheaderinsp" 
+
+////Loan Transaction               |#classPath+"/login?menu=imloan"             |     |      |120
+////Stock Take                     |#classPath+"/login?screen=imtag"        	|     |      |120
+////Stock Take Process             |#classPath+"/login?screen=imtagcon"         |     |      |120
+//IM To GL Transfer                |#classPath+"/login?screen=imtogltransfer"
+//Receive By Challan    |#classPath+"/login?screen=imrcheaderreq"        |      |     |120
+//Inspection              		|#classPath+"/login?menu=iminsp"   		 |      |     |120
+//Order Delivery              |#classPath+"/login?menu=imdelivery"                    |im  	 |	|inventory.png|180
+//Delivery Challan Entry                    |#classPath+"/login?screen=opordappdo"
+//Requisition To Other Factory For Grey Fabric    |#classPath+"/login?screen=imrcheaderreq"        |       |      |120
+//Requisition Approval For Grey Fabric    |#classPath+"/login?screen=imrcheader"      |       |      |120
+//Fabric Requisition From Other Factory               |#classPath+"/login?screen=imfabreqheader"        |       |      |120
+
+//
+//
+//Transfer Chalan                    |#classPath+"/login?screen=imtorheadertr"        |       |      |120
+//Receive Chalan                     |#classPath+"/login?screen=imtorheaderre"        |       |      |120
+//Inventory Transaction               |#classPath+"/login?screen=imtrn"
+//Store Requisition For  Production|#classPath+"/login?screen=mostorereqheader"
+//Requisition From Production         |#classPath+"/login?screen=imtormoreqheader"    |       |      |120
+//Inspection              		|#classPath+"/login?menu=iminsp"   					  |       |      |120
+//Loan Transaction                          |#classPath+"/login?menu=imloan"          |       |      |120
+//Print Transfer and Revceive         |#classPath+"/login?screen=imtorprint"          |       |      |120
+//Codes & Parameter              |#classPath+"/login?menu=imcodes"
+//Costing                      |#classPath+"/login?screen=imaveragecost"
+//Codes & Parameter               |#classPath+"/login?menu=imcodes"   				  |       |      |120
+//Master                           |#classPath+"/login?menu=immst"   		  		  |       |      |120
+//Master                           |#classPath+"/login?screen=caitem"   			  |       |      |120
+
+
+//-------------------------------------------------------------------
+

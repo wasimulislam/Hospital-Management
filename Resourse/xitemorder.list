@@ -1,0 +1,15 @@
+     list xitemorder
+        caption "Items containing: "+zvalue
+        table caitemchargeview
+        order xitem
+		linksql select xdesc from caitemchargeview
+        select "((xitem like '%"+zvalue+"%' or xdesc like '%"+zvalue+"%') and left(xitem,2)<>'CC') and zactive=1  and xipprice>0 and xgitem='1029'" 
+        searchselect "left(xitem,2)<>'CC' and zactive=1  and xipprice>0"
+		lengthfield 2
+		rows 30
+        objects xitem attrib(link "abc" embed onclick="return updateParent(this:'$')"), ~
+                xdesc,xtheircode,xtitem,xgitem,xgitemdes,xipprice//,xitemdept,xitemsubdept//,xshelf
+						
+	
+	headers "Item","Description","Old Code","Item Type","Item Group","Item Group Name","IPD Price"
+     end list

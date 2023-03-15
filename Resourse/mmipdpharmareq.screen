@@ -1,0 +1,174 @@
+screen mmipdpharmareq
+
+     caption "Chart of Accounts"
+     sidebar //list one
+	 pstyle datatable
+     sections  form one,list one, jscript myscript//,list one
+
+
+     list one
+        caption "Open Order List For Dispense"
+        table opipdpcreqheader
+        order xreqnum desc// asc
+		dtlengthmenu [100, -1], [100, "All"]
+		dtordering [0,"desc"]
+	     searchselect "xfloor,xwing,xpharmacyreqtype"
+		 //select "xstatusreq in ('Open','Partially Issue') and condition0 and condition1"
+		 select "xstatusreq <> '' and xstatusreq='"+xstatusreq+"' and condition0 and condition1 and condition2 and ((cast(ztime as date)='"+xfdate+"' and '"+xselectdate+"'='1') or '"+xselectdate+"'='0')"
+		 
+        rows 30
+        objects  xreqnum attrib(link "login?screen=opipdpcreqheaderdis&command=Show&xreqnum=?"), ~
+                 ztime display(const),xpatient display(const), name equals((select xname from mmpatient where zid=opipdpcreqheader.zid and xpatient=opipdpcreqheader.xpatient)),~
+				 
+				 xpharmacyreqtype display(const),xroom display(const),xbedno display(const),xfloor display(const),xwing display(const),xstatusreq
+				 field xreqnum
+					display const
+				 end field
+				 field ztime
+					format dd-MMM-yyyy hh:mm:ss a
+					//format dd-MMMM-yyyy hh:mm:ss a
+					//format dd-MM-yyyy HH:mm:ss 
+				end field
+				 
+				 
+				 headers "Requisition No.","Date Time","Patient ID","Name","Requisition Type","Room No","Bed No","Floor","Wing","Status"
+				 
+     end list
+	
+	
+     
+    
+	 
+     
+		 
+		form one
+        caption "IPD Pharmacy Filling List"
+        table opipdpcreqheader
+	     primarykey xreqnum desc
+        order xreqnum desc
+        return "login"
+        layout 3
+        pstyle 3
+		prow 2
+        objects ~
+                Search,Clear,Back,"<p>" ,~
+                xpharmacyreqtype,xfloor,xwing,xstatusreq,xselectdate,xfdate
+				
+ 		
+
+	
+       field xpharmacyreqtype
+		pick code Pharmacy Requisition
+		end field
+	
+	field Search
+		width 100
+		height 40
+		event before
+			//if xpharmacyreqtype .eq. ""
+				//error "Please Select Requisition Type"
+			//else 
+			if xstatusreq .eq. ""
+				error "Please Select Request Staus"
+			end if
+			set xselectdate="1"
+		end event
+		event after
+			
+		end event
+	end field	
+	
+	field xstatusreq
+		pick "Partially Received,Partially Issue,Open,Cancel,Confirmed"
+		display combo
+	end field
+	
+	
+	
+	    
+		
+		
+		
+		
+		field Clear
+			width 100
+		    height 40
+		end field
+		
+		
+		
+		field Back
+		    width 100
+		    height 40
+			embed onclick="clicked(this)"
+		end field
+	
+
+	embed onsubmit="submitit(this)"
+
+	
+     end form
+
+
+
+
+
+     jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+        function budgeted(b){
+          detail="budgeted"
+        }
+        function submitit(form){
+
+	    if (detail=="Back"){
+            form.screen.value = "opipdpcreqheaderdis"
+            form.searchbutton.value = "Clear"
+            //return false
+          }
+	    if (detail=="budgeted"){
+            form.screen.value = "glbud"
+            form.searchbutton.value = "Top"
+            //return false
+          }
+        }
+		
+				$(function() {
+	  $("#one td").each(function() {
+		if ($(this).text() == 'STAT') {
+		  $(this).css('background', 'red');
+		  $(this).css('color', 'White');
+		}
+		else if ($(this).text() == 'New Order') {
+		  $(this).css('background', 'purple');
+		  $(this).css('color', 'White');
+		}
+		else if ($(this).text() == 'Routine') {
+		  $(this).css('background', 'Green');
+		  $(this).css('color', 'White');
+		}
+		else if ($(this).text() == 'Narcotic') {
+		  $(this).css('background', 'orange');
+		  $(this).css('color', 'White');
+		}
+		else if ($(this).text() == 'New Admission') {
+		  $(this).css('background', 'blue');
+		  $(this).css('color', 'White');
+		}
+	  });
+	  console.log(oneListTable)
+	});
+	
+		
+		
+
+        </script>
+     end jscript
+
+
+
+end screen

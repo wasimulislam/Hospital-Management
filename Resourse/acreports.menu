@@ -1,0 +1,47 @@
+//Accounts Reports.menu
+//-------------------------------------------------------------------
+option                           |action
+//-------------------------------------------------------------------
+//Chart of Account  				   	|#classPath+"/login?screen=*viewcrystal accode(2;in,st;zid,group;xgroup=Account Group,xviewtype=Report View)" 
+//Chart of Account (All) 				|#classPath+"/login?screen=*viewcrystal accodeall(3;in,st,st;zid,group,reptype;xgroup=Account Group,xreptype=Report Type,xviewtype=Report View)"                      
+//Employee Information Report		   	|#classPath+"/login?screen=*viewcrystal pdempinformation(12;in,st,st,st,st,st,st,st,st,dt,dt,st;zid,dept,desi,reli,gendr,blodg,empstatus,emptype,section,fdate,tdate,location;~
+//									xdeptname=Department Name,xdesignation=Designation,xreligion=Religion,xsexrep=Gendar,xbloodgroup=Blood Group,xempstatus=Employee Status,xemptype=Employment Type,xsection=Section,xdate=From Joining Date,xdate=To Joining Date,xlocation=Location Name,xviewtype=Report View)"
+//GL Mapping Report                   |#classPath+"/login?screen=*viewcrystal glmapping(1;in;@zid;xviewtype=Report View)"
+//View Voucher  						|#classPath+"/login?screen=*viewcrystal acvoucher(2;in,st;zid,svoucher;xvoucher=Voucher No<span>*</span>,xviewtype=Report View)" 
+//Transaction Listing   	    	    |#classPath+"/login?screen=*viewcrystal actrnlisting2(9;in,st,st,dt,dt,st,st,st,st;zid,wh,trn,fdate,tdate,status,apvstatus,preparer,approver;xproject=Project,xtrnrep=Voucher Type,xdate=From Date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xstatusjvrep=Status,xstatuslvrep=Approval Status,xstaff=Prepared By,xposition=To be Approved By,xviewtype=Report View)"
+
+//Ledger                              |#classPath+"/login?menu=acledreports"
+//AP Ledger                           |#classPath+"/login?menu=apledreports"
+//AR Ledger                           |#classPath+"/login?menu=arreports"
+//Trial Balance	                	|#classPath+"/login?menu=actrialreports"
+
+//Cross Year Reports	                |#classPath+"/login?menu=acledreportsall"
+//Balance Sheet/P&L Statement		|#classPath+"/login?screen=*viewcrystal acpnlbsrepp(8;in,st,st,in,st,st,st,st;@zid,@user,@wh,@year,@fdate,@tdate,@reportfor,@reptype;xuserhide=User,xproject=Project,xyearcombo=Year<span>*</span>,xdate=From Date<span>*</span>,xdate=To Date<span>*</span>,xrptfor=Report For<span>*</span>,xreptype=Report Type<span>*</span>,xviewtype=Report View)"	
+
+//Balance Sheet/P&L Statement		    |#classPath+"/login?screen=*viewcrystal acpnlbsrep(8;in,st,st,in,dt,dt,st,st;zid,user,wh,year,fdate,tdate,reportfor,reptype;xuserhide=User,xproject=Project,xyearcombo=Year<span>*</span>,xdate=From Date<span>*</span>,xdate=To Date<span>*</span>,xrptfor=Report For<span>*</span>,xreptype=Report Type<span>*</span>,xviewtype=Report View;rptproc=zabsp_RPT_acpnlbs)"		
+//Balance Sheet/P&L (comparison)      |#classPath+"/login?screen=*viewcrystal acpnlbs(7;in,st,in,st,st,st,st;@zid,@wh,@year,@report,@reportfor,@pacc,@paccgroup;xproject=Project,xyearcombo=Year<span>*</span>,xrptshow=Report Showing<span>*</span>,xrptfor=Report For<span>*</span>,xhide=Hide,xhide=Hide,xviewtype=Report View)"
+
+
+////Balance Sheet                    	|#classPath+"/login?screen=*viewcrystal acbalancesheetdate(5;in,dt,dt,st,in;zid,fdate,tdate,wh,year;xdate=From Date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xproject=Project,xyearcombo=Year<span>*</span>,xviewtype=Report View)"
+////Balance Sheet Detail                |#classPath+"/login?screen=*viewcrystal acbalancesheetdatedetail(5;in,dt,dt,st,in;zid,fdate,tdate,wh,year;xdate=From Date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xproject=Project,xyearcombo=Year<span>*</span>,xviewtype=Report View)"
+////Profit & Loss               		|#classPath+"/login?screen=*viewcrystal acplaccountdate(5;in,dt,dt,st,in;zid,fdate,tdate,wh,year;xdate=From Date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xproject=Project,xyearcombo=Year<span>*</span>,xviewtype=Report View)"
+////Profit & Loss Detail                |#classPath+"/login?screen=*viewcrystal acplaccountdatedetail(5;in,dt,dt,st,in;zid,fdate,tdate,wh,year;xdate=From Date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xproject=Project,xyearcombo=Year<span>*</span>,xviewtype=Report View)"
+
+Employee Loan & Advance Checking	|#classPath+"/login?screen=*viewcrystal pdloantrn(4;in,st,st,st;zid,cate,femp,temp;xempcategory=Employee Category,xstaff=From Employee,xstaff=To Employee,xviewtype=Report View;zremip=http://172.16.0.11:922/zab/)"
+
+Inventory Reports                   |#classPath+"/login?menu=imacreports"	
+
+
+
+
+//Cost Center Report 				   	|#classPath+"/login?screen=*viewcrystal accostcenter(3;in,st,st;zid,profitcentercat,profitcenter;xprofitcntrcat=Profit Center Category,xprofitcntr=Profit Center,xviewtype=Report View)"                   
+//Cost Center Wise Profit & Loss Detail |#classPath+"/login?screen=*viewcrystal accostcenterwisepnl(8;in,dt,dt,st,in,st,st,st;zid,fdate,tdate,wh,year,profitcentercat,profitcenter,costcenter;xdate=From Date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xproject=Project,xyearcombo=Year<span>*</span>,xprofitcntrcat=Profit Center Category,xprofitcntr=Profit Center,xcostcenter=Cost Center,xviewtype=Report View)"
+
+///Balance Sheet/P&L (comparison)      |#classPath+"/login?screen=*viewcrystal acpnlbs(5;in,st,in,st,st;@zid,@wh,@year,@report,@reportfor;xproject=Project,xyearcombo=Year<span>*</span>,xrptshow=Report Showing,xrptfor=Report For,xviewtype=Report View)"
+//--Travel Expense Reports	                |#classPath+"/login?menu=acledtravel"
+//All Employee Personal Info	|#classPath+"/login?screen=*viewcrystal pdpmstperinfo(5;in,st,st,st,st;zid,empcate,empstatus,department,designation;xhide=Concern Name,xempstatus=Employee Status,xdeptname=Department Name,xdesignation=Designation,xviewtype=Report View)"
+//Transaction Listing   	    	    |#classPath+"/login?screen=*viewcrystal actrnlisting(7;in,st,st,dt,dt,st,st;zid,wh,trn,fdate,tdate,status,apvstatus;xdiv=Division,xtrnrep=Voucher Type,xdate=From Date=#date,xdate=To Date=#date,xstatusjvrep=Status,xstatuslvrep=Approval Status,xviewtype=Report View)"
+///Voucher Box Reference               |#classPath+"/login?screen=*viewcrystal acfileref(2;in,st;zid,fileref;xfileref=Box No.,xviewtype=Report View)"
+//Service Length Wise Employee List  |#classPath+"/login?screen=*viewcrystal pdpmstperinfo(7;in,st,st,st,st,st,in;zid,empcate,empstatus,designation,section,department,serviceyear;xempcategory=Concern Name,xempstatus=Employee Status,xdesignation=Designation,xsection=Section Name,xdeptname=Department Name,xnum=Service Year,xviewtype=Report View)"
+//All Employee List	   	   		    |#classPath+"/login?screen=*viewcrystal pdperinfo(6;in,st,st,st,st,st;zid,empcate,empstatus,department,designation,adminid;~
+//									 xhide=Concern Name,xhide=Employee Status,xhide=Department Name,xhide=Designation,xhide=Superior ID,xviewtype=Report View)"

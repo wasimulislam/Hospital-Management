@@ -1,0 +1,422 @@
+screen mmentexamination
+
+     sidebar list one
+     sections form one, jscript myscript
+
+
+     list one
+        caption "Physical Examination "+xpatient
+        table mmonexam
+        order xcase,xrow
+        fixed xcase
+        rows 20
+        objects xrow attrib(link "login?screen=mmentexamination&command=Show&xcase=?&xrow=?"), ~
+                xlong,xcode,xnote
+        header "Serial No","Examination Name","Observation","Note"
+     end list
+	 
+	
+
+     form one
+        caption "<ACRONYM>Physical Examinationn</ACRONYM>"
+        table mmonexam
+		primarykey xcase,xrow
+        order xcase,xrow
+        fixed xcase
+        return "login"
+        layout 2
+        pstyle 3
+        objects Add,Update,Delete,Show,Clear,History,General Examinations,Physical Examination,Investigation,Diagnosis,Medications,Diet & Advice,Back,~
+		        Top,Previous,Next,Bottom,"<p>",~
+                xrow attrib(row 0 1),xlong,xcode,xnote,xuserdept display(hide)
+
+       		
+		field xuserdept
+			caption Doctor Department
+			attrib local
+			event after
+				set xuserdept=pdmstview.departmentname("xposition='"+#position+"'")
+			end event
+		end field
+		
+		
+		
+		
+		field xnote
+			caption Note
+		end field
+		
+		field xlong
+			display combo
+			caption Examination Name
+			// 				setcombo(linkfieldvalue,linkfield,targetfieldvalue,targetfield,targettable)
+			embed onchange="setCombo(this,'xlong',xcode,'xcode','xcodesnew')"
+			pick "select xlong from xcodesnew where zactive='1' and xtype='Examination'"
+			event after
+			set globals(xlong)=xlong
+			set globals(xcode)=xexamination
+			end event
+        end field
+		
+		
+	  
+		field xcode
+		display combo
+		caption Observation
+		// 				setcombo(linkfieldvalue,linkfield,targetfieldvalue,targetfield,targettable)
+		pick "select xcode from xcodesnew where xtype='Examination Detail' and xlong='"+xlong+"'"
+			//embed onclick="setCombo(this,'xdeptname',xsection,'xsection','pdhrc3')"
+		end field
+
+		field xrow
+			display hide
+		end field
+		
+
+        field add
+          event before
+            set xepisodeno=#sql("select xepisodeno from mmpatientepisode where xpatient='"+xpatient+"' and xstatus='Open' order by xepisodeno desc")
+            set xepisodetype=#sql("select xepisodetype from mmpatientepisode where xpatient='"+xpatient+"' and xstatus='Open' order by xepisodeno desc")
+			set temp=#sesql("Select SUBSTRING((SELECT ', ' + xrem AS 'data()' FROM mmonexam FOR XML PATH('')), 2 , 9999) As Examination where xcase='"+xcase+"'")
+			
+			
+		
+          end event
+		  event after
+			set globals(xorgunit)=xorgunit
+			set globals(xexamination)=xexamination
+			set xpatient = mmappointment.xpatient(xcase='"+xcase+"')
+			set temp =#sesql("update mmonexam set xrem =CONCAT(xexamination,' ',xnote) where xcase='"+xcase+"'")
+		  end event
+        end field
+		
+		field update
+          event before
+            set xepisodeno=#sql("select xepisodeno from mmpatientepisode where xpatient='"+xpatient+"' and xstatus='Open' order by xepisodeno desc")
+            set xepisodetype=#sql("select xepisodetype from mmpatientepisode where xpatient='"+xpatient+"' and xstatus='Open' order by xepisodeno desc")
+			set temp=#sesql("Select SUBSTRING((SELECT ', ' + xrem AS 'data()' FROM mmonexam FOR XML PATH('')), 2 , 9999) As Examination where xcase='"+xcase+"'")
+          end event
+		  event after
+			set temp =#sesql("update mmonexam set xrem =CONCAT(xexamination,' ',xnote) where xcase='"+xcase+"'")
+			//set temp=#sesql("update mmonexam set xinvest=Select SUBSTRING((SELECT ', ' + xrem AS 'data()' FROM mmonexam FOR XML PATH('')), 2 , 9999)  where xcase='"+xcase+"'")
+		  end event
+        end field
+
+        field Back
+          embed onclick="clicked(this)"
+		  width 100
+		  height 40
+        end field
+		
+		field History
+			caption History
+			height 40
+			width 100
+			embed onclick="clicked(this)"
+        end field
+		
+		field Diet & Advice
+			caption Diet & Advice
+			height 40
+			//width 100
+			embed onclick="clicked(this)"
+        end field
+
+        field Investigation
+			//width 100
+			height 40
+			embed onclick="clicked(this)"
+        end field
+
+     
+        field Medications
+		    width 100
+			height 40
+			embed onclick="clicked(this)"
+        end field
+
+		field Physical Examination
+			height 40
+			width 100
+			embed onclick="clicked(this)"
+        end field
+		
+		field General Examinations
+		  height 40
+		  width 100
+          embed onclick="clicked(this)"
+        end field
+		
+		
+		field Diagnosis
+			height 40
+		  //width 100
+			embed onclick="clicked(this)"
+        end field
+
+        embed onsubmit="submitit(this)"
+     end form
+
+
+
+
+
+     jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+        function submitit(form){
+		var prcstype = document.one.xuserdept.value
+			console.log(prcstype)
+    	   
+		if (detail=="History"){
+          if (prcstype=="ENT" ){
+            form.screen.value = "mmentpatientassessment"
+            form.searchbutton.value = "Top"
+          }
+		  
+		  else if (prcstype=="Pediatric Surgery"  || prcstype=="Neonatology" || prcstype=="Paediatrics"){
+            form.screen.value = "mmpaedneunpatassessment"
+            form.searchbutton.value = "Top"
+          }
+
+		 else if (prcstype=="Obstetrics & Gynaecology" ){
+           form.screen.value = "mmobsandgynpatientassessment"
+           form.searchbutton.value = "Top"
+         }
+		 
+		 else if (prcstype=="Cardiology"){
+			form.screen.value = "mmcardpatassessment"
+			form.searchbutton.value = "Top"
+			}
+			
+		  else {
+           form.screen.value = "mmpatassessment"
+           form.searchbutton.value = "Top"
+		   
+			}
+         		 
+        }
+		
+		//Physical Examination
+		
+		if (detail=="Physical Examination"){
+		if (prcstype=="ENT"){
+            form.screen.value = "mmentexamination"
+            form.searchbutton.value = "Find xcase=?"
+          }
+		 else if (prcstype=="Internal Medicine"){
+			form.screen.value = "mmhistoryexami"
+			form.searchbutton.value = "Find xcase=?"
+			}
+						
+		else if (prcstype=="General Surgery"){
+			form.screen.value = "mmhistoryexamgene"
+			form.searchbutton.value = "Find xcase=?"
+			}
+			
+		 else if (prcstype=="Obstetrics & Gynaecology"){
+			form.screen.value = "mmhistoryexmobs"
+			form.searchbutton.value = "Find xcase=?"
+			}
+		else if (prcstype=="Urology"){
+           form.screen.value = "mmhistoryexamuro"
+           form.searchbutton.value = "Find xcase=?"
+			}
+		else if (prcstype=="Gastroenterology"){
+           form.screen.value = "mmhistoryexamgas"
+           form.searchbutton.value = "Find xcase=?"
+			}	
+		else if (prcstype=="Nephrology"){
+            form.screen.value = "mmhistoryexamnep"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+			
+		else if (prcstype=="Orthopaedic"){
+            form.screen.value = "mmhistoryexamort"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+		else if (prcstype=="Neuro Medicine"){
+            form.screen.value = "mmhistoryexamneu"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+		else if (prcstype=="Neuro Surgery"){
+            form.screen.value = "mmhistoryexamneuro"
+			form.searchbutton.value = "Find xcase=?"
+		    }
+		else if (prcstype=="Respiratory Medicine"){
+            form.screen.value = "mmhistoryexamres"
+			form.searchbutton.value = "Find xcase=?"
+		    }				
+	    else if (prcstype=="Pediatric Surgery"  || prcstype=="Neonatology" || prcstype=="Paediatrics"){
+            form.screen.value = "mmhistorypediatric"
+            form.searchbutton.value = "Find xcase=?"
+			}
+		 else if (prcstype=="Cardiac Surgery"){
+            form.screen.value = "mmhistorycardiac"
+            form.searchbutton.value = "Find xcase=?"
+			}
+		 else if (prcstype=="Cardiology"){
+            form.screen.value = "mmhistoryexamcardsurg"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+		 else if (prcstype=="Oncology" || prcstype=="Endocrinology"){
+            form.screen.value = "mmhistoryoncology"
+			form.searchbutton.value = "Find xcase=?"
+		    }	 
+		 else if (prcstype=="Dermatology"){
+            form.screen.value = "mmhistoryexamiderm"
+			form.searchbutton.value = "Find xcase=?"
+		    }
+		 else if (prcstype=="Thoracic Surgery"){
+            form.screen.value = "mmhistoryexamithor"
+			form.searchbutton.value = "Find xcase=?"
+		    }	 			
+		} 
+		
+		 // Diagnosis
+		 if (detail=="Diagnosis"){
+		  if (prcstype=="ENT"){
+            form.screen.value = "mmentdiagnosisnew"
+            form.searchbutton.value = "Top"
+          }
+		  else {
+            form.screen.value = "mmdiagnosisnew"
+            form.searchbutton.value = "Top"
+          }
+		  }	
+		  
+		if (detail=="General Examinations"){
+			if (prcstype=="ENT" ){
+            form.screen.value = "mmentgeneralexam"
+            form.searchbutton.value = "Clear"
+			}
+			else {
+            form.screen.value = "mmgeneralexam"
+            form.searchbutton.value = "Clear"
+			}
+		}
+		  
+		if (detail=="Investigation"){
+            form.screen.value = "mmlaborder"
+            form.searchbutton.value = "Clear"
+        }
+		
+		if (detail=="Medications"){
+            form.screen.value = "mmprescription"
+            form.searchbutton.value = "xpatient=?"
+        }
+		 
+		///Diet&Advice
+		 
+		   if (detail=="Diet & Advice"){
+		   if (prcstype=="ENT" ){
+            form.screen.value = "mmentadvice"
+            form.searchbutton.value = "Top"
+          }
+		  
+		   else if (prcstype=="Pediatric Surgery"  || prcstype=="Neonatology" || prcstype=="Paediatrics"){
+            form.screen.value = "mmpaedneoadvice"
+            form.searchbutton.value = "Top"
+          }
+		  
+		   else if (prcstype=="Obstetrics & Gynaecology" ){
+            form.screen.value = "mmobsgynadvice"
+            form.searchbutton.value = "Top"
+         }
+		 
+		   else if (prcstype=="Cardiology"){
+			form.screen.value = "mmcardadvice"
+			form.searchbutton.value = "Top"
+		 }
+			
+		   else if (prcstype=="Oncology" || prcstype=="Endocrinology"){
+			form.screen.value = "mmendroadvice"
+			form.searchbutton.value = "Top"
+		 }
+		  
+		   else {
+            form.screen.value = "mmadvice"
+            form.searchbutton.value = "Top"
+         }
+          }
+			if (detail=="Back"){
+				form.screen.value = "mmdocapp"
+				form.searchbutton.value = "Find xcase=?"
+			}
+			
+
+    }
+		
+      
+		
+	function setCombo(b,linkfield,trgfieldobj,trgfield,table){
+        var char = '/'
+        var quote = '\''
+        var space = ' '
+        
+        var url = "/zab/setcombo?linkfield="+linkfield+"&linkfieldval="+b.value+"&trgfield="+trgfield+"&table="+table
+        if (window.ActiveXObject)
+        {
+            httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+      	}
+        else if (window.XMLHttpRequest)
+        {
+            httpRequest = new XMLHttpRequest();
+        }
+
+        httpRequest.open("GET", url, true);
+        httpRequest.onreadystatechange = function() {processRequest(trgfieldobj,b.value); } ;
+        httpRequest.send(null);
+
+      }
+    
+    function processRequest(trgfieldobj,value)
+    {
+        if (httpRequest.readyState == 4)
+        {
+            if(httpRequest.status == 200)
+            {
+                //get the Value send by the servlet
+                var resultText = httpRequest.responseText
+                var myfield = eval(trgfieldobj) 
+                //Update the HTML
+                if(resultText==''){
+                  alert('Cannot Proceed-'+value+' Is Not A Valid ID')
+                }else{
+	             // alert(resultText.length)
+	             trgfieldobj.options.length=0
+	              var check = new Array()
+	              var option
+	              if(resultText.length == 2){
+	              	check = ''
+		            option = new Option('','')
+	             // 	document.one.xdeptname.options.length=1
+	             // 	document.one.xdeptname.options[0]=option
+    	          	trgfieldobj.options.length=1
+    	          	trgfieldobj.options[0]=option
+	              }else{
+		              check = resultText.split(',')
+		              for(i=0;i<check.length;i++){
+			            option = new Option(check[i],check[i])
+	    	          	trgfieldobj.options[i]=option
+	        	      }
+	              }
+	            }  
+            }
+            else
+            {
+                //alert("Error loading page\n"+ httpRequest.status +":"+ httpRequest.statusText);
+            }
+        }
+    }
+
+        </script>
+     end jscript
+
+
+
+end screen

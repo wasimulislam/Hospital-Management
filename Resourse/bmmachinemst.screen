@@ -1,0 +1,348 @@
+screen bmmachinemst
+
+     sections  form one,list one, jscript myscript
+	 
+	 
+	  list one
+        caption "Accessories List of Machine "+xcode
+        table bmaccessories
+        order xcode,xrow
+        fixed xcode
+        rows 20
+		maxwidth 1075
+        objects xrow attrib(link "login?screen=bmaccessories&command=Show&xcode=?&xrow=?"), ~
+               xname,xmodel,xqty,xdaterec,xserialnum,xaccspec
+			  headers "Serial No","Name","Model","Accessories Qty","Date Received","Serial No","Accessories Specification"
+     end list
+
+
+     form one
+        caption "Machine Register"
+	    table famst
+	    primarykey xcode
+        order xcode
+        select "xfagroup='1004'"
+        return "login"
+        layout 4
+        pstyle 3
+        objects Show,Clear,Add,Update,Accessories,AMC/CMC,*next,Top, Previous, Next, Bottom,*next,"<p>" ,~//Add,
+        xcode,xname,xmodel,xserialnum,xassetcode,xmclass,xsup,xsupdesc,~
+		xmanufacturer,xmanufacturerdesc,xmfdate,xorigin,xinsteng,xinstengdesc,xdateinst,xdateinstexp display(const),~
+        xstaff,xstaffdesc,xdeptname,xsec,xwstart,xwexpiry,xwper,xlife,~
+		xamcstart,xamcexpiry display(const),xcontracttype  display(const),xfacat,xpmdonedt,xpmduedt,xfatype,xfagroup,~
+	    xcalibratndue,xcalibratndone,xfagname,~
+        xownershiptype
+        
+		
+		field xdateinst
+			caption Installation Start Date
+		width 15
+		end field
+		
+		field xmodel
+		display combo
+			pick code BME Model No
+			
+		end field
+		
+		field xmfdate
+			width 15
+		end field
+		
+		field xdateinstexp
+		caption Installation Complete Date
+		width 15
+		end field
+		field xwstart
+		
+		width 15
+		end field
+		
+		field xwexpiry
+		width 15
+		end field
+		
+		field xamcstart
+			caption AMC/CMC Start Date
+			width 15
+		end field
+		
+		field xmclass
+		display combo
+		pick " ,A,B,C"
+		end field
+		
+		field xamcexpiry
+		caption AMC/CMC Expiry Date
+			width 15
+		end field
+		
+		field xwper
+			width 15
+		end field
+		
+		
+		
+		field xstaff
+		width 20
+			caption Handover To
+		end field
+		
+		field xlife
+			
+		width 20
+			caption Machine Life Time(In Month)
+		end field
+		
+		
+		
+		field xorigin
+		width 40
+			caption Country Of Origin
+		end field
+		
+        field xcode
+			caption Machine Code
+          pick list bmmstbme
+          event after
+          	set globals(xcode)=xcode
+          end event
+        end field
+        
+        field xdum
+			attrib local
+			caption 
+			display const
+		end field
+		
+        field xdum2
+			attrib local
+			caption 
+			display const
+		end field
+		
+		field xsup
+			pick list casupfa
+		end field
+		
+         field xsupdesc
+			attrib local
+			caption Supplier Name
+			display const
+			event after
+				if xsup .ne. ""
+				set xsupdesc=cacus.xorg("xcus='"+xsup+"'")
+				end if
+			end event
+		end field
+		
+		field xinsteng
+			width 20
+		end field
+		
+        field xinstengdesc
+			attrib local
+			caption Install By Name
+			display const
+			event after
+				if xinsteng .ne. ""
+				set xinstengdesc=bminstengmst.xname("xinsteng='"+xinsteng+"'")
+				end if
+			end event
+		end field
+		
+		field xmanufacturer
+		width 20
+		end field
+		
+        field xmanufacturerdesc
+			attrib local
+			caption Manufactured By Name
+			display const
+			event after
+				if xmanufacturer .ne. ""
+				set xmanufacturerdesc=camanufacturer.xname("xmanufacturer='"+xmanufacturer+"'")
+				end if
+			end event
+		end field
+        field xstaffdesc
+			attrib local
+			caption Handover To Name
+			display const
+			event after
+				if xstaff .ne. ""
+				set xstaffdesc=pdmst.xname("xstaff='"+xstaff+"'")
+				end if
+			end event
+		end field
+		
+        field xfagname
+			attrib local
+			caption Group Name
+			display const
+			event after
+				if xfagroup .ne. ""
+				set xfagname=xcodes.xlong("xtype='Asset Group' and xcode='"+xfagroup+"'")
+				end if
+			end event
+		end field
+		
+		field xfacat
+			pick "select xcode,xlong from xcodes where xtype='Asset Category' and zactive='1'"
+			display combo2
+		end field
+		
+		field xsec
+			pick "select xcode,xlong from xcodes where xtype='Section' and zactive='1'"
+			display combo2
+		end field
+		
+		field xfacname
+			attrib local
+			caption Category Name
+			display const
+			event after
+				set xfacname=xcodes.xlong("xtype='Asset Category' and xcode='"+xfacat+"'")
+			end event
+		end field
+		
+		field xfatype
+			pick "select xcode,xlong from xcodes where xtype='Asset Type' and zactive='1'"
+			display combo2
+			
+		end field
+		
+		field xfatname
+			attrib local
+			caption Asset Model
+			display const
+			event after
+				if xfatype .ne. ""
+				set xfatname=xcodes.xlong("xtype='Asset Type' and xcode='"+xfatype+"'")
+				end if
+			end event
+		end field
+		
+		field xdepmethod
+			attrib local
+			caption Depreciation Method
+			display const
+			event after
+				if xdepmethod .ne. ""
+				set xdepmethod=xcodes.xdepmethod("xtype='Category' and xcode='"+xcat+"'")
+				end if
+			end event
+		end field
+		
+        field xname
+          width 40
+		  caption Machine Name
+		   bootstrapclass text-capitalize
+        end field
+		
+	field add
+          event before
+            int lastnum = 0
+            int inc = 0
+            int length = 0
+			set xfagroup="1001"
+            set lastnum = faassetserial.xnum("xfagroup='"+xfagroup+"' and xfacat='"+xfacat+"' and xfatype='"+xfatype+"'")
+            set inc = faassetserial.xinc("xfagroup='"+xfagroup+"' and xfacat='"+xfacat+"' and xfatype='"+xfatype+"'")
+            set length = faassetserial.xlength("xfagroup='"+xfagroup+"' and xfacat='"+xfacat+"' and xfatype='"+xfatype+"'")
+            set lastnum = lastnum+inc
+            //set xcode = xfagroup+"/"+xfacat+"/"+xfatype+"/"+#padl(""+lastnum,length,0)
+            set xstatusjv="Open"
+            set xbookval=xcost
+            set xresalval=xsalval
+            set xliferemain=xlife
+            set xlifeused=0
+            set xyear=#sub(xdaterel,0,4)
+            set xper=#sub(xdaterel,5,2)
+			set xfagroup='1004'
+			if xcode .eq. ""
+				error "Please Enter Machine Code"
+			end if
+          end event
+          event after
+          	//set command ="add"
+            //set temp = #sql("update faassetserial set xnum="+lastnum+" where xfatype='"+xfatype+"' and xfacat='"+xfacat+"'")
+            
+	        //set temp = #spsql(zabsp_FA_validateAfterMST,#id,#user,xcode,command)
+	        action show
+       //     class faprocs(FAValidateAfterMst)
+          end event
+        end field
+
+		field update
+          event after
+	        set temp = #spsql(zabsp_BM_validateAfterBMinstemgmst,#id,#user,"bmmachinemst",xcode,xwper,xdateinst,0)
+	        action show
+          end event
+        end field
+		
+		field xserialnum
+			width 40
+			pick 
+		end field
+
+
+        
+
+        field Accessories
+			width 100
+			height 40
+          embed onclick="clicked(this)"
+        end field
+
+        field AMC/CMC
+			width 100
+			height 40
+          embed onclick="clicked(this)"
+        end field
+		
+		field History
+			width 100
+			height 40
+          embed onclick="clicked(this)"
+        end field
+		
+		embed onsubmit="submitit(this)"
+     end form
+
+
+
+
+
+     jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+        function submitit(form){
+
+	    if (detail=="Accessories"){
+            form.screen.value = "bmaccessories"
+            form.searchbutton.value = "Clear"
+            //return false
+          }
+	    if (detail=="History"){
+            form.screen.value = "bmservicelog"
+            form.searchbutton.value = "Clear"
+            //return false
+          }
+		  
+		  if (detail=="AMC/CMC"){
+            form.screen.value = "bmamccmc"
+            form.searchbutton.value = "Clear"
+            //return false
+          }
+        }
+
+        </script>
+     end jscript
+
+
+
+end screen

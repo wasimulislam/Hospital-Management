@@ -1,0 +1,72 @@
+//imacreports Reports.menu
+//-------------------------------------------------------------------
+option                                |action
+//-------------------------------------------------------------------
+Current Product Stock 			  |#classPath+"/login?screen=*viewcrystal imcurrentstockall(4;in,st,st,st;@zid,@wh,@gitem,@item;xwh=Store<span>*</span>,xgitemrpt=Item Group,xitem=Item Code,xviewtype=Report View)"
+//Product Stock With Value 		  |#classPath+"/login?screen=*viewcrystal imstockval(6;in,st,st,st,st,st;@zid,@user,@pgroup,@pitem,@date,@type;xrepuser=User,xgitem=Itemgroup,xitem=Item,xdate=As On date,ximreptype=Type,xviewtype=Report View)"
+//Store Product Wise Patient Charge   	|#classPath+"/login?screen=*viewcrystal patientledgerinvwh(6;in,st,st,st,dt,dt;zid,wh,item,patient,fdate,tdate;xwh=Store<span>*</span>,xitem=Item<span>*</span>,xpatient=Patient,xdate=From Date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xviewtype=Report View)"
+
+//Item Ledger Summary           		  |#classPath+"/login?screen=*viewcrystal imledsum(7;in,dt,dt,st,st,st,st;zid,fdate,tdate,xwh,fgitem,fitem,reptype;xdate=From date=#date,xdate=To Date=#date,xwh=Store=,xgitem=Item Group,xitem=Item Code,xreptype=Report Type,xviewtype=Report View)"
+//
+//Item Ledger Detail            		  |#classPath+"/login?screen=*viewcrystal imtrndetailv(5;in,dt,dt,st,st;zid,fdate,tdate,item,wh;xdate=From date=#date,xdate=To Date=#date,xitem=Item,xwh=Store=,xviewtype=Report View)"
+
+///////-------Item Ledger Summary           		  |#classPath+"/login?screen=*viewcrystal imledsum(7;in,dt,dt,st,st,st,st;zid,fdate,tdate,xwh,fgitem,fitem,reptype;xdate=From date=#date,xdate=To Date=#date,xwh=Store=,xgitem=Item Group,xitem=Item Code,xreptype=Report Type,xviewtype=Report View)"
+///////-------Item Transaction Summary                |#classPath+"/login?screen=*viewcrystal imadjisre(8;in,dt,dt,st,st,st,st,st;zid,fdate,tdate,xwh,gitem,item,reptype,type;xdate=From date=#date,xdate=To Date=#date,xwh=Store/Plant,xgitem=Item Group,xitem=Item=,xreptype=Report Type,ximreptype=Type,xviewtype=Report View)"
+///////-------Transfer & Receive Summary              |#classPath+"/login?screen=*viewcrystal imledto(10;in,st,st,dt,dt,st,st,st,st,st;zid,acdiv,xwh,fdate,tdate,gitem,item,stockcat,transfertype,reptype;xdiv=Account Division=,xwh=Store/Plant,xdate=From date=#date,xdate=To Date=#date,xgitem=Item Group,xitem=Item=,xstockcat = Stock Category,xtransfertype=Transfer Type,xreptype=Report Type,xviewtype=Report View)"
+///////-------
+///////-------//GRN & Consumption Summary       	  |#classPath+"/login?screen=*viewcrystal imledsumpogrnall(9;in,st,st,dt,dt,st,st,st,st;zid,acdiv,xwh,fdate,tdate,gitem,item,stockcat,reptype;xdiv=Account Division=,xwh=Store/Plant,xdate=From date=#date,xdate=To Date=#date,xgitem=Item Group,xitem=Item=,xstockcat = Stock Category,xreptype=Report Type,xviewtype=Report View)"
+///////-------//Transfer & Loan Summary               |#classPath+"/login?screen=*viewcrystal imledsumloan(9;in,st,st,dt,dt,st,st,st,st;zid,acdiv,xwh,fdate,tdate,gitem,item,stockcat,reptype;xdiv=Account Division=,xwh=Store/Plant,xdate=From date=#date,xdate=To Date=#date,xgitem=Item Group,xitem=Item=,xstockcat = Stock Category,xreptype=Report Type,xviewtype=Report View)"
+///////-------//Loan Summary              			  |#classPath+"/login?screen=*viewcrystal imledloan(9;in,st,st,dt,dt,st,st,st,st;zid,acdiv,xwh,fdate,tdate,gitem,item,stockcat,reptype;xdiv=Account Division=,xwh=Store/Plant,xdate=From date=#date,xdate=To Date=#date,xgitem=Item Group,xitem=Item=,xstockcat = Stock Category,xreptype=Report Type,xviewtype=Report View)"
+///////-------
+///////-------Plant & machinery Summary          	  |#classPath+"/login?screen=*viewcrystal imledsumpnm(8;in,st,st,st,st,dt,dt,st;zid,xwh,pnature,fitem,titem,fdate,tdate,reptype;xwh=Store=,xtypeitemrep=Product Nature,xitem=From Item=0=text,xitem=To Item=zzz,xdate=From date=#date,xdate=To Date=#date,xreptype=Report Type,xviewtype=Report View)"
+///////-------
+///////-------
+///////-------Item Ledger Detail            		  |#classPath+"/login?screen=*viewcrystal imtrndetailnew(6;in,dt,dt,st,st,st;zid,fdate,tdate,gitem,item,wh;xdate=From date=#date,xdate=To Date=#date,xgitem=Item Group,xitem=Item,xwh=Store=,xviewtype=Report View)"
+///////-------Store/Plant wise Product Stock 		  |#classPath+"/login?screen=*viewcrystal imstockbystorewithval(3;in,st,st;@zid,@gitem,@item;xgitem=Item Group,xitem=Item,xviewtype=Report View)"
+///////-------Item Ledger Summary With Type  		  |#classPath+"/login?screen=*viewcrystal imledsumtype(8;in,st,st,st,st,dt,dt,st;zid,xwh,fgitem,fitem,titem,fdate,tdate,reptype;xwh=Store=,xgitem=Item Group,xitem=From Item=0=text,xitem=To Item=zzz,xdate=From date=#date,xdate=To Date=#date,xreptype=Report Type,xviewtype=Report View)"
+///////-------//Item Ledger Summary(Without Value)    |#classPath+"/login?screen=*viewcrystal imledsumstore(11;in,st,st,st,st,st,st,dt,dt,st,st;zid,acdiv,xwh,fgitem,tgitem,fitem,titem,fdate,tdate,itemtype,pnature;xdiv = Plant/Project,xwh=Store=,xgitem=Item Group,xgitem=Item Group,xitem=From Item=0=text,xitem=To Item=zzz,xdate=From date=#date,xdate=To Date=#date,xtitem=Product Manufacturer,xtypeitemrep=Product Nature,xviewtype=Report View)"
+///////-------Item Ledger Summary(Without Value)           |#classPath+"/login?screen=*viewcrystal imledsumstore(6;in,dt,dt,st,st,st;zid,fdate,tdate,xwh,fgitem,item;xdate=From date=#date,xdate=To Date=#date,xwh=Store=,xgitemrpt=Item Group,xitem=Item,xviewtype=Report View)"
+///////-------
+///////-------Inventory Ageing Report            	  |#classPath+"/login?screen=*viewcrystal imageing(7;in,st,dt,st,st,st,st;zid,wh,date,gitem,catitem,item,datahide;xwh=Store=,xdate=Date=#date,xgitem=Item Group,xcatitem=Item Category,xitem=Item,xdatahide=Display Items only,xviewtype=Report View)"
+///////-------LC Confirmation Report		  		  |#classPath+"/login?screen=*viewcrystal lcreport(4;in,dt,dt,st;zid,fdate,tdate,lcno;xdate=From Date=,xdate=To Date=,xlcno=LC No,xviewtype=Report View)"
+///////-------
+//Item Transaction Summary                |#classPath+"/login?screen=*viewcrystal imadjisre(8;in,dt,dt,st,st,st,st,st;zid,fdate,tdate,xwh,gitem,item,reptype,type;xdate=From date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xwh=Store<span>*</span>,xgitem=Item Group,xitem=Item=,xreptype=Report Type<span>*</span>,ximreptype=Type<span>*</span>,xviewtype=Report View)"
+
+//Supplier-wise PO/WO Report       	  |#classPath+"/login?screen=*viewcrystal pomrrsum(7;in,st,st,dt,dt,st,st;zid,wh,tornum,fdate,tdate,sup,rpt;xwh=Store,xsprnum=SPR No,xdate=From Date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xsup=Supplier=,xpodoctype=Document Type<span>*</span>,xviewtype=Report View)"
+//Supplier Wise GRN/SQC Listing     	  |#classPath+"/login?screen=*viewcrystal posupwisegrndetail(9;in,st,st,st,st,dt,dt,st,st;zid,project,wh,sup,item,fdate,tdate,grnstatus,doctype;xproject=Project,xwh=Store<span>*</span>,xsup=Supplier=,xitemall=Item,xdate=From Date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xstatusrep=GRN/SQC Status,ximdoctype=Document Type,xviewtype=Report View)"
+//Supplier Wise GRN (With Value)     	  |#classPath+"/login?screen=*viewcrystal posupgrnac(7;in,st,st,st,st,dt,dt;zid,project,wh,sup,rpttype,fdate,tdate;xproject =Project, xwh=Store=,xsup=Supplier=,xreptype=Report Type,xdate=From Date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xviewtype=Report View)"
+//Purchase report With GRN		  	  |#classPath+"/login?screen=*viewcrystal pogrnrptval(6;in,st,st,dt,dt,st;zid,wh,cus,fdate,tdate,pono;xwh=Store,xsup=Supplier,xdate=From Date,xdate=To Date,xpornum=PO No,xviewtype=Report View)"
+
+///////-------
+///////-------//Loan Receive & Issue Detail   		  |#classPath+"/login?screen=*viewcrystal imloandetail(7;in,st,st,st,st,st,st;zid,wh,fdate,tdate,xcus,status,item;xwh=Store,xdate=From date=#date,xdate=To Date=#date,xintercompar=Party/Inter Company,xappstatus=Approval Status,xitem=Item, xviewtype=Report View)"
+///////-------Loan Receive & Issue Detail   		  |#classPath+"/login?screen=*viewcrystal imloandetailp(7;in,st,st,st,st,st,st;@zid,@fdate,@tdate,@pwh,@pparty,@pstatus,@pitem;xdate=From date=#date,xdate=To Date=#date,xwh=Store,xintercompar=Party/Inter Company,xappstatus=Approval Status,xitem=Item, xviewtype=Report View)"
+///////-------
+///////-------Workshop Receive & Issue Details 	  |#classPath+"/login?screen=*viewcrystal imwredetail(6;in,st,st,st,st,st;zid,wh,fdate,tdate,status,item;xwh=Store,xdate=From date=#date,xdate=To Date=#date,xappstatus=Approval Status,xitem=Item, xviewtype=Report View)"
+///////-------//Transfer & receive Detail     	  |#classPath+"/login?screen=*viewcrystal imtrndetailTO(7;in,st,st,st,st,dt,dt;zid,wh,catitem,itemtype,item,fdate,tdate;xwh=Store=,xcatitem=Item Category,xtitem=Item Type,xitem=Item,xdate=From date=#date,xdate=To Date=#date,xviewtype=Report View)"
+///////-------Date Wise Product Damage           	  |#classPath+"/login?screen=*viewcrystal imdamage(6;in,dt,dt,st,st,st;zid,fdate,tdate,wh,gitem,status;xdate=From date=#date,xdate=To Date=#date,xwh=Store=,xgitem=Item Group,xstatusrep=Status,xviewtype=Report View)"
+///////-------
+//Date Wise Receive           		  			  |#classPath+"/login?screen=*viewcrystal imreceived(9;in,dt,dt,st,st,st,st,st,st;zid,fdate,tdate,gitem,item,wh,type,repview,repdisplay;xdate=From date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xgitem=Item Group,xitem=Item,xwh=Store=,ximretype=Receive Type<span>*</span>,xhide=Hide=1,xreptype=Report Type<span>*</span>,xviewtype=Report View)"
+//Date Wise Issue          		  	  			  |#classPath+"/login?screen=*viewcrystal imconsumption(8;in,dt,dt,st,st,st,st,st;zid,fdate,tdate,gitem,wh,type,repview,repdisplay;xdate=From date<span>*</span>=#date,xdate=To Date<span>*</span>=#date,xgitem=Item Group,xwh=Store=,ximistype = Issue Type<span>*</span>,xhide=Hide=1,xreptype=Report Type<span>*</span>,xviewtype=Report View)"
+///////-------PO/WO Review             			  |#classPath+"/login?screen=ponotificreview"
+///////-------PR Status List                   	  |#classPath+"/login?screen=*viewcrystal reqlist-pr(6;in,st,st,st,st,st;zid,fdate,tdate,status,staff,reptype;xdate=From date=#date,xdate=To Date=#date,xreqstatuspr=Requisition Status,xstaff=Employee ID,xreptype=Report Type,xviewtype=Report View)"
+///////-------PO Status List                   	  |#classPath+"/login?screen=*viewcrystal polist(8;in,st,st,st,st,st,st,st;zid,fdate,tdate,status,spr,staff,rpttype,project;xdate=From date=#date,xdate=To Date=#date,xreqstatuspo=Requisition Status,xdegree=To Show,xstaff=Employee ID,xreptype=Report Type,xproject=Project,xviewtype=Report View)"
+///////-------View PO           					  |#classPath+"/login?screen=*viewcrystal poprint(2;in,st;zid,pornum;xponum=PO No,xviewtype=Report View)"
+///////-------View GRN           		  		      |#classPath+"/login?screen=*viewcrystal pogrnprint(2;in,st;zid,grnnum;xgrnnum=GRN No,xviewtype=Report View)"
+///////-------View Damage Status           		  |#classPath+"/login?screen=*viewcrystal imdamprint(2;in,st;zid,tornum;xdamno=Damage No,xviewtype=Report View)"
+///////-------
+///////-------Duplicate Product Listing	  		  |#classPath+"/login?screen=*viewcrystal caitemjustification(3;in,st,st;zid,firstpar,secpar;xdegree=1st Param,xdegree=2nd Param,xviewtype=Report View)"
+///////-------Receive Entry List            		  |#classPath+"/login?screen=*viewcrystal imreceipt(5;in,dt,dt,st,st;zid,fdate,tdate,fgitem,tgitem;xdate=From Date=#date,xdate=To Date=#date,xcatitem=Item Category,xcatitem=Item Category,xviewtype=Report View)"
+//Product List                  	 |#classPath+"/login?screen=*viewcrystal caitem(4;in,st,st,st;zid,gitem,itemtype,activeinactive;xgitem=Item Group,xitemgrptype=Item Type,xempjobstatus=Activation Status<span>*</span>,xviewtype=Report View)"
+//Product List                  		  |#classPath+"/login?screen=*viewcrystal caitem(3;in,st,st;zid,gitem,catitem;xgitem=Item Group,xcatitem=Item Category,xviewtype=Report View)"
+///////-------
+///////-------//Loan Summary                  	  |#classPath+"/login?screen=*viewcrystal loansummary(5;in,st,st,st,st;zid,wh,xcus,fdate,tdate;xwh=Store,xintercompar=Inter Company/ Party,xdate=From date=#date,xdate=To Date=#date, xviewtype=Report View)"
+///////-------//Item Ledger Detail            	  |#classPath+"/login?screen=*viewcrystal imtrndetailnew(8;in,st,st,st,st,st,dt,dt;zid,wh,gitem,catitem,itemtype,item,fdate,tdate;xwh=Store=,xgitem=Item Group,xcatitem=Item Category,xtitem=Item Type,xitem=Item,xdate=From date=#date,xdate=To Date=#date,xviewtype=Report View)"
+///////-------//Item Ledger Summary           	  |#classPath+"/login?screen=*viewcrystal imledsum(9;in,st,st,st,st,st,dt,dt,st;zid,xwh,fgitem,tgitem,fitem,titem,fdate,tdate,reptype;xwh=Store=,xgitem=Item Group,xgitem=Item Group,xitem=From Item=0=text,xitem=To Item=zzz,xdate=From date=#date,xdate=To Date=#date,xreptype=Report Type,xviewtype=Report View)"
+///////-------//Transfer & receive Summary            |#classPath+"/login?screen=*viewcrystal imledsumtoloan(7;in,st,st,dt,dt,st,st;zid,xwh,gitem,fdate,tdate,item,reptype;xwh=Store=,xgitem=Item Group,xdate=From date=#date,xdate=To Date=#date,xitem=From Item=,xreptype=Report Type,xviewtype=Report View)"
+///////-------//GRN & Consumption Summary             |#classPath+"/login?screen=*viewcrystal imledsumpogrn(8;in,st,st,dt,dt,st,st,st;zid,xwh,gitem,fdate,tdate,item,stockcat,reptype;xwh=Store=,xgitem=Item Group,xdate=From date=#date,xdate=To Date=#date,xitem=From Item=,xstockcat = Stock Category,xreptype=Report Type,xviewtype=Report View)"
+///////-------//Item Damage Summary            	  |#classPath+"/login?screen=*viewcrystal imdamsum(7;in,st,st,dt,dt,st,st;zid,xwh,gitem,fdate,tdate,item,reptype;xwh=Store=,xgitem=Item Group,xdate=From date=#date,xdate=To Date=#date,xitem=From Item=,xreptype=Report Type,xviewtype=Report View)"
+///////-------//Item Damage Detail     			  |#classPath+"/login?screen=*viewcrystal imtrndetaildam(7;in,st,st,st,st,dt,dt;zid,wh,catitem,itemtype,item,fdate,tdate;xwh=Store=,xcatitem=Item Category,xtitem=Item Type,xitem=Item,xdate=From date=#date,xdate=To Date=#date,xviewtype=Report View)"
+///////-------
+///////-------
+//-------------------------------------------------------------------
+

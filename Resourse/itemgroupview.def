@@ -1,0 +1,21 @@
+product ZAB ERP
+
+table itemgroupview
+  caption "Item Group View"
+  columns zid,xtype,xlong,xcode
+
+  primary key zid,xcode
+
+  foreign key
+        zid references zbusiness.zid
+  end foreign key
+
+	sql CREATE VIEW itemgroupview(zid,xtype,xlong,xcode,zactive,xgitem) ~
+	AS ~
+	SELECT a.zid,b.xtype,b.xlong,b.xcode,b.zactive,b.xcode ~
+	FROM zbusiness a JOIN ~
+	xcodes(NOLOCK) b ON a.zid=b.zid ~
+	WHERE b.xtype='Item Group'
+
+end table
+

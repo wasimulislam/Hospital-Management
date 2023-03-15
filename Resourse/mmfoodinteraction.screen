@@ -1,0 +1,100 @@
+screen mmfoodinteraction
+
+     sidebar list one//,two,three
+     sections form one, jscript myscript
+
+     list one
+        caption "Food Interaction"
+        table foodintrmaster
+        order xgenericdesc,xrow
+        fixed xgenericdesc
+        rows 20
+        objects xrow attrib(link "login?screen=mmfoodinteraction&command=Show&xrow=?"),~
+               xfoodinteraction,xnote2//,xdiagnosis,xnote3
+				
+
+        header "Serial No","Food Interaction","Output"//,"Disease Interaction","Output"
+     end list
+	 
+	 
+	 
+     form one
+        caption "Food Interaction Master "+xgenericdesc
+        table foodintrmaster
+	    primarykey xgenericdesc,xrow
+        order xgenericdesc,xrow
+		fixed xgenericdesc
+        return "login"
+        layout 2
+        pstyle 3
+        objects Show,Clear,Add, Update, Delete,Back,~
+        	    Top,Previous,Next,Bottom,"<p>",~
+                xrow attrib(row 0 1),xfoodinteraction,xnote2//,xdiagnosis,xnote3
+		
+		field xrow
+		column 2
+			event after
+				
+				set globals(xgenericdesc)=xgenericdesc
+			end event
+		end field
+		
+        field xfoodinteraction
+			display multi
+			pick "select xcode from xcodes where zactive='1' and xtype='Food Allergy'"
+        end field
+		
+		field xnote2
+			caption Outcome
+			height 5
+		end field
+		
+		field Back
+          embed onclick="clicked(this)"
+		  width 100
+        end field
+		
+		field Add
+		event after
+			set xrow=''
+			action show
+		end event
+		end field
+
+        embed onsubmit="submitit(this)"
+     end form
+
+
+
+
+
+     jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+        function submitit(form){
+
+         if (detail=="Back"){
+            form.screen.value = "mmgenericmaster"
+            form.searchbutton.value = "Find xgenericdesc=?"
+          }
+        }
+      function pickDetail(link){
+        if (navigator.appName.indexOf("Netscape") >= 0){
+          document.one.xinvnum.value=link.text
+          document.one.xbalance.value=primebal.text
+          document.one.xdate.value=date.text
+        }else{
+          document.one.xgenericname.value=link.innerText
+        }
+	return false
+	}	
+        </script>
+     end jscript
+
+
+
+end screen

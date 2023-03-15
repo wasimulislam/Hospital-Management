@@ -1,0 +1,1672 @@
+screen mmprescription
+
+    sidebar list profile,list old//,list Vital,list prescrecon
+    sections form one,list one,jscript myscript
+
+     list one
+        caption "Medicine"+"-"+mmpatient.xname("xpatient='"+xpatient+"'")
+        table mmprescription
+        order xcase,xrow
+        fixed xcase
+        rows 20
+		maxwidth 700
+        objects xrow attrib(link "login?screen=mmprescription&command=Show&xcase=?&xrow=?"),~
+                xgenericdesc attrib(link "login?screen=mmprescription&command=Show&xcase=?&xrow=?"),~
+                xinst attrib(link "login?screen=mmprescription&command=Show&xcase=?&xrow=?"),xroute attrib(link "login?screen=mmprescription&command=Show&xcase=?&xrow=?"),~
+				xrem attrib(link "login?screen=mmprescription&command=Show&xcase=?&xrow=?")
+                
+      // header "Serial No","Name of Medicine","Instruction","Route","Advice"//,"Duration","","Strength"
+     end list
+	
+	list Vital
+        caption "General Assessment"//+xpatient+"-"+mmpatient.xname("xpatient='"+xpatient+"'")
+        table mmvitcomview
+        order xcase,xrow
+        fixed xcase
+        rows 20
+        objects xrow attrib(link "login?screen=mmgeneralexam&command=Show&xcase=?&xrow=?"),~
+                xrem,xnote
+		field xrow
+		display hide
+		end field
+        header "Serial No.","Vitals","Chief Complaints"//,"B.P.","Resp.","Temperature","SP Oxygen","RBS"
+     end list
+	 
+	 list chief
+        caption "Chief Complains"
+        table mmpresent
+        order xcase,xrow
+        fixed xcase
+        rows 20
+        objects xrow attrib(link "login?screen=mmpresentgenaral&command=Show&xcase=?&xrow=?"), ~
+                xdiagnosis,xduration,xdurationday,xpersistant
+        header "Serial No","Chief Complain","Duration","Days"//,"Persistant"
+     end list
+
+	
+      list profile 
+        caption "Medicine Profile"+" of " +pdmst.xname("xposition='"+#position+"'")
+        table mmdocdrugprofile
+        order xrow
+        select "xstaff=(select xstaff from pdmst where xposition='"+#position+"')"	
+		rows 150	
+		maxheight 1000
+		objects xrow,xgenericdesc attrib(link "login?screen=mmprescription&xgenericdesc=?&xroute=?&xfrequency=?&xtakingtime=?&xdosage=?&xduration1=?&xdurationday=?&xdose=?&xrem=?"),~
+		xdosage,xfrequency,xtakingtime,xduration1,xdurationday,xroute,xdose,xrem
+        
+		header "SL","Generic Name of Drug","Dosage","Frquency","Taking Time","Duration","Days","Route","Instruction","Note"
+     end list
+	 
+	  list prescrecon
+        caption "Previously Taken Medicine Information"
+        table mmopdprescrecon
+        order xcase,xrow
+        fixed xcase
+		//select "xcase='"+xcase+"'"
+        rows 20
+       
+		objects xgenericname display(hide),xgenericdesc attrib(link "login?screen=mmprescription&xgenericdesc=?&xdosage=?&xroute=?&xfrequency=?"),~
+                xdosage,xroute,xfrequency,xfdate,xtdate,xcase display(hide),xrow display(hide)
+
+        //header "Case No","Serial No","","Medicine Name","Dose","Route","Frequency","From Date","To Date","",""
+     end list
+	 
+	 list old
+        caption "Latest Prescription History"
+        table mmprescription
+        order xcase,xrow
+        fixed xpatient
+		//select "xcase='"+xcase+"'"
+        rows 20
+        objects xgenericdesc attrib(link "abc" embed onclick="return pickItem2(this)"),xinst,xroute,xqtyord,xmedcadvice
+        header "Generic Name of Drug","Instruction","Route","Quantity","Advice"
+     end list
+	 
+	
+
+     form one
+        caption "Medication Advised "//+xcase
+        table mmprescription
+	    primarykey xcase,xrow
+        order xcase,xrow
+        fixed xcase
+        return "login"
+        layout 3
+        pstyle 3
+        objects Add,Update,Delete,Show,Clear,History,General Examinations,Physical Examination,Investigation,Diagnosis,Medications,Diet & Advice,Back,"<p>",*next,~
+        	    Top,Previous,Next,Bottom,"<p>",~
+                xrow attrib(row 0 1),xfdate,xpatient,~
+				xgenericdesc,xdose,xduration1,xdurationday,xtakingtime,xdosage, ~
+				xfrequency,xroute,~
+				xqtyord,xdrugtype,xmeddetail,xrem,~
+				xtdate display(hide),xstrengthgn display(hide),xgenericname display(hide),~
+				xinst display(hide), xuserdept display(hide) //,xitem,xitemdesc
+
+
+
+		field xuserdept
+			caption Doctor Department
+			attrib local
+			event after
+				set xuserdept=pdmstview.departmentname("xposition='"+#position+"'")
+			end event
+		end field
+
+		field xpatient
+			display hide
+		end field
+		
+	field xdosage
+		//display combo;;;
+		default 1
+		list mmdrug
+		caption Dose
+	end field
+	
+	 field xdose
+		caption Instruction
+	end field
+	
+	field xdrugtype
+	caption Unit
+		//attrib local
+		display combo
+		//pick "Tab(s),Cap(s),Inj,Supp,TSF,ml,Units,Puff(s),Spray,Drop(s),"
+		pick "select xcode from xcodesnew where zactive='1' and xtype='drugtype' "
+		event after
+			set xgenericdescdesc=genericmaster.xdrugtype("xgenericdesc='"+xgenericdesc+"'")
+		end event
+	end field
+	
+	field xmeddetail
+		caption <span class=sheader style="BACKGROUND:#a796c3;color:white;PADDING-BOTTOM: 3px;PADDING-LEFT: 7px; PADDING-RIGHT: 20px; 	PADDING-TOP: 3px;">Instruction Template</span>
+		//column 2
+		display const
+	end field
+	
+	field xqtyord
+		caption Quantity
+		display hide
+		default 1
+	end field
+	
+		field xgenericdesc
+			display text
+			pick list xitemgeneric
+			embed onchange="setCombo(this,'xgenericdesc',xroute,'xroute','mmroute')"
+		end field
+		
+	
+		field xroute
+			display combo
+			pick "select xroute from mmroute where xgenericdesc='"+xgenericdesc+"'"
+		end field
+		
+	
+	
+		
+	//field xgenericdesc
+	//	embed required
+	//	caption Generic Name 	
+	//	pick list xitemgeneric
+	//	embed onblur="myFunction()"
+	//	embed onchange="setCombo(this,'xgenericdesc',xroute,'xroute','cacolordetail')"
+	//end field
+
+	//field xroute	
+	//	caption Route
+	//	display combo
+	//	//Default "Oral"
+	//	pick "select * from xcodes  where xtype='Route' and zactive=1"
+	//end field
+	
+	field xgenericname
+		pick xgenericname
+		embed required
+		event after
+			set globals(xgenericname)=xgenericname
+		end event
+    end field
+	
+	field xitem
+	  	pick xitempc
+		//pick xitempcgen
+		caption Brand Code
+			width 30
+		end event
+	  end field
+
+      field xitemdesc
+        attrib local
+        display const
+        caption Brand Name
+        event after
+          set xitemdesc = caitem.xdesc("xitem = '"+xitem+"'")
+        end event
+      end field
+	
+	field xrow
+	display hide
+	event after
+		set globals(xgenericdesc)=xgenericdesc
+		set globals(xcase)=xcase
+		set globals(xrow)=xrow
+	end event
+	end field
+	
+    field xrem
+		caption Special Note
+		//column 3
+		display area
+		width 40
+		height 3
+	end field
+	  
+   
+	
+	
+	
+	field xtakingtime
+		//embed required
+		display radio-horizontal
+		pick "Before Meal,With Meal,After Meal,,"
+	end field
+	
+	field xdurationday
+		//embed required onchange="changeCat(this)"
+		display radio-horizontal
+		
+		pick "Days,Week,Month,Continue<br/>,IF Needed,,"
+		//default "Continue"
+		width 80
+		embed onclick="clicked(this)"
+	end field
+	  
+	
+	
+	field xduration1
+		//embed required
+		caption Duration
+		display text
+		texttype number
+	end field
+
+	field xcase
+        event before
+            set xyear=#sub(#date,0,4)
+            set year=#sub(#date,0,4)
+            set per=#sub(#date,5,2)
+            set day=#sub(#date,8,2)
+            set xper=#sub(#date,5,2)
+            set xyearperdate = year+per+day
+		//	set xpatient = mmappointment.xpatient("xcase='"+xcase+"'")
+        end event
+		event after
+			set docname = pdmst.xname("xstaff='"+#user+"'")
+		end event
+	end field
+	
+	field Add
+	
+		event before
+			set xqtyalc=0
+			set xqtycom=0
+          	set xcostcenter=#getccenter
+			set xunit =caitem.xunitsel("xitem='"+xitem+"'")
+            set xitemold=xitem
+          	set gitem = caitem.xgitem("xitem='"+xitem+"'")
+			set xgenericdesc=#trim(xgenericdesc)
+			set xitem=#trim(xitem)
+			set genericname=#sql("select xgenericdesc from mmprescription where xcase='"+xcase+"' and xgenericdesc='"+xgenericdesc+"'")
+			set genericname=#trim(genericname)
+			set medicine =#sesql("select xgenericdesc from genericmaster where zid='"+#id+"' and xgenericdesc='"+xgenericdesc+"'")
+			int duration=0
+			int fraction=0
+			set duration=#sesql("SELECT LEFT('"+xduration1+"',CHARINDEX('.','"+xduration1+"')-1)")
+			
+			set fraction=#sesql("RIGHT('"+xduration1+"',CHARINDEX('.',REVERSE('"+xduration1+"')) - 1)")
+			
+			//set xfrequency=xmedidose.xfrequency("xtype='Dose' and xcode='"+xdose+"'")
+			set xdosage=xmedidose.xdose("xtype='Dose' and xcode='"+xdose+"'")
+			//print xfrequency
+			//print xdosage
+			
+			if xfrequency .eq. ""
+			set xfrequency=xmedidose.xfrequency("xtype='Dose' and xcode='"+xdose+"'") 
+			else
+			     set xfrequency= "'"+xfrequency+"'"
+			   
+			end if
+			    
+			
+			if duration==0
+				set duration=xduration1
+			end if
+			if xgenericname .eq. ""
+				set xgenericname=genericmaster.xgenericname("xgenericdesc='"+xgenericdesc+"'")
+			end if
+		    if xitem .ne. ""
+				set xgenericdesc=caitem.xgenericdesc("xitem='"+xitem+"'")
+			end if
+			if xpatient .eq. ""
+				set xpatient=mmappointment.xpatient("xcase='"+xcase+"'")
+			end if
+			if xroute .eq. ""
+				set xroute=genericmaster.xroute("xgenericdesc='"+xgenericdesc+"'")
+			end if
+			if xdrugtype .eq. ""
+				set xdrugtype=genericmaster.xdrugtype("xgenericdesc='"+xgenericdesc+"'")
+			end if
+			
+		//................For only select Instruction and genericname...........................
+					
+				// if xdose .eq. "'"+xdose+"'"
+				// prit xdose
+				//	set xdosage=xcodes.xhrc2("xcode='"+xdose+"' and xtype='Dose'")
+				//	set xfrequency=xcodes.xlong("xcode='"+xdose+"' and xtype='Dose'")
+				//end if 					
+		//................end.......................................................
+			
+			if medicine .eq. ""
+				error "Please Select From Valid Generic Name"
+			//else if xfrequency .eq. ""
+				//error "Please Select Frequency"
+			else if genericmaster.xgenericdesc("xgenericdesc='"+xgenericdesc+"'") .ne. xgenericdesc
+				error "Cannot Proceed -- This Generic is not available in Generic Master"
+          	else if xgenericdesc .eq. "" 
+				error "Cannot Proceed -- Please Select Generic Name"
+			else if xgenericdesc .eq. genericname
+				error "This Generic Already Added"
+			else if xduration1 .eq. "" .and. xdurationday .eq. "days"
+				error "Please give the duration of day"
+			else if xduration1 .eq. "" .and. xdurationday .eq. "Week"
+				error "Please give the duration of Week"
+			else if xduration1 .eq. "" .and. xdurationday .eq. "Month"
+				error "Please give the duration of Month"
+			else if xcase .eq. ""
+				error "Please select Prescription ID"
+			else
+			
+
+		
+				if xfrequency .eq. "12 Hourly" 
+					set xf = "2 Times Daily"
+					set wfrequency=#sub(xf,0,1)			 
+					double frequeny=0.00
+					double frequency=wfrequency
+					double dose=0.00
+					set dose=xdosage
+			
+				else if xfrequency .eq. "6 Hourly" 
+					set xf = "4 Times Daily"
+					set wfrequency=#sub(xf,0,1)			 
+					double frequeny=0.00
+					double frequency=wfrequency
+					double dose=0.00
+					set dose=xdosage
+				
+				else if xfrequency .eq. "8 Hourly" 
+					set xf = "3 Times Daily"
+					set wfrequency=#sub(xf,0,1)			 
+					double frequeny=0.00
+					double frequency=wfrequency
+					double dose=0.00
+					set dose=xdosage
+				
+				
+				else if xfrequency .eq. "Once daily" 
+					//print "Once daily"
+					set xf = "1 Times Daily"
+					set wfrequency=#sub(xf,0,1)			 
+					double frequeny=0.00
+					double frequency=wfrequency
+					double dose=0.00
+					set dose=xdosage
+				
+				else if xfrequency .eq. "Twice daily" 
+					set xf = "2 Times Daily"
+					set wfrequency=#sub(xf,0,1)			 
+					double frequeny=0.00
+					double frequency=wfrequency
+					double dose=0.00
+					set dose=xdosage
+				
+				else if xfrequency .eq. "Thrice daily" 
+					set xf = "3 Times Daily"
+					set wfrequency=#sub(xf,0,1)			 
+					double frequeny=0.00
+					double frequency=wfrequency
+					double dose=0.00
+					set dose=xdosage
+				
+				
+				else if xfrequency .eq. "Four times daily" 
+					set xf = "4 Times Daily"
+					set wfrequency=#sub(xf,0,1)			 
+					double frequeny=0.00
+					double frequency=wfrequency
+					double dose=0.00
+					set dose=xdosage
+				
+				else 
+					set wfrequency=#sub(xfrequency,0,1)			 
+					double frequeny=0.00
+					double frequency=wfrequency
+					double dose=0.00
+					set dose=xdosage
+				end if 
+				
+			
+		if xdurationday .eq. "Continue"	
+			if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"
+				double qtyord=0.00
+				double duration=dose*frequency
+				//print duration
+				double lineamt= 30.00
+				double qty = duration*lineamt
+				set xqtyord=#round(qty,0)
+			end if
+			if xdrugtype .eq. "TAB" .or. xdrugtype .eq. "CAP" .or. xdrugtype .eq. "SYP" .or. xdrugtype .eq. "SUSP" .or. xdrugtype .eq. "Solution"
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "SUPP" 
+				set xinst=" Insert "+xdosage+" "+xdrugtype+" "+xfrequency+" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "INJ"  .or. xdrugtype .eq. "Injection" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Insulin"  .or. xdrugtype .eq. "INSULIN" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Inhaler" .or. xdrugtype .eq. "INH"
+				set xinst=" Inhale "+xdosage+" "Puff" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "NASAL SPRAY"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Spray"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "DROP" .or. xdrugtype .eq. "Nasal+eye drop" .or. xdrugtype .eq. "NASAL DROP" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "EYE DROP" .or. xdrugtype .eq. "EYE & EAR & NASAL DROP" .or. xdrugtype .eq. "E/E DROP" .or. xdrugtype .eq. "EAR DROP"
+				set xinst=" Instill "+xdosage+" "Drop(s)" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "CREAM"  .or. xdrugtype .eq. "OINT"  .or. xdrugtype .eq. "Ointment" .or. xdrugtype .eq. "POWDER" .or. xdrugtype .eq. "Lotion" .or. xdrugtype .eq. "GEL" .or. xdrugtype .eq. "Shampoo" .or. xdrugtype .eq. "Patch"  .or. xdrugtype .eq. "LOT"  .or. xdrugtype .eq. "Each" 
+				set xinst=" Apply  "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else 
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			end if
+		else if xdurationday .eq. "Month"
+			if xfrequency .eq. "Once monthly"
+				set xf = "1 Times Daily"
+				set wfrequency=#sub(xf,0,1)			 
+				double frequeny=0.00
+				double frequency=wfrequency
+				double dose=0.00
+				set dose=xdosage
+				if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"
+					double qtyord=0.00
+					double duration=dose*frequency
+					double lineamt= xduration1
+					double pqty=lineamt
+					double qty = duration*pqty
+					set xqtyord=#round(qty,0)
+				end if
+			 
+			else if xfrequency .eq. "Twice monthly"
+				set xf = "2 Times Daily"
+				set wfrequency=#sub(xf,0,1)			 
+				double frequeny=0.00
+				double frequency=wfrequency
+				double dose=0.00
+				set dose=xdosage
+				if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"
+					double qtyord=0.00
+					double duration=dose*frequency
+					double lineamt= xduration1
+					double pqty=lineamt
+					double qty = duration*pqty
+					set xqtyord=#round(qty,0)
+				end if
+			else if xfrequency .eq. "Thrice monthly"
+				set xf = "3 Times Daily"
+				set wfrequency=#sub(xf,0,1)			 
+				double frequeny=0.00
+				double frequency=wfrequency
+				double dose=0.00
+				set dose=xdosage
+				if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"
+					double qtyord=0.00
+					double duration=dose*frequency
+					double lineamt= xduration1
+					double pqty=lineamt
+					double qty = duration*pqty
+					set xqtyord=#round(qty,0)
+				end if
+			else
+				if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"
+					double qtyord=0.00
+					double duration=dose*frequency
+					double lineamt= xduration1
+					double pqty=lineamt*30
+					double qty = duration*pqty
+					set xqtyord=#round(qty,0)
+				end if
+			end if
+			
+			if xdrugtype .eq. "TAB" .or. xdrugtype .eq. "CAP" .or. xdrugtype .eq. "SYP" .or. xdrugtype .eq. "SUSP" .or. xdrugtype .eq. "Solution"
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "SUPP" 
+				set xinst=" Insert "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "INJ"  .or. xdrugtype .eq. "Injection" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Insulin"  .or. xdrugtype .eq. "INSULIN" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Inhaler" .or. xdrugtype .eq. "INH"
+				set xinst=" Inhale "+xdosage+" "Puff" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "NASAL SPRAY"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Spray"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "DROP" .or. xdrugtype .eq. "Nasal+eye drop" .or. xdrugtype .eq. "NASAL DROP" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "EYE DROP" .or. xdrugtype .eq. "EYE & EAR & NASAL DROP" .or. xdrugtype .eq. "E/E DROP" .or. xdrugtype .eq. "EAR DROP"
+				set xinst=" Instill "+xdosage+" "Drop(s)" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "CREAM"  .or. xdrugtype .eq. "OINT"  .or. xdrugtype .eq. "Ointment" .or. xdrugtype .eq. "POWDER" .or. xdrugtype .eq. "Lotion" .or. xdrugtype .eq. "GEL" .or. xdrugtype .eq. "Shampoo" .or. xdrugtype .eq. "Patch"  .or. xdrugtype .eq. "LOT"  .or. xdrugtype .eq. "SOAP" .or. xdrugtype .eq. "Each" 
+				set xinst=" Apply  "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else 
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			end if
+		else if xdurationday .eq. "Week"
+			if xfrequency .eq. "Once Weekly"
+				set xf = "1 Times Daily"
+				set wfrequency=#sub(xf,0,1)			 
+				double frequeny=0.00
+				double frequency=wfrequency
+				double dose=0.00
+				set dose=xdosage
+				if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"
+					double qtyord=0.00
+					double duration=dose*frequency
+					double lineamt= xduration1
+					double pqty=lineamt
+					double qty = duration*pqty
+					set xqtyord=#round(qty,0)
+				end if
+			 
+			else if xfrequency .eq. "Twice Weekly"
+				set xf = "2 Times Daily"
+				set wfrequency=#sub(xf,0,1)			 
+				double frequeny=0.00
+				double frequency=wfrequency
+				double dose=0.00
+				set dose=xdosage
+				if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"
+					double qtyord=0.00
+					double duration=dose*frequency
+					//print duration
+					double lineamt= xduration1
+					double pqty=lineamt
+					double qty = duration*pqty
+					set xqtyord=#round(qty,0)
+				end if
+			else if xfrequency .eq. "Thrice Weekly"
+				set xf = "3 Times Daily"
+				set wfrequency=#sub(xf,0,1)			 
+				double frequeny=0.00
+				double frequency=wfrequency
+				double dose=0.00
+				set dose=xdosage
+				if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"
+					double qtyord=0.00
+					double duration=dose*frequency
+					double lineamt= xduration1
+					double pqty=lineamt
+					double qty = duration*pqty
+					set xqtyord=#round(qty,0)
+				end if
+			else
+				if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"
+					double qtyord=0.00
+					double duration=dose*frequency
+					double lineamt= xduration1
+					double pqty=lineamt*7
+					double qty = duration*pqty
+					set xqtyord=#round(qty,0)
+					//print xqtyord
+				end if
+			end if
+			
+			if xdrugtype .eq. "TAB" .or. xdrugtype .eq. "CAP" .or. xdrugtype .eq. "SYP" .or. xdrugtype .eq. "SUSP" .or. xdrugtype .eq. "Solution"
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "SUPP" 
+				set xinst=" Insert "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "INJ"  .or. xdrugtype .eq. "Injection" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Insulin"  .or. xdrugtype .eq. "INSULIN" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Inhaler" .or. xdrugtype .eq. "INH"
+				set xinst=" Inhale "+xdosage+" "Puff" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "NASAL SPRAY"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Spray"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			
+			else if xdrugtype .eq. "DROP" .or. xdrugtype .eq. "Nasal+eye drop" .or. xdrugtype .eq. "NASAL DROP" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "EYE DROP" .or. xdrugtype .eq. "EYE & EAR & NASAL DROP" .or. xdrugtype .eq. "E/E DROP" .or. xdrugtype .eq. "EAR DROP"
+				set xinst=" Instill "+xdosage+" "Drop(s)" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "CREAM"  .or. xdrugtype .eq. "OINT"  .or. xdrugtype .eq. "Ointment" .or. xdrugtype .eq. "POWDER" .or. xdrugtype .eq. "Lotion" .or. xdrugtype .eq. "GEL" .or. xdrugtype .eq. "Shampoo" .or. xdrugtype .eq. "Patch"  .or. xdrugtype .eq. "LOT"  .or. xdrugtype .eq. "Each" 
+				set xinst=" Apply  "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else 
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			end if
+		else if xdurationday .eq. "days"
+		
+			if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"	 
+				double qtyord=0.00
+				double duration=dose*frequency
+				double lineamt= xduration1
+				double qty = duration*lineamt
+				set xqtyord=#round(qty,0)
+			else if xdrugtype .eq. "SYP" .or. xdrugtype .eq. "SUSP" .or. xdrugtype .eq. "Solution" .or. xdrugtype .eq. "Inhaler" .or. xdrugtype .eq. "INH" .or. xdrugtype .eq. "ml" .or. xdrugtype .eq. "Insulin"
+				set xqtyord=1
+			else if xdrugtype .eq. "NASAL SPRAY" .or. xdrugtype .eq. "DROP" .or. xdrugtype .eq. "Nasal+eye drop" .or. xdrugtype .eq. "NASAL DROP" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "EYE DROP" .or. xdrugtype .eq. "EYE & EAR & NASAL DROP" .or. xdrugtype .eq. "E/E DROP" .or. xdrugtype .eq. "EAR DROP"
+				set xqtyord=1
+			else if xdrugtype .eq. "CREAM"  .or. xdrugtype .eq. "OINT"  .or. xdrugtype .eq. "Ointment" .or. xdrugtype .eq. "POWDER" .or. xdrugtype .eq. "Lotion" .or. xdrugtype .eq. "GEL" .or. xdrugtype .eq. "Shampoo"  .or. xdrugtype .eq. "LOT"  .or. xdrugtype .eq. "Each" 
+				set xqtyord=1
+			end if
+		
+			if xdrugtype .eq. "TAB" .or. xdrugtype .eq. "CAP" .or. xdrugtype .eq. "SYP" .or. xdrugtype .eq. "SUSP" .or. xdrugtype .eq. "Solution"
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "SUPP" 
+				set xinst=" Insert "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "INJ"  .or. xdrugtype .eq. "Injection" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Insulin"  .or. xdrugtype .eq. "INSULIN" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Inhaler" .or. xdrugtype .eq. "INH"
+				set xinst=" Inhale "+xdosage+" "Puff" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "NASAL SPRAY"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Spray"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			
+			else if xdrugtype .eq. "DROP" .or. xdrugtype .eq. "Nasal+eye drop" .or. xdrugtype .eq. "NASAL DROP" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "EYE DROP" .or. xdrugtype .eq. "EYE & EAR & NASAL DROP" .or. xdrugtype .eq. "E/E DROP" .or. xdrugtype .eq. "EAR DROP"
+				set xinst=" Instill "+xdosage+" "Drop(s)" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "CREAM"  .or. xdrugtype .eq. "OINT"  .or. xdrugtype .eq. "Ointment" .or. xdrugtype .eq. "POWDER" .or. xdrugtype .eq. "Lotion" .or. xdrugtype .eq. "GEL" .or. xdrugtype .eq. "Shampoo" .or. xdrugtype .eq. "Patch"  .or. xdrugtype .eq. "LOT"  .or. xdrugtype .eq. "Each" 
+				set xinst=" Apply  "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else 
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			end if
+		else if xdurationday .eq. "If Needed"
+		
+			if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"	 
+				double qtyord=0.00
+				double duration=dose*frequency
+				//print duration
+				double lineamt= 30.00
+				double qty = duration*lineamt
+				set xqtyord=#round(qty,0)
+			else if xdrugtype .eq. "SYP" .or. xdrugtype .eq. "SUSP" .or. xdrugtype .eq. "Solution" .or. xdrugtype .eq. "Inhaler" .or. xdrugtype .eq. "INH" .or. xdrugtype .eq. "ml" .or. xdrugtype .eq. "Insulin"
+				set xqtyord=1
+			else if xdrugtype .eq. "NASAL SPRAY" .or. xdrugtype .eq. "DROP" .or. xdrugtype .eq. "Nasal+eye drop" .or. xdrugtype .eq. "NASAL DROP" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "EYE DROP" .or. xdrugtype .eq. "EYE & EAR & NASAL DROP" .or. xdrugtype .eq. "E/E DROP" .or. xdrugtype .eq. "EAR DROP"
+				set xqtyord=1
+			else if xdrugtype .eq. "CREAM"  .or. xdrugtype .eq. "OINT"  .or. xdrugtype .eq. "Ointment" .or. xdrugtype .eq. "POWDER" .or. xdrugtype .eq. "Lotion" .or. xdrugtype .eq. "GEL" .or. xdrugtype .eq. "Shampoo"  .or. xdrugtype .eq. "LOT"  .or. xdrugtype .eq. "Each" 
+				set xqtyord=1
+			end if
+		
+			if xdrugtype .eq. "TAB" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "CAP" .or. xdrugtype .eq. "SYP" .or. xdrugtype .eq. "SUSP" .or. xdrugtype .eq. "Solution"
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "SUPP" 
+				set xinst=" Insert "+xdosage+" "+xdrugtype+" "+xfrequency+" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "INJ"  .or. xdrugtype .eq. "Injection" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Insulin"  .or. xdrugtype .eq. "INSULIN" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Inhaler" .or. xdrugtype .eq. "INH"
+				set xinst=" Inhale "+xdosage+" "Puff" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "NASAL SPRAY"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Spray"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "DROP" .or. xdrugtype .eq. "Nasal+eye drop" .or. xdrugtype .eq. "NASAL DROP" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "EYE DROP" .or. xdrugtype .eq. "EYE & EAR & NASAL DROP" .or. xdrugtype .eq. "E/E DROP" .or. xdrugtype .eq. "EAR DROP"
+				set xinst=" Instill "+xdosage+" "Drop(s)" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "CREAM"  .or. xdrugtype .eq. "OINT"  .or. xdrugtype .eq. "Ointment" .or. xdrugtype .eq. "POWDER" .or. xdrugtype .eq. "Lotion" .or. xdrugtype .eq. "GEL" .or. xdrugtype .eq. "Shampoo" .or. xdrugtype .eq. "Patch"  .or. xdrugtype .eq. "LOT"  .or. xdrugtype .eq. "Each" 
+				set xinst=" Apply  "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else 
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			end if
+		else xdurationday .eq. ""
+		
+			if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"	 
+				double qtyord=0.00
+				double duration=dose*frequency
+				//print duration
+				double lineamt= 30.00
+				double qty = duration*lineamt
+				set xqtyord=#round(qty,0)
+			else if xdrugtype .eq. "SYP" .or. xdrugtype .eq. "SUSP" .or. xdrugtype .eq. "Solution" .or. xdrugtype .eq. "Inhaler" .or. xdrugtype .eq. "INH" .or. xdrugtype .eq. "ml" .or. xdrugtype .eq. "Insulin"
+				set xqtyord=1
+			else if xdrugtype .eq. "NASAL SPRAY" .or. xdrugtype .eq. "DROP" .or. xdrugtype .eq. "Nasal+eye drop" .or. xdrugtype .eq. "NASAL DROP" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "EYE DROP" .or. xdrugtype .eq. "EYE & EAR & NASAL DROP" .or. xdrugtype .eq. "E/E DROP" .or. xdrugtype .eq. "EAR DROP"
+				set xqtyord=1
+			else if xdrugtype .eq. "CREAM"  .or. xdrugtype .eq. "OINT"  .or. xdrugtype .eq. "Ointment" .or. xdrugtype .eq. "POWDER" .or. xdrugtype .eq. "Lotion" .or. xdrugtype .eq. "GEL" .or. xdrugtype .eq. "Shampoo"  .or. xdrugtype .eq. "LOT"  .or. xdrugtype .eq. "Each" 
+				set xqtyord=1
+			end if
+		
+			if xdrugtype .eq. "TAB" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "CAP" .or. xdrugtype .eq. "SYP" .or. xdrugtype .eq. "SUSP" .or. xdrugtype .eq. "Solution"
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "SUPP" 
+				set xinst=" Insert "+xdosage+" "+xdrugtype+" "+xfrequency+" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "INJ"  .or. xdrugtype .eq. "Injection" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Insulin"  .or. xdrugtype .eq. "INSULIN" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Inhaler" .or. xdrugtype .eq. "INH"
+				set xinst=" Inhale "+xdosage+" "Puff" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "NASAL SPRAY"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Spray"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "DROP" .or. xdrugtype .eq. "Nasal+eye drop" .or. xdrugtype .eq. "NASAL DROP" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "EYE DROP" .or. xdrugtype .eq. "EYE & EAR & NASAL DROP" .or. xdrugtype .eq. "E/E DROP" .or. xdrugtype .eq. "EAR DROP"
+				set xinst=" Instill "+xdosage+" "Drop(s)" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "CREAM"  .or. xdrugtype .eq. "OINT"  .or. xdrugtype .eq. "Ointment" .or. xdrugtype .eq. "POWDER" .or. xdrugtype .eq. "Lotion" .or. xdrugtype .eq. "GEL" .or. xdrugtype .eq. "Shampoo" .or. xdrugtype .eq. "Patch"  .or. xdrugtype .eq. "LOT"  .or. xdrugtype .eq. "Each" 
+				set xinst=" Apply  "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else 
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			end if
+		end if
+		end if
+           
+        end event
+        
+		event after
+			set xrow=0
+			action show
+			
+		end event
+        end field
+
+	
+		
+		field update
+		event before
+			set xqtyalc=0
+			set xqtycom=0
+          	set xcostcenter=#getccenter
+			set xunit =caitem.xunitsel("xitem='"+xitem+"'")
+            set xitemold=xitem
+          	set gitem = caitem.xgitem("xitem='"+xitem+"'")
+			set xgenericdesc=#trim(xgenericdesc)
+			set xitem=#trim(xitem)
+			set genericname=#sql("select xgenericdesc from mmprescription where xcase='"+xcase+"' and xgenericdesc='"+xgenericdesc+"'")
+			set genericname=#trim(genericname)
+			set medicine =#sesql("select xgenericdesc from genericmaster where zid='"+#id+"' and xgenericdesc='"+xgenericdesc+"'")
+			int duration=0
+			int fraction=0
+			set duration=#sesql("SELECT LEFT('"+xduration1+"',CHARINDEX('.','"+xduration1+"')-1)")
+			set fraction=#sesql("RIGHT('"+xduration1+"',CHARINDEX('.',REVERSE('"+xduration1+"')) - 1)")
+			set xfrequency=xmedidose.xfrequency("xtype='Dose' and xcode='"+xdose+"'")
+			set xdosage=xmedidose.xdose("xtype='Dose' and xcode='"+xdose+"'")
+			if duration==0
+				set duration=xduration1
+			end if
+			if xgenericname .eq. ""
+				set xgenericname=genericmaster.xgenericname("xgenericdesc='"+xgenericdesc+"'")
+			end if
+		    if xitem .ne. ""
+				set xgenericdesc=caitem.xgenericdesc("xitem='"+xitem+"'")
+			end if
+			if xpatient .eq. ""
+				set xpatient=mmappointment.xpatient("xcase='"+xcase+"'")
+			end if
+			if xroute .eq. ""
+				set xroute=genericmaster.xroute("xgenericdesc='"+xgenericdesc+"'")
+			end if
+			if xdrugtype .eq. ""
+				set xdrugtype=genericmaster.xdrugtype("xgenericdesc='"+xgenericdesc+"'")
+			end if
+			if medicine .eq. ""
+				error "Please Select From Valid Generic Name"
+			end if
+			if xfrequency .eq. ""
+				error "Please Select Frequency"
+			end if
+		
+			
+			if xfrequency .eq. "12 Hourly" 
+				set xf = "2 Times Daily"
+				set wfrequency=#sub(xf,0,1)			 
+				double frequeny=0.00
+				double frequency=wfrequency
+				double dose=0.00
+				set dose=xdosage
+			
+			else if xfrequency .eq. "6 Hourly" 
+				set xf = "4 Times Daily"
+				set wfrequency=#sub(xf,0,1)			 
+				double frequeny=0.00
+				double frequency=wfrequency
+				double dose=0.00
+				set dose=xdosage
+			
+			else if xfrequency .eq. "8 Hourly" 
+				set xf = "3 Times Daily"
+				set wfrequency=#sub(xf,0,1)			 
+				double frequeny=0.00
+				double frequency=wfrequency
+				double dose=0.00
+				set dose=xdosage
+			
+			
+			else if xfrequency .eq. "Once daily" 
+				//print "Once daily"
+				set xf = "1 Times Daily"
+				set wfrequency=#sub(xf,0,1)			 
+				double frequeny=0.00
+				double frequency=wfrequency
+				double dose=0.00
+				set dose=xdosage
+			
+			else if xfrequency .eq. "Twice daily" 
+				set xf = "2 Times Daily"
+				set wfrequency=#sub(xf,0,1)			 
+				double frequeny=0.00
+				double frequency=wfrequency
+				double dose=0.00
+				set dose=xdosage
+			
+			else if xfrequency .eq. "Thrice daily" 
+				set xf = "3 Times Daily"
+				set wfrequency=#sub(xf,0,1)			 
+				double frequeny=0.00
+				double frequency=wfrequency
+				double dose=0.00
+				set dose=xdosage
+			
+			
+			else if xfrequency .eq. "Four times daily" 
+				set xf = "4 Times Daily"
+				set wfrequency=#sub(xf,0,1)			 
+				double frequeny=0.00
+				double frequency=wfrequency
+				double dose=0.00
+				set dose=xdosage
+			
+			else 
+				set wfrequency=#sub(xfrequency,0,1)			 
+				double frequeny=0.00
+				double frequency=wfrequency
+				double dose=0.00
+				set dose=xdosage
+			end if 
+				
+			
+		if xdurationday .eq. "Continue"	
+			if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"
+				double qtyord=0.00
+				double duration=dose*frequency
+				//print duration
+				double lineamt= 30.00
+				double qty = duration*lineamt
+				set xqtyord=#round(qty,0)
+			end if
+			if xdrugtype .eq. "TAB" .or. xdrugtype .eq. "CAP" .or. xdrugtype .eq. "SYP" .or. xdrugtype .eq. "SUSP" .or. xdrugtype .eq. "Solution"
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "SUPP" 
+				set xinst=" Insert "+xdosage+" "+xdrugtype+" "+xfrequency+" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "INJ"  .or. xdrugtype .eq. "Injection" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Insulin"  .or. xdrugtype .eq. "INSULIN" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Inhaler" .or. xdrugtype .eq. "INH"
+				set xinst=" Inhale "+xdosage+" "Puff" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "NASAL SPRAY"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Spray"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "DROP" .or. xdrugtype .eq. "Nasal+eye drop" .or. xdrugtype .eq. "NASAL DROP" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "EYE DROP" .or. xdrugtype .eq. "EYE & EAR & NASAL DROP" .or. xdrugtype .eq. "E/E DROP" .or. xdrugtype .eq. "EAR DROP"
+				set xinst=" Instill "+xdosage+" "Drop(s)" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "CREAM"  .or. xdrugtype .eq. "OINT"  .or. xdrugtype .eq. "Ointment" .or. xdrugtype .eq. "POWDER" .or. xdrugtype .eq. "Lotion" .or. xdrugtype .eq. "GEL" .or. xdrugtype .eq. "Shampoo" .or. xdrugtype .eq. "Patch"  .or. xdrugtype .eq. "LOT"  .or. xdrugtype .eq. "Each" 
+				set xinst=" Apply  "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else 
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			end if
+		else if xdurationday .eq. "Month"
+			if xfrequency .eq. "Once monthly"
+				set xf = "1 Times Daily"
+				set wfrequency=#sub(xf,0,1)			 
+				double frequeny=0.00
+				double frequency=wfrequency
+				double dose=0.00
+				set dose=xdosage
+				if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"
+					double qtyord=0.00
+					double duration=dose*frequency
+					double lineamt= xduration1
+					double pqty=lineamt
+					double qty = duration*pqty
+					set xqtyord=#round(qty,0)
+				end if
+			 
+			else if xfrequency .eq. "Twice monthly"
+				set xf = "2 Times Daily"
+				set wfrequency=#sub(xf,0,1)			 
+				double frequeny=0.00
+				double frequency=wfrequency
+				double dose=0.00
+				set dose=xdosage
+				if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"
+					double qtyord=0.00
+					double duration=dose*frequency
+					double lineamt= xduration1
+					double pqty=lineamt
+					double qty = duration*pqty
+					set xqtyord=#round(qty,0)
+				end if
+			else if xfrequency .eq. "Thrice monthly"
+				set xf = "3 Times Daily"
+				set wfrequency=#sub(xf,0,1)			 
+				double frequeny=0.00
+				double frequency=wfrequency
+				double dose=0.00
+				set dose=xdosage
+				if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"
+					double qtyord=0.00
+					double duration=dose*frequency
+					double lineamt= xduration1
+					double pqty=lineamt
+					double qty = duration*pqty
+					set xqtyord=#round(qty,0)
+				end if
+			else
+				if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"
+					double qtyord=0.00
+					double duration=dose*frequency
+					double lineamt= xduration1
+					double pqty=lineamt*30
+					double qty = duration*pqty
+					set xqtyord=#round(qty,0)
+				end if
+			end if
+			
+			if xdrugtype .eq. "TAB" .or. xdrugtype .eq. "CAP" .or. xdrugtype .eq. "SYP" .or. xdrugtype .eq. "SUSP" .or. xdrugtype .eq. "Solution"
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "SUPP" 
+				set xinst=" Insert "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "INJ"  .or. xdrugtype .eq. "Injection" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Insulin"  .or. xdrugtype .eq. "INSULIN" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Inhaler" .or. xdrugtype .eq. "INH"
+				set xinst=" Inhale "+xdosage+" "Puff" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "NASAL SPRAY"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Spray"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "DROP" .or. xdrugtype .eq. "Nasal+eye drop" .or. xdrugtype .eq. "NASAL DROP" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "EYE DROP" .or. xdrugtype .eq. "EYE & EAR & NASAL DROP" .or. xdrugtype .eq. "E/E DROP" .or. xdrugtype .eq. "EAR DROP"
+				set xinst=" Instill "+xdosage+" "Drop(s)" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "CREAM"  .or. xdrugtype .eq. "OINT"  .or. xdrugtype .eq. "Ointment" .or. xdrugtype .eq. "POWDER" .or. xdrugtype .eq. "Lotion" .or. xdrugtype .eq. "GEL" .or. xdrugtype .eq. "Shampoo" .or. xdrugtype .eq. "Patch"  .or. xdrugtype .eq. "LOT"  .or. xdrugtype .eq. "Each" 
+				set xinst=" Apply  "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else 
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			end if
+		else if xdurationday .eq. "Week"
+			if xfrequency .eq. "Once Weekly"
+				set xf = "1 Times Daily"
+				set wfrequency=#sub(xf,0,1)			 
+				double frequeny=0.00
+				double frequency=wfrequency
+				double dose=0.00
+				set dose=xdosage
+				if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"
+					double qtyord=0.00
+					double duration=dose*frequency
+					double lineamt= xduration1
+					double pqty=lineamt
+					double qty = duration*pqty
+					set xqtyord=#round(qty,0)
+				end if
+			 
+			else if xfrequency .eq. "Twice Weekly"
+				set xf = "2 Times Daily"
+				set wfrequency=#sub(xf,0,1)			 
+				double frequeny=0.00
+				double frequency=wfrequency
+				double dose=0.00
+				set dose=xdosage
+				if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"
+					double qtyord=0.00
+					double duration=dose*frequency
+					//print duration
+					double lineamt= xduration1
+					double pqty=lineamt
+					double qty = duration*pqty
+					set xqtyord=#round(qty,0)
+				end if
+			else if xfrequency .eq. "Thrice Weekly"
+				set xf = "3 Times Daily"
+				set wfrequency=#sub(xf,0,1)			 
+				double frequeny=0.00
+				double frequency=wfrequency
+				double dose=0.00
+				set dose=xdosage
+				if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"
+					double qtyord=0.00
+					double duration=dose*frequency
+					double lineamt= xduration1
+					double pqty=lineamt
+					double qty = duration*pqty
+					set xqtyord=#round(qty,0)
+				end if
+			else
+				if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"
+					double qtyord=0.00
+					double duration=dose*frequency
+					double lineamt= xduration1
+					double pqty=lineamt*7
+					double qty = duration*pqty
+					set xqtyord=#round(qty,0)
+					//print xqtyord
+				end if
+			end if
+			
+			if xdrugtype .eq. "TAB" .or. xdrugtype .eq. "CAP" .or. xdrugtype .eq. "SYP" .or. xdrugtype .eq. "SUSP" .or. xdrugtype .eq. "Solution"
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "SUPP" 
+				set xinst=" Insert "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "INJ"  .or. xdrugtype .eq. "Injection" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Insulin"  .or. xdrugtype .eq. "INSULIN" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Inhaler" .or. xdrugtype .eq. "INH"
+				set xinst=" Inhale "+xdosage+" "Puff" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "NASAL SPRAY"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Spray"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			
+			else if xdrugtype .eq. "DROP" .or. xdrugtype .eq. "Nasal+eye drop" .or. xdrugtype .eq. "NASAL DROP" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "EYE DROP" .or. xdrugtype .eq. "EYE & EAR & NASAL DROP" .or. xdrugtype .eq. "E/E DROP" .or. xdrugtype .eq. "EAR DROP"
+				set xinst=" Instill "+xdosage+" "Drop(s)" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "CREAM"  .or. xdrugtype .eq. "OINT"  .or. xdrugtype .eq. "Ointment" .or. xdrugtype .eq. "POWDER" .or. xdrugtype .eq. "Lotion" .or. xdrugtype .eq. "GEL" .or. xdrugtype .eq. "Shampoo" .or. xdrugtype .eq. "Patch"  .or. xdrugtype .eq. "LOT"  .or. xdrugtype .eq. "Each" 
+				set xinst=" Apply  "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else 
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			end if
+		else if xdurationday .eq. "days"
+		
+			if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"	 
+				double qtyord=0.00
+				double duration=dose*frequency
+				double lineamt= xduration1
+				double qty = duration*lineamt
+				set xqtyord=#round(qty,0)
+			else if xdrugtype .eq. "SYP" .or. xdrugtype .eq. "SUSP" .or. xdrugtype .eq. "Solution" .or. xdrugtype .eq. "Inhaler" .or. xdrugtype .eq. "INH" .or. xdrugtype .eq. "ml" .or. xdrugtype .eq. "Insulin"
+				set xqtyord=1
+			else if xdrugtype .eq. "NASAL SPRAY" .or. xdrugtype .eq. "DROP" .or. xdrugtype .eq. "Nasal+eye drop" .or. xdrugtype .eq. "NASAL DROP" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "EYE DROP" .or. xdrugtype .eq. "EYE & EAR & NASAL DROP" .or. xdrugtype .eq. "E/E DROP" .or. xdrugtype .eq. "EAR DROP"
+				set xqtyord=1
+			else if xdrugtype .eq. "CREAM"  .or. xdrugtype .eq. "OINT"  .or. xdrugtype .eq. "Ointment" .or. xdrugtype .eq. "POWDER" .or. xdrugtype .eq. "Lotion" .or. xdrugtype .eq. "GEL" .or. xdrugtype .eq. "Shampoo"  .or. xdrugtype .eq. "LOT"  .or. xdrugtype .eq. "Each" 
+				set xqtyord=1
+			end if
+		
+			if xdrugtype .eq. "TAB" .or. xdrugtype .eq. "CAP" .or. xdrugtype .eq. "SYP" .or. xdrugtype .eq. "SUSP" .or. xdrugtype .eq. "Solution"
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "SUPP" 
+				set xinst=" Insert "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "INJ"  .or. xdrugtype .eq. "Injection" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Insulin"  .or. xdrugtype .eq. "INSULIN" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Inhaler" .or. xdrugtype .eq. "INH"
+				set xinst=" Inhale "+xdosage+" "Puff" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "NASAL SPRAY"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Spray"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			
+			else if xdrugtype .eq. "DROP" .or. xdrugtype .eq. "Nasal+eye drop" .or. xdrugtype .eq. "NASAL DROP" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "EYE DROP" .or. xdrugtype .eq. "EYE & EAR & NASAL DROP" .or. xdrugtype .eq. "E/E DROP" .or. xdrugtype .eq. "EAR DROP"
+				set xinst=" Instill "+xdosage+" "Drop(s)" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "CREAM"  .or. xdrugtype .eq. "OINT"  .or. xdrugtype .eq. "Ointment" .or. xdrugtype .eq. "POWDER" .or. xdrugtype .eq. "Lotion" .or. xdrugtype .eq. "GEL" .or. xdrugtype .eq. "Shampoo" .or. xdrugtype .eq. "Patch"  .or. xdrugtype .eq. "LOT"  .or. xdrugtype .eq. "Each" 
+				set xinst=" Apply  "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else 
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+" "for" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			end if
+		else if xdurationday .eq. "If Needed"
+		
+			if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"	 
+				double qtyord=0.00
+				double duration=dose*frequency
+				//print duration
+				double lineamt= 30.00
+				double qty = duration*lineamt
+				set xqtyord=#round(qty,0)
+			else if xdrugtype .eq. "SYP" .or. xdrugtype .eq. "SUSP" .or. xdrugtype .eq. "Solution" .or. xdrugtype .eq. "Inhaler" .or. xdrugtype .eq. "INH" .or. xdrugtype .eq. "ml" .or. xdrugtype .eq. "Insulin"
+				set xqtyord=1
+			else if xdrugtype .eq. "NASAL SPRAY" .or. xdrugtype .eq. "DROP" .or. xdrugtype .eq. "Nasal+eye drop" .or. xdrugtype .eq. "NASAL DROP" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "EYE DROP" .or. xdrugtype .eq. "EYE & EAR & NASAL DROP" .or. xdrugtype .eq. "E/E DROP" .or. xdrugtype .eq. "EAR DROP"
+				set xqtyord=1
+			else if xdrugtype .eq. "CREAM"  .or. xdrugtype .eq. "OINT"  .or. xdrugtype .eq. "Ointment" .or. xdrugtype .eq. "POWDER" .or. xdrugtype .eq. "Lotion" .or. xdrugtype .eq. "GEL" .or. xdrugtype .eq. "Shampoo"  .or. xdrugtype .eq. "LOT"  .or. xdrugtype .eq. "Each" 
+				set xqtyord=1
+			end if
+		
+			if xdrugtype .eq. "TAB" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "CAP" .or. xdrugtype .eq. "SYP" .or. xdrugtype .eq. "SUSP" .or. xdrugtype .eq. "Solution"
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "SUPP" 
+				set xinst=" Insert "+xdosage+" "+xdrugtype+" "+xfrequency+" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "INJ"  .or. xdrugtype .eq. "Injection" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Insulin"  .or. xdrugtype .eq. "INSULIN" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Inhaler" .or. xdrugtype .eq. "INH"
+				set xinst=" Inhale "+xdosage+" "Puff" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "NASAL SPRAY"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Spray"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "DROP" .or. xdrugtype .eq. "Nasal+eye drop" .or. xdrugtype .eq. "NASAL DROP" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "EYE DROP" .or. xdrugtype .eq. "EYE & EAR & NASAL DROP" .or. xdrugtype .eq. "E/E DROP" .or. xdrugtype .eq. "EAR DROP"
+				set xinst=" Instill "+xdosage+" "Drop(s)" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "CREAM"  .or. xdrugtype .eq. "OINT"  .or. xdrugtype .eq. "Ointment" .or. xdrugtype .eq. "POWDER" .or. xdrugtype .eq. "Lotion" .or. xdrugtype .eq. "GEL" .or. xdrugtype .eq. "Shampoo" .or. xdrugtype .eq. "Patch"  .or. xdrugtype .eq. "LOT"  .or. xdrugtype .eq. "Each" 
+				set xinst=" Apply  "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else 
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			end if
+		else xdurationday .eq. ""
+		
+			if xdrugtype .eq. "Tab" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "Cap" .or. xdrugtype .eq. "Inj" .or. xdrugtype .eq. "Sache" .or. xdrugtype .eq. "Supp" .or. xdrugtype .eq. "Patch"	 
+				double qtyord=0.00
+				double duration=dose*frequency
+				//print duration
+				double lineamt= 30.00
+				double qty = duration*lineamt
+				set xqtyord=#round(qty,0)
+			else if xdrugtype .eq. "SYP" .or. xdrugtype .eq. "SUSP" .or. xdrugtype .eq. "Solution" .or. xdrugtype .eq. "Inhaler" .or. xdrugtype .eq. "INH" .or. xdrugtype .eq. "ml" .or. xdrugtype .eq. "Insulin"
+				set xqtyord=1
+			else if xdrugtype .eq. "NASAL SPRAY" .or. xdrugtype .eq. "DROP" .or. xdrugtype .eq. "Nasal+eye drop" .or. xdrugtype .eq. "NASAL DROP" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "EYE DROP" .or. xdrugtype .eq. "EYE & EAR & NASAL DROP" .or. xdrugtype .eq. "E/E DROP" .or. xdrugtype .eq. "EAR DROP"
+				set xqtyord=1
+			else if xdrugtype .eq. "CREAM"  .or. xdrugtype .eq. "OINT"  .or. xdrugtype .eq. "Ointment" .or. xdrugtype .eq. "POWDER" .or. xdrugtype .eq. "Lotion" .or. xdrugtype .eq. "GEL" .or. xdrugtype .eq. "Shampoo"  .or. xdrugtype .eq. "LOT"  .or. xdrugtype .eq. "Each" 
+				set xqtyord=1
+			end if
+		
+			if xdrugtype .eq. "TAB" .or. xdrugtype .eq. "Tab(s)" .or. xdrugtype .eq. "Cap(s)" .or. xdrugtype .eq. "CAP" .or. xdrugtype .eq. "SYP" .or. xdrugtype .eq. "SUSP" .or. xdrugtype .eq. "Solution"
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "SUPP" 
+				set xinst=" Insert "+xdosage+" "+xdrugtype+" "+xfrequency+" "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "INJ"  .or. xdrugtype .eq. "Injection" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Insulin"  .or. xdrugtype .eq. "INSULIN" 
+				set xinst=" Inject "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Inhaler" .or. xdrugtype .eq. "INH"
+				set xinst=" Inhale "+xdosage+" "Puff" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "NASAL SPRAY"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "Spray"
+				set xinst=" Spray "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "DROP" .or. xdrugtype .eq. "Nasal+eye drop" .or. xdrugtype .eq. "NASAL DROP" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "Eye-Drop" .or. xdrugtype .eq. "EYE DROP" .or. xdrugtype .eq. "EYE & EAR & NASAL DROP" .or. xdrugtype .eq. "E/E DROP" .or. xdrugtype .eq. "EAR DROP"
+				set xinst=" Instill "+xdosage+" "Drop(s)" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else if xdrugtype .eq. "CREAM"  .or. xdrugtype .eq. "OINT"  .or. xdrugtype .eq. "Ointment" .or. xdrugtype .eq. "POWDER" .or. xdrugtype .eq. "Lotion" .or. xdrugtype .eq. "GEL" .or. xdrugtype .eq. "Shampoo" .or. xdrugtype .eq. "Patch"  .or. xdrugtype .eq. "LOT"  .or. xdrugtype .eq. "Each" 
+				set xinst=" Apply  "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			else 
+				set xinst=" Take "+xdosage+" "+xdrugtype+" "+xfrequency+"  "+xduration1+" "+xdurationday
+				set xmeddetail = xgenericdesc+"<br/>"+xinst+"<br/>"+xdose+""
+			end if
+		end if
+		end if				
+           
+        end event
+		event after
+			set xrow=0
+			action show
+			
+		end event
+        end field
+
+
+
+        field Back
+			width 100
+			height 40
+          embed onclick="clicked(this)"
+        end field
+		
+		field History
+			caption History
+			height 40
+			width 150
+          embed onclick="clicked(this)"
+        end field
+		
+		field Diet & Advice
+		caption Diet & Advice
+			height 40
+          embed onclick="clicked(this)"
+        end field
+
+        field Investigation
+			//width 100
+			height 40
+          embed onclick="clicked(this)"
+        end field
+
+     
+        field Medications
+		    width 100
+			height 40
+          embed onclick="clicked(this)"
+        end field
+		
+		field Physical Examination
+			height 40
+		  //width 100
+          embed onclick="clicked(this)"
+        end field
+		
+		field General Examinations
+		  height 40
+		  width 100
+          embed onclick="clicked(this)"
+        end field
+
+		field Diagnosis
+			height 40
+		  //width 100
+          embed onclick="clicked(this)"
+        end field  
+
+        embed onsubmit="submitit(this)"
+     end form
+
+
+     jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+        function submitit(form){
+		var prcstype = document.one.xuserdept.value
+			console.log(prcstype)
+		
+		//if (detail=="Continue"){
+		//	alert()
+        //}
+		
+         if (detail=="Back"){
+            form.screen.value = "mmdocapp"
+            form.searchbutton.value = "Find xcase=?"
+          }
+		  
+		   
+		 if (detail=="History"){
+          if (prcstype=="ENT" ){
+            form.screen.value = "mmentpatientassessment"
+            form.searchbutton.value = "Top"
+          }
+		  
+		  else if (prcstype=="Pediatric Surgery"  || prcstype=="Neonatology" || prcstype=="Paediatrics"){
+            form.screen.value = "mmpaedneunpatassessment"
+            form.searchbutton.value = "Top"
+          }
+
+		 else if (prcstype=="Obstetrics & Gynaecology" ){
+           form.screen.value = "mmobsandgynpatientassessment"
+           form.searchbutton.value = "Top"
+         }
+		 
+		 else if (prcstype=="Cardiology"){
+			form.screen.value = "mmcardpatassessment"
+			form.searchbutton.value = "Top"
+			}
+		else if (prcstype=="Dentistry"){
+			form.screen.value = "mmdentalpatassessment"
+			form.searchbutton.value = "Top"
+			}
+		else if (prcstype=="Oncology" || prcstype=="Endocrinology"|| prcstype=="Ophthalmology"){
+				form.screen.value = "mmendropatassessment"
+				form.searchbutton.value = "Top"
+			}
+		else if (prcstype=="Nephrology"){
+				form.screen.value = "mmnephropatassessment"
+				form.searchbutton.value = "Top"
+		}
+		else if (prcstype=="Internal Medicine"){
+			form.screen.value = "mminternalpatassessment"
+			form.searchbutton.value = "Top"
+		}
+			
+		  else {
+           form.screen.value = "mmpatassessment"
+           form.searchbutton.value = "Top"
+		   
+			}
+         		 
+        }
+		
+		//Physical Examination
+		
+		if (detail=="Physical Examination"){
+		if (prcstype=="ENT"){
+            form.screen.value = "mmentexamination"
+            form.searchbutton.value = "Find xcase=?"
+          }
+		 else if (prcstype=="Internal Medicine"){
+			form.screen.value = "mmhistoryexami"
+			form.searchbutton.value = "Find xcase=?"
+			}
+						
+		else if (prcstype=="General Surgery"){
+			form.screen.value = "mmhistoryexamgene"
+			form.searchbutton.value = "Find xcase=?"
+			}
+			
+		 else if (prcstype=="Obstetrics & Gynaecology"){
+			form.screen.value = "mmhistoryexmobs"
+			form.searchbutton.value = "Find xcase=?"
+			}
+		else if (prcstype=="Ophthalmology"){
+			form.screen.value = "mmhistoryoptham"
+			form.searchbutton.value = "Find xcase=?"
+		}
+		else if (prcstype=="Urology"){
+           form.screen.value = "mmhistoryexamuro"
+           form.searchbutton.value = "Find xcase=?"
+			}
+		else if (prcstype=="Gastroenterology"){
+           form.screen.value = "mmhistoryexamgas"
+           form.searchbutton.value = "Find xcase=?"
+			}	
+		else if (prcstype=="Nephrology"){
+            form.screen.value = "mmhistoryexamnep"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+			
+		else if (prcstype=="Orthopaedic"){
+            form.screen.value = "mmhistoryexamort"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+		else if (prcstype=="Neuro Medicine"){
+            form.screen.value = "mmhistoryexamneu"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+		else if (prcstype=="Neuro Surgery"){
+            form.screen.value = "mmhistoryexamneuro"
+			form.searchbutton.value = "Find xcase=?"
+		    }
+		else if (prcstype=="Respiratory Medicine"){
+            form.screen.value = "mmhistoryexamres"
+			form.searchbutton.value = "Find xcase=?"
+		    }				
+	    else if (prcstype=="Pediatric Surgery"  || prcstype=="Neonatology" || prcstype=="Paediatrics"){
+            form.screen.value = "mmhistorypediatric"
+            form.searchbutton.value = "Find xcase=?"
+			}
+		 else if (prcstype=="Cardiac Surgery"){
+            form.screen.value = "mmhistorycardiac"
+            form.searchbutton.value = "Find xcase=?"
+			}
+		 else if (prcstype=="Cardiology"){
+            form.screen.value = "mmhistoryexamcardsurg"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+		 else if (prcstype=="Endocrinology"){
+			form.screen.value = "mmendropatassessment"
+			form.searchbutton.value = "Top"
+			}
+		else if (prcstype=="Oncology"){
+			form.screen.value = "mmoncopatassessment"
+			form.searchbutton.value = "Top"
+			}	 
+		 else if (prcstype=="Dermatology"){
+            form.screen.value = "mmhistoryexamiderm"
+			form.searchbutton.value = "Find xcase=?"
+		    }
+		 else if (prcstype=="Thoracic Surgery"){
+            form.screen.value = "mmhistoryexamithor"
+			form.searchbutton.value = "Find xcase=?"
+		    }	
+		else if (prcstype=="Ophthalmology"){
+			form.screen.value = "mmhistoryoptham"
+			form.searchbutton.value = "Find xcase=?"
+		}
+		} 
+		
+		 // Diagnosis
+		 if (detail=="Diagnosis"){
+		  if (prcstype=="ENT"){
+            form.screen.value = "mmentdiagnosisnew"
+            form.searchbutton.value = "Top"
+          }
+		  else {
+            form.screen.value = "mmdiagnosisnew"
+            form.searchbutton.value = "Top"
+          }
+		}	
+		  
+		if (detail=="General Examinations"){
+			if (prcstype=="ENT" ){
+            form.screen.value = "mmentgeneralexam"
+            form.searchbutton.value = "Clear"
+			}
+			else {
+            form.screen.value = "mmgeneralexam"
+            form.searchbutton.value = "Clear"
+			}
+		}
+		  
+		if (detail=="Investigation"){
+            form.screen.value = "mmlaborder"
+            form.searchbutton.value = "Clear"
+        }
+		
+		if (detail=="Medications"){
+            form.screen.value = "mmprescription"
+            form.searchbutton.value = "xpatient=?"
+        }
+		 
+		///Diet&Advice
+		 
+		   if (detail=="Diet & Advice"){
+		   if (prcstype=="ENT" ){
+            form.screen.value = "mmentadvice"
+            form.searchbutton.value = "Top"
+          }
+		  
+		   else if (prcstype=="Pediatric Surgery"  || prcstype=="Neonatology" || prcstype=="Paediatrics"){
+            form.screen.value = "mmpaedneoadvice"
+            form.searchbutton.value = "Top"
+          }
+		  
+		   else if (prcstype=="Obstetrics & Gynaecology" ){
+            form.screen.value = "mmobsgynadvice"
+            form.searchbutton.value = "Top"
+         }
+		 
+		   else if (prcstype=="Cardiology"){
+			form.screen.value = "mmcardadvice"
+			form.searchbutton.value = "Top"
+		 }
+			
+		   else if (prcstype=="Endocrinology"){
+			form.screen.value = "mmendroadvice"
+			form.searchbutton.value = "Top"
+		 }
+		  else if (prcstype=="Oncology"){
+			form.screen.value = "mmoncoadvice"
+			form.searchbutton.value = "Top"
+		 }
+		   else {
+            form.screen.value = "mmadvice"
+            form.searchbutton.value = "Top"
+         }
+          }
+		  
+        }
+		function pickItem(link,route,frequency,takingtime,duration,day,note){
+          if (navigator.appName.indexOf("Netscape") >= 0){
+            document.one.xgenericdesc.value=link.text
+			document.one.xroute.value=route.text 
+			document.one.xfrequency.value=frequency.text 
+			document.one.xtakingtime.value=takingtime.text 
+			document.one.xduration1.value=duration.text 
+			document.one.xdosage.value=day.text 
+			document.one.xrem.value=note.text 
+			
+          }else{
+            document.one.xgenericdesc.value=link.innerText
+			document.one.xroute.value=route.innerText 
+			document.one.xfrequency.value=frequency.innerText 
+			document.one.xtakingtime.value=takingtime.innerText 
+			document.one.xduration1.value=duration.innerText 
+			document.one.xdosage.value=day.innerText
+			document.one.xrem.value=note.innerText
+            
+          }
+		  return false
+		 }
+		 
+		 function pickItem2(link){
+          if (navigator.appName.indexOf("Netscape") >= 0){
+            document.one.xgenericdesc.value=link.text
+
+			
+          }else{
+            document.one.xgenericdesc.value=link.innerText
+
+            
+          }
+		  return false
+		 }
+		 
+		 
+		 
+		function setCombo(b,linkfield,trgfieldobj,trgfield,table){
+        
+        var url = "/zab/setcombo?linkfield="+linkfield+"&linkfieldval="+b.value+"&trgfield="+trgfield+"&table="+table
+        if (window.ActiveXObject){
+            httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+      	}
+        else if (window.XMLHttpRequest){
+            httpRequest = new XMLHttpRequest();
+        }
+
+        httpRequest.open("GET", url, true);
+        httpRequest.onreadystatechange = function() {processRequest(trgfieldobj,b.value); } ;
+        httpRequest.send(null);
+
+      }
+	  
+	   function processRequest(trgfieldobj,value)
+    {
+        if (httpRequest.readyState == 4)
+        {
+            if(httpRequest.status == 200)
+            {
+                //get the Value send by the servlet
+                var resultText = httpRequest.responseText
+                var myfield = eval(trgfieldobj) 
+                //Update the HTML
+                if(resultText==''){
+                  alert('Cannot Proceed-'+value+' Is Not A Valid ID')
+                }else{
+	             // alert(resultText.length)
+	             trgfieldobj.options.length=0
+	              var check = new Array()
+	              var option
+	              if(resultText.length == 2){
+	              	check = ''
+		            option = new Option('','')
+	             // 	document.one.xdeptname.options.length=1
+	             // 	document.one.xdeptname.options[0]=option
+    	          	trgfieldobj.options.length=1
+    	          	trgfieldobj.options[0]=option
+	              }else{
+		              check = resultText.split(',')
+		              for(i=0;i<check.length;i++){
+			            option = new Option(check[i],check[i])
+	    	          	trgfieldobj.options[i]=option
+	        	      }
+	              }
+	            }  
+            }
+            else
+            {
+                //alert("Error loading page\n"+ httpRequest.status +":"+ httpRequest.statusText);
+            }
+        }
+    }
+		 
+		 
+        </script>
+		
+		
+		
+     end jscript
+
+
+
+end screen

@@ -1,0 +1,24 @@
+product ZAB ERP
+
+table mmprescriptionviewrpt
+	caption "ARHED View"
+	columns ztime,zid,xcase,xgenericdesc,xinst,xtdate,xdosage,xdose,xfrequency,xtakingtime,xdurationday,xqty,xroute,xduration1,xmedcadvice,xpatient,xname,xage,xsex,doctorname,designationname,departmentname,xregino,xrem,xprofdegree,xdoctor
+	primary key zid,xcase,xrow
+
+	foreign key
+        zid references zbusiness.zid
+	end foreign key
+				
+	sql Create view mmprescriptionviewrpt (ztime,zid,xcase,xgenericdesc,xinst,xtdate,xdosage,xdose,xfrequency,xtakingtime, ~
+					xdurationday,xqty,xroute,xduration1,xmedcadvice,xpatient,xname,xage,xsex,doctorname,designationname,departmentname,xregino,xrem,xprofdegree,xdoctor) ~
+				as select b.ztime,b.zid,b.xcase,isnull(a.xgenericdesc,''),isnull(a.xinst,''),isnull(convert(VARCHAR, b.xdate, 106),'') as xtdate,~ 
+					isnull(a.xdosage,''),isnull(a.xdose,''),isnull(a.xfrequency,''),isnull(a.xtakingtime,''),~ 
+					isnull(a.xdurationday,''),isnull(a.xqty,0),isnull(a.xroute,''),isnull(a.xduration1,''),isnull(a.xmedcadvice,''),~ 
+					b.xpatient,c.xname,b.xage,c.xsex,d.xname,y.xlong,x.xlong,d.xregino,~ 
+					isnull(a.xrem,''),isnull(b.xprofdegree,''),isnull(b.xdoctor,'') from mmappointment b ~  
+					 left join mmprescription a on b.zid=a.zid and b.xcase=a.xcase ~ 
+					left join mmpatient c on b.zid=c.zid and b.xpatient=c.xpatient ~
+				   left join pdsignph d on b.zid=d.zid and b.xdoctor=d.xstaff ~
+				   left join departmentview x on b.zid=x.zid and b.xdeptname=x.xcode ~
+				   left join designationview y on b.zid=y.zid and b.xdesignation=y.xcode
+end table

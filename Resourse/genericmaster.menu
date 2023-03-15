@@ -1,0 +1,28 @@
+//opd.menu
+//-------------------------------------------------------------------
+option                           	|action
+
+Generic Master                   	|#classPath+"/login?screen=mmgenericmaster" 			    |ca        	|   	|rx.png   |210
+Generic Name                      	|#classPath+"/login?screen=xcodes(xtype=GENERIC NAME)"
+Indications					        |#classPath+"/login?screen=xcodes(xtype=Indication)"
+System								|#classPath+"/login?screen=xcodes(xtype=System)"
+Common Side Effect					|#classPath+"/login?screen=xcodes(xtype=Common Side Effect)"
+Uncommon Side Effect				|#classPath+"/login?screen=xcodes(xtype=Uncommon Side Effect)"
+Rare Side Effect					|#classPath+"/login?screen=xcodes(xtype=Rare Side Effect)"
+Very Rare Side Effect				|#classPath+"/login?screen=xcodes(xtype=Very Rare Side Effect)"
+Pregnancy Category					|#classPath+"/login?screen=xcodes(xtype=Pregnancy Category)"
+//Instruction Template				|#classPath+"/login?screen=xinstemp"
+Caution								|#classPath+"/login?screen=xcaution"
+ICD CODE							|#classPath+"/login?screen=xicdcode"
+Concatenate							|#classPath+"/login?screen=xconcat"
+Frequency							|#classPath+"/login?screen=xcodes(xtype=FREQUENCY)"
+Medicine Advice                     |#classPath+"/login?screen=xcodesadvice"
+Dosage                           	|#classPath+"/login?screen=xcodes(xtype=Dosage)"
+Dose Instruction                           	    |#classPath+"/login?screen=xcodesdose"
+Instruction Template                           	|	#classPath+"/login?screen=xcodes(xtype=Instruction Template)"
+Drug Type                        	|#classPath+"/login?screen=xcodes(xtype=Drug Type)"
+Duration                         	|#classPath+"/login?screen=xcodes(xtype=Duration)"
+Route                            	|#classPath+"/login?screen=xcodes(xtype=Route)"
+Therapeutic Classification          |#classPath+"/login?screen=xcodes(xtype=Therapeutic Classification)"
+Taking Time                       	|#classPath+"/login?screen=xcodes(xtype=Taking Time)"
+

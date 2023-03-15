@@ -1,0 +1,487 @@
+screen mmgeneralexam
+	  
+     sections form one,list Vital, jscript myscript
+	
+	 list Vital
+        caption "General Examinations <br>"+xpatient+"-"+mmpatient.xname("xpatient='"+xpatient+"'")
+        table vitalssign
+        order xcase,xrow
+        fixed xcase
+        rows 20
+		maxwidth 780
+        objects xrow attrib(link "login?screen=mmgeneralexam&command=Show&xcase=?&xrow=?"),~
+               //episodenodescee equals(( select xepisodeno from mmappointment where zid=vitalssign.zid and xcase=vitalssign.xcase)),~
+				xdate attrib(link "login?screen=mmgeneralexam&command=Show&xcase=?&xrow=?"),xpulserate attrib(link "login?screen=mmgeneralexam&command=Show&xcase=?&xrow=?"),xbp attrib(link "login?screen=mmgeneralexam&command=Show&xcase=?&xrow=?"),xrespiration attrib(link "login?screen=mmgeneralexam&command=Show&xcase=?&xrow=?"),xspo2 attrib(link "login?screen=mmgeneralexam&command=Show&xcase=?&xrow=?"),xtemperature attrib(link "login?screen=mmgeneralexam&command=Show&xcase=?&xrow=?"),xheightvit attrib(link "login?screen=mmgeneralexam&command=Show&xcase=?&xrow=?"),xweightvit attrib(link "login?screen=mmgeneralexam&command=Show&xcase=?&xrow=?"),~
+				xbmigyn display(const) attrib(link "login?screen=mmgeneralexam&command=Show&xcase=?&xrow=?"),xbsa display(const) attrib(link "login?screen=mmgeneralexam&command=Show&xcase=?&xrow=?"),xnote attrib(link "login?screen=mmgeneralexam&command=Show&xcase=?&xrow=?")
+				xsystolic,xdiastolic,xtemperature,xrespiration,xheartrate,xurinecc,xsugar,xbloodsugar,xspo2,xavpu,xtrauma,xmobility
+                
+
+        header "Serial No.","Date","Pulse","BP","RR","SPO2","Temp.","Height (cm)","Weight (kg)","BMI","BSA","Others"//"Visit type",
+     end list
+	 
+     form one
+        caption "<ACRONYM>General Examinations</ACRONYM>"//+xpatient+//"-"+mmpatient.xname("xpatient='"+xpatient+"'")
+		table vitalssign
+        primarykey xcase,xrow
+        order xcase,xrow
+        fixed xcase
+        return "login"
+        layout 4
+        pstyle 3
+        objects Add,Update,Delete,Show,Clear,History,General Examinations,Physical Examination,Investigation,Diagnosis,Medications,Diet & Advice,Back,"<p>",~
+				Top,Previous,Next,Bottom,"<p>",~
+				xrow attrib(row 0 1),~
+				xpatient display(hide),xname display(hide),~
+                xvitalcheckup,xdate,xpulserate,xbp,xheightvit,xweightvit,xuserdept display(hide),~
+				xbmigyn display(const),xbsa display(const),xheartrate,xrespiration,xtemperature,xspo2,xheartsound,xpalor,xjaundice,xodema,xanemia,xavpu,xofc,xnote
+				
+		
+		
+		
+		field xrespiration
+		caption Respiratory Rate (minute)
+			width 20
+		end field
+		
+		field xpulserate
+			caption Pulse Rate (minute)
+			display text
+		end field
+		
+		field xpalor
+			caption Pallor
+			//display text
+		end field
+		
+		field xodema
+			caption Oedema
+			//display text
+		end field
+		
+		field xanemia
+			caption Anaemia
+			display text
+		end field
+		field xavpu
+			caption Ankle Oedema
+			display text
+		end field
+		field xofc
+			caption JVP
+			display text
+			width 20
+		end field
+		
+		field xbp
+			caption BP (mmHg)
+		end field
+		
+		field xheartrate
+			caption Heart Rate
+		end field
+		
+		field xheightvit
+			caption Height (cm) / in Percentile
+			 
+		end field
+		
+		field xweightvit
+			caption Weight (kg) / in Percentile
+		end field
+		
+		field xpatient
+	    //attrib readonly	
+          caption Patient ID
+          event after
+            set globals(xcase)=xcase
+			set globals(xdoctor)=xdoctor
+			set xpatient = mmappointment.xpatient("xcase='"+xcase+"'")
+			set globals(xpatient)=xpatient
+          end event
+        end field
+		
+		field xrow
+			display hide
+		end field
+
+        field xname
+          attrib local
+          display hide
+          caption Patient Name
+          event after
+            set xname = mmpatient.xname("xpatient='"+xpatient+"'")
+          end event
+        end field
+	  
+	   field xcase
+          event before
+            set xyear=#sub(#date,0,4)
+            set year=#sub(#date,0,4)
+            set per=#sub(#date,5,2)
+            set day=#sub(#date,8,2)
+            set xper=#sub(#date,5,2)
+            set xyearperdate = year+per+day
+          end event
+          event after
+            set docname = pdmst.xname("xstaff='"+#user+"'")
+          end event
+        end field
+		
+        field xnote
+          caption Others
+          //column 3
+		  height 2
+          //width 80
+        end field
+		
+		field xtemperature
+			caption Temperature °F
+		end field
+		
+		field xspo2
+			caption SpO<sub>2</sub>(%)
+		end field
+		
+		field xbmigyn
+			caption BMI (kg/m<sup>2</sup>) 
+		end field
+		
+		field xbsa
+			caption Body Surface Area (m<sup>2</sup>)
+		end field
+
+     
+		
+		field add
+		event before
+			column 2
+			double bmipoints1 = 0.00
+			double bmipoints2 = 0.00
+			double bmipoints3 = 0.00
+			double bmipoints4 = 0.00
+			set bmipoints1=xheightvit*0.01
+			set bmipoints2=xheightvit*0.01
+			set bmipoints3=bmipoints1*bmipoints2
+			set bmipoints4=xweightvit/bmipoints3
+			set xbmigyn=bmipoints4
+			double bsapoints1 = 0.00
+			double bsapoints2 = 0.00
+			set bsapoints1=xheightvit*xweightvit
+			set bsapoints2=bsapoints1/3600
+			set xbsa=bsapoints2
+			if xcase .eq. ""
+				error "Please select Prescription ID"
+			end if
+		end event
+		event after
+			set temp =#sesql("update vitalssign set xrem =CONCAT('Pulse: ',xpulserate,',  BP: ',xbp,',   Rsp: ',xrespiration,',  Temp: ',xtemperature,',  Spo2: ',xspo2,',  Rbs: ',xrbs,',  Ht: ',xheightvit,',  Wt: ',xweightvit,',  Bmi: ',xbmigyn) where xcase='"+xcase+"'") 
+			set temp =#sesql("update vitalssign set xbsa=SQRT(xbsa) where xcase='"+xcase+"'") 
+			action show
+		end event
+		end field
+		
+		field update
+		event before
+			column 2
+			double bmipoints1 = 0.00
+			double bmipoints2 = 0.00
+			double bmipoints3 = 0.00
+			double bmipoints4 = 0.00
+			set bmipoints1=xheightvit*0.01
+			set bmipoints2=xheightvit*0.01
+			set bmipoints3=bmipoints1*bmipoints2
+			set bmipoints4=xweightvit/bmipoints3
+			set xbmigyn=bmipoints4
+			double bsapoints1 = 0.00
+			double bsapoints2 = 0.00
+			set bsapoints1=xheightvit*xweightvit
+			set bsapoints2=bsapoints1/3600
+			set xbsa=bsapoints2
+		end event
+		event after
+			set temp =#sesql("update vitalssign set xrem =CONCAT('Pulse: ',xpulserate,',  BP: ',xbp,',   Rsp: ',xrespiration,',  Temp: ',xtemperature,',  Spo2: ',xspo2,',  Rbs: ',xrbs,',  Ht: ',xheightvit,',  Wt: ',xweightvit,',  Bmi: ',xbmigyn) where xcase='"+xcase+"'") 
+			set temp =#sesql("update vitalssign set xbsa=SQRT(xbsa) where xcase='"+xcase+"'") 
+			action show
+		end event
+		end field
+
+
+        field Back
+			embed onclick="clicked(this)"
+			width 100
+			height 40
+        end field
+		
+		field History
+			caption History
+			height 40
+			width 100
+			embed onclick="clicked(this)"
+        end field
+		
+		field Diet & Advice
+			caption Diet & Advice
+			height 40
+			//width 100
+			embed onclick="clicked(this)"
+        end field
+
+        field Investigation
+			//width 100
+			height 40
+			embed onclick="clicked(this)"
+        end field
+
+     
+        field Medications
+		    width 100
+			height 40
+			embed onclick="clicked(this)"
+        end field
+
+		field Physical Examination
+			height 40
+			width 100
+			embed onclick="clicked(this)"
+        end field
+		
+		field General Examinations
+		  height 40
+		  width 100
+          embed onclick="clicked(this)"
+        end field
+		
+		field xuserdept
+			caption Department
+			attrib local
+			event after
+				set xuserdept=pdmstview.departmentname("xposition='"+#position+"'")
+			end event
+		end field
+		
+		field Diagnosis
+			height 40
+		  //width 100
+			embed onclick="clicked(this)"
+        end field
+
+        embed onsubmit="submitit(this)"
+     end form
+
+	
+	jscript myscript
+
+    <script language="javascript" type="text/javascript">
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+        function submitit(form){
+		var prcstype = document.one.xuserdept.value
+		
+		if (detail=="History"){
+			if (prcstype=="ENT" ){
+				form.screen.value = "mmentpatientassessment"
+				form.searchbutton.value = "find xcase=?"
+			}
+		  
+			else if (prcstype=="Pediatric Surgery"  || prcstype=="Neonatology" || prcstype=="Paediatrics"){
+				form.screen.value = "mmpaedneunpatassessment"
+				form.searchbutton.value = "Top"
+			}
+
+			else if (prcstype=="Obstetrics & Gynaecology" ){
+				form.screen.value = "mmobsandgynpatientassessment"
+				form.searchbutton.value = "Top"
+			}
+			else if (prcstype=="Cardiology"){
+				form.screen.value = "mmcardpatassessment"
+				form.searchbutton.value = "Top"
+			}
+			else if (prcstype=="Oncology" || prcstype=="Endocrinology" || prcstype=="Ophthalmology"){
+				form.screen.value = "mmendropatassessment"
+				form.searchbutton.value = "Top"
+			}
+			else if (prcstype=="Dentistry"){
+				form.screen.value = "mmdentalpatassessment"
+				form.searchbutton.value = "Top"
+			}
+			else if (prcstype=="Nephrology"){
+				form.screen.value = "mmnephropatassessment"
+				form.searchbutton.value = "Top"
+			}
+			else if (prcstype=="Internal Medicine"){
+				form.screen.value = "mminternalpatassessment"
+				form.searchbutton.value = "Top"
+			}
+			else {
+				form.screen.value = "mmpatassessment"
+				form.searchbutton.value = "Top"		   
+			}
+         		 
+        }
+		  
+		if (detail=="General Examinations"){
+			form.screen.value = "mmgeneralexam"
+            form.searchbutton.value = "Clear"
+        }
+		  	
+		//Physical Examination
+		
+		if (detail=="Physical Examination"){
+			if (prcstype=="ENT"){
+				form.screen.value = "mmentexamination"
+				form.searchbutton.value = "Find xcase=?"
+			  }
+			 else if (prcstype=="Internal Medicine"){
+				form.screen.value = "mmhistorycardiac"
+				form.searchbutton.value = "Find xcase=?"
+				}
+			else if (prcstype=="Ophthalmology"){
+				form.screen.value = "mmhistoryoptham"
+				form.searchbutton.value = "Find xcase=?"
+			}
+							
+			else if (prcstype=="General Surgery"){
+				form.screen.value = "mmhistoryexamgene"
+				form.searchbutton.value = "Find xcase=?"
+				}
+				
+			 else if (prcstype=="Obstetrics & Gynaecology"){
+				form.screen.value = "mmhistoryexmobs"
+				form.searchbutton.value = "Find xcase=?"
+				}
+			else if (prcstype=="Urology"){
+			   form.screen.value = "mmhistoryexamuro"
+			   form.searchbutton.value = "Find xcase=?"
+				}
+			else if (prcstype=="Gastroenterology"){
+			   form.screen.value = "mmhistoryexamgas"
+			   form.searchbutton.value = "Find xcase=?"
+				}	
+			else if (prcstype=="Nephrology"){
+				form.screen.value = "mmhistoryexamnep"
+				form.searchbutton.value = "Find xcase=?"
+				}	
+				
+			else if (prcstype=="Orthopaedic"){
+				form.screen.value = "mmhistoryexamort"
+				form.searchbutton.value = "Find xcase=?"
+				}	
+			else if (prcstype=="Neuro Medicine"){
+				form.screen.value = "mmhistoryexamneu"
+				form.searchbutton.value = "Find xcase=?"
+				}	
+			else if (prcstype=="Neuro Surgery"){
+				form.screen.value = "mmhistoryexamneuro"
+				form.searchbutton.value = "Find xcase=?"
+				}
+			else if (prcstype=="Respiratory Medicine"){
+				form.screen.value = "mmhistoryexamres"
+				form.searchbutton.value = "Find xcase=?"
+				}				
+			  else if (prcstype=="Pediatric Surgery"  || prcstype=="Neonatology" || prcstype=="Paediatrics"){
+				form.screen.value = "mmhistorypediatric"
+				form.searchbutton.value = "Find xcase=?"
+				}
+			 else if (prcstype=="Cardiac Surgery"){
+				form.screen.value = "mmhistorycardiac"
+				form.searchbutton.value = "Find xcase=?"
+				}
+			 else if (prcstype=="Cardiology"){
+				form.screen.value = "mmhistoryexamcardsurg"
+				form.searchbutton.value = "Find xcase=?"
+				}	
+			 else if (prcstype=="Oncology" || prcstype=="Endocrinology" || prcstype=="Haematology"|| prcstype=="Dentistry"){
+				form.screen.value = "mmhistoryoncology"
+				form.searchbutton.value = "Find xcase=?"
+				}	 
+			 else if (prcstype=="Dermatology"){
+				form.screen.value = "mmhistoryexamiderm"
+				form.searchbutton.value = "Find xcase=?"
+				}
+			 else if (prcstype=="Thoracic Surgery"){
+				form.screen.value = "mmhistoryexamithor"
+				form.searchbutton.value = "Find xcase=?"
+				}	
+			else if (prcstype=="Ophthalmology"){
+				form.screen.value = "mmhistoryoptham"
+				form.searchbutton.value = "Find xcase=?"
+			}
+		} 
+		 	   
+				  			
+
+		if (detail=="Investigation"){
+			form.screen.value = "mmlaborder"
+			form.searchbutton.value = "Clear"
+		}
+		  
+		 // Diagnosis
+		if (detail=="Diagnosis"){
+			if (prcstype=="ENT"){
+				form.screen.value = "mmentdiagnosisnew"
+				form.searchbutton.value = "Top"
+			}
+			else {
+				form.screen.value = "mmdiagnosisnew"
+				form.searchbutton.value = "xcase=?"
+			}
+		}	
+         		
+        
+    	   
+		if (detail=="Medications"){
+			form.screen.value = "mmprescription"
+			form.searchbutton.value = "xpatient=?"
+		}
+
+		///Diet&Advice
+
+		if (detail=="Diet & Advice"){
+		if (prcstype=="ENT" ){
+			form.screen.value = "mmentadvice"
+			form.searchbutton.value = "Top"
+		}
+
+		else if (prcstype=="Pediatric Surgery"  || prcstype=="Neonatology" || prcstype=="Paediatrics"){
+			form.screen.value = "mmpaedneoadvice"
+			form.searchbutton.value = "Top"
+		}
+
+		else if (prcstype=="Obstetrics & Gynaecology" ){
+			form.screen.value = "mmobsgynadvice"
+			form.searchbutton.value = "Top"
+		}
+
+		else if (prcstype=="Cardiology"){
+			form.screen.value = "mmcardadvice"
+			form.searchbutton.value = "Top"
+		}
+
+		else if (prcstype=="Oncology" || prcstype=="Endocrinology"){
+			form.screen.value = "mmendroadvice"
+			form.searchbutton.value = "Top"
+		}
+
+		else {
+			form.screen.value = "mmadvice"
+			form.searchbutton.value = "Top"
+		}
+		}
+		  
+	    if (detail=="Back"){
+			form.screen.value = "mmdocapp"
+			form.searchbutton.value = "Find xcase=?"
+		}
+
+    }
+		
+		
+    </script>
+    end jscript
+
+
+
+end screen
+		

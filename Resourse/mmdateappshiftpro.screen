@@ -1,0 +1,293 @@
+screen mmdateappshiftpro
+
+      sidebar list one
+     sections  form one,list detail, jscript myscript
+	 
+     list one
+        caption "To Appointment For "+caitem.xdesc("xitem='"+xitem+"'")+" " +xfdate
+        table procedureplanview 
+        order xyearperdate,xitem,xrow
+       // fixed xyearperdate,xitem
+		select "xitem='"+xitem+"' and xfdate='"+xfdate+"' and xstatus='Open' and '"+xfdate+"' > '"+#date+"'"
+		dtlengthmenu [100, -1], [100, "All"]
+		maxheight 2000
+        rows 50
+        objects xrow attrib(link "abc" embed onclick="return pickItem(this:#)"),~
+                xapptime,xpatient,xname,~
+                xstatus,xnote
+
+        header "Serial No","Time","Patient ID","Patient's Name","Status","Note"
+     end list
+	 
+	 
+	 list detail
+        caption "From Appointment For "+caitem.xdesc("xitem='"+xitem+"'")+" " +xdate
+        table procedureplanview 
+        order xyearperdate,xitem,xrow
+       // fixed xyearperdate,xitem
+		select "xitem='"+xitem+"' and xfdate='"+xdate+"' and xstatus in ('Booked','Confirmed') and '"+xdate+"' >= '"+#date+"'"
+		dtlengthmenu [100, -1], [100, "All"]
+		maxheight 2000
+        rows 50
+        objects xrow attrib(link "abc" embed onclick="return pickItem2(this:#)"),~
+                xapptime,xpatient,xname,~
+                xstatus,xnote
+
+        header "Serial No","Time","Patient ID","Patient's Name","Status","Note"
+  end list
+
+     form one
+        caption "Procedure Appointment Day Shifting " +xitem
+       // table mmappointmentprocedure
+		//primarykey xyearperdate,xitem
+        //order xyearperdate,xitem,xrow
+		//select "xapptype='Procedure'"	
+        return "login"
+        layout 2
+        pstyle 3
+        objects Back,Shift,Show,Clear,"<p>" ,~  //New_Appointment,Search_Appointment
+				xdate,xfdate,~
+                xyearperdate display(hide),~
+				xrow attrib(readonly local),xtrow attrib(readonly local),xnote,xdname,xcase display(hide)
+		
+        
+		
+		
+		
+		
+		field xdname
+          caption Procedure Name
+          attrib local
+          display const
+          event after
+            set xdname = caitem.xdesc("xitem='"+xitem+"'")
+          end event
+         end field
+
+	
+		
+		
+		field xnote
+			caption Shifting Note
+			col 2
+			embed placeholder='Dont Use Any Special Character'
+		end field
+		
+		field xfdate
+			caption To Date
+			attrib local
+		end field
+		
+		field xrow
+			caption From Serial
+			event before
+           // set xyear=#sub(xdate,0,4)
+            //set year=#sub(xdate,0,4)
+            //set per=#sub(xdate,5,2)
+            //set day=#sub(xdate,8,2)
+            //set xyearperdate = year+per+day
+			//set globals(xfdate)=xfdate
+          end event
+			event after
+			 //set globals(xyearperdate)=xyearperdate
+			  set globals(xitem)=xitem
+			//set globals(xrow)=xrow
+			end event
+		end field
+		
+		field Shift
+			width 100
+			height 40
+			customclass Shift
+          event before
+		  int tempcase = 0
+		  set tempcase =#sql("select count(xcase) from mmappointmentprocedure WITH (NOLOCK) WHERE zid='"+#id+"' and xapptype='Procedure' and xdate='"+xfdate+"' and xitem='"+xitem+"' AND xrow='"+xtrow+"' AND xstatus = 'Open'")
+		  set xcase=mmappointmentprocedure.xcase("xapptype='Procedure' and xdate='"+xdate+"' and xitem='"+xitem+"' and xrow='"+xrow+"'")
+		  //set status=#sesql("select xstatus from mmappointmentprocedure WITH (NOLOCK) WHERE zid='"+#id+"' and xapptype='Procedure' and xdate='"+xdate+"' and xitem='"+xitem+"' AND xrow='"+xrow+"'")
+			if xitem .eq. ""
+				error "Cannot Proceed--Please Select Proper Procedure Code From Header Screen"
+			else if xnote .eq. ""
+				error "Cannot Proceed--Please Write Shiftting Reason"
+			else if xfdate .eq. xdate			
+				error "You can not shift same date"
+			else if  xtrow .eq. ""			
+				error "Please select To Serial"
+			//else if xstatus .eq. "Reported"		
+				//	error "Cannot Proceed--Patient Already Report"
+			else if xrow .eq. ""
+				error "Please Select From Serial"
+			else if xrow .eq. 0
+				error "Please Select From Serial"
+			else if xtrow .eq. ""
+				error "Please Select To Serial"
+			else if tempcase < 1
+				error "Please Select Proper To Slot"
+			else if mmappointmentprocedure.xstatus("xapptype='Procedure' and xdate='"+xfdate+"' and xitem='"+xitem+"' and xrow='"+xtrow+"'") .ne. "Open"
+				error "Cannot Procedure--Your Selected To Serial is not Open"
+			else if mmappointmentprocedure.xstatus("xapptype='Procedure' and xdate='"+xdate+"' and xitem='"+xitem+"' and xrow='"+xrow+"'") .ne. "Booked" .and. mmappointmentprocedure.xstatus("xapptype='Procedure' and xdate='"+xdate+"' and xitem='"+xitem+"' and xrow='"+xrow+"'") .ne. "Confirmed"
+				error "Cannot Procedure--Your Selected From Serial is not Booked or Confirmed"
+			end if
+          end event	
+          event after
+			if xitem .ne. ""
+			set temp=#sql("update mmappointmentprocedure set xnote='"+xnote+"' where xapptype='Procedure' and xitem='"+xitem+"' and xdate='"+xdate+"' and xrow='"+xrow+"'")
+			set temp = #spsql(zabsp_MMAPP_validateAfterProcedure_dayshift,#id,#user,xcase,"mmappshift",xdate,xfdate,"Procedure",xitem,xrow,xtrow,"Shift",xnote)
+				print "Your Shifting has been successful"
+			set xrow=0
+			set xtrow=""
+			set xnote=""
+			end if
+            action show
+          end event
+        end field
+		
+		
+		
+		 field xtrow
+          //attrib local
+          display text
+          width 5
+          caption To Serial
+        end field
+		
+		field xdate
+			width 20
+			caption From Date
+		end field
+		
+		field xdeptname
+			event after
+				set xdeptname=pdmst.xdeptname("xstaff='"+xdoctor+"'")
+			end event
+		end field
+		
+		field xdeptdesc
+			caption Department Name
+			attrib local
+			event after
+				set deptname = ""+pdmstview.departmentname("xstaff='"+xdoctor+"'")
+				set xdeptdesc="<b>"+deptname+"</b>"
+			end event
+		end field
+		
+
+		
+		 field Back
+			width 100
+			height 40
+          embed onclick="clicked(this)"
+        end field
+		
+		
+	
+		
+		
+
+		field show
+        	event before
+				set machine =#trim(xitem)
+				set fappdate =#trim(xfdate)
+				set appfyear=#sub(fappdate,0,4)
+				set appfper=#sub(fappdate,5,2)
+				set appfday=#sub(fappdate,8,2)
+				set fappyearperdate = appfyear+appfper+appfday
+        		
+				set fstaff=mmappointmentprocedure.xitem("xyearperdate='"+fappyearperdate+"' and xitem='"+xitem+"' and xapptype='Procedure'")
+				
+        		if machine .eq. ""
+					error "Please select Charge ID"
+				else if xfdate .lt. #date
+					error "Todate Cannot be less than current date"
+				else if xdate .lt. #date
+					error "From Date Cannot be less than current date"
+				else if xfdate .eq. xdate			
+				error "You can not shift same date"
+				else if machine .ne. "" .and. machine .ne. caitem.xitem("xitem='"+xitem+"'")
+					error "Charge code not exist in the system"
+				else if caitem.xappplan("xitem='"+xitem+"'") .eq. ""
+					error "Please set up plan in Procedure Charges"
+				else if fstaff .eq. ""
+        			set plan = caitem.xappplan("xitem='"+xitem+"'")
+					set temp = #spsql(zabsp_PRCS_createScheduleProcedure,#id,#user,"Procedure",fappdate,fappdate,machine,plan)
+				end if
+        	end event
+        end field
+
+       
+		
+		field Shift
+			embed onclick="clicked(this)" 
+        end field
+		
+        embed onsubmit="submitit(this)"
+
+     end form
+	 
+	 
+
+     jscript myscript
+		
+        <script language="javascript" type="text/javascript">
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+        function submitit(form){
+	    
+		if (detail=="Back"){
+            form.screen.value = "proceduredetails"
+            form.searchbutton.value = "Find xyearperdate=?&xitem=?"
+          }
+		if (detail=="Shift"){
+          
+			form.searchbutton.value = "Shift"
+			document.getElementById("Back").disabled = true;
+			document.getElementById("Shift").disabled = true;
+			
+        }
+        }
+		
+	$(function() {
+	  $("#oneListTable td").each(function() {
+		if ($(this).text() == 'Blocked') {
+		  $(this).css('background', 'red');
+		  $(this).css('color', 'White');
+		}
+		else if ($(this).text() == 'Open') {
+		  $(this).css('background', '#ffeb3b');
+		}
+		else if ($(this).text() == 'Confirmed') {
+		  $(this).css('background', 'Green');
+		  $(this).css('color', 'White');
+		}
+	  });
+	  console.log(oneListTable)
+	});
+	
+			function pickItem(link){
+          if (navigator.appName.indexOf("Netscape") >= 0){
+            document.one.xtrow.value=link.text
+            
+          }else{
+            document.one.xtrow.value=link.innerText
+            
+          }
+          return false
+        }
+		
+		function pickItem2(link){
+          if (navigator.appName.indexOf("Netscape") >= 0){
+            document.one.xrow.value=link.text
+            
+          }else{
+            document.one.xrow.value=link.innerText
+            
+          }
+          return false
+        }
+    </script>
+    end jscript
+
+
+
+end screen

@@ -1,0 +1,25 @@
+//Lab Report.menu
+//-------------------------------------------------------------------
+option                                |action
+//-------------------------------------------------------------------
+//Datewise Sample Report             |#classPath+"/login?screen=*viewcrystal datewisesample(5;in,st,st,st,st;@zid,@user,@fdate,@tdate,@status;zemail=User ID,xdate=From date,xdate=To Date,xsamplestatus=Sample Status,xviewtype=Report View)"
+//Lab Status Summary Report 		   |#classPath+"/login?screen=*viewcrystal labstatussummary(3;in,st,st,st; @zid,@date,@catitem; xdate = Date , xcatitemlab= Lab Test Category)" 
+//Lab Test Tasks Report 		   |#classPath+"/login?screen=*viewcrystal testtasks(6;in,st,st,st,st,st;@zid,@catitem,@xpatient,@fdate,@tdate,@status; xcatitemlab= Lab Test Category, xpatient= Patient ID,xdate = From Date, xdate= To Date,xlabrept=Status,xviewtype=Report View)"
+Lab Test Tasks Report    		   |#classPath+"/login?screen=*viewcrystal labtesttasks(6;in,st,st,st,st,st;@zid,@catitem,@xpatient,@date,@status,@test;xcatitemlab=Lab Test Category,xpatient=Patient ID,xdate=Date,xlabrept=Status,xitemlcrpt=Test Code,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+RT PCR Daily Received List 		   |#classPath+"/login?screen=*viewcrystal mmmdlrtpcr(2;in,dt;zid,fdate;xdate=Date,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+//Lab Category Wise Report 		   |#classPath+"/login?screen=*viewcrystal labcatwiserpt(3;in,st,st;@zid,@fdate,@tdate;xdate=From date,xdate=To Date,xviewtype=Report View)"
+//Lab Statistical Report 		   |#classPath+"/login?screen=*viewcrystal mmlabitemdailyrpt(3;in,st,st;@zid,@fdate,@tdate;xdate=From date,xdate=To Date,xviewtype=Report View)"
+//Lab Category Wise Report 		   |#classPath+"/login?screen=*viewcrystal mmlabcatstat(3;in,st,st;@zid,@fdate,@tdate;xdate=From date,xdate=To Date,xviewtype=Report View)"
+//Lab Daily List Report		       |#classPath+"/login?screen=*viewcrystal labtestdaily(3;in,st,st;@zid,@fdate,@tdate;xdate=From date,xdate=To Date,xviewtype=Report View)"
+//Date Wise Lab Test Tasks Report    |#classPath+"/login?screen=*viewcrystal testtasks(7;in,st,st,st,st,st,st;@zid,@catitem,@xpatient,@fdate,@tdate,@status,@test; xcatitemlab= Lab Test Category, xpatient= Patient ID,xdate = From Date, xdate= To Date,xlabrept=Status,xitemlcrpt=Test Code,xviewtype=Report View"
+
+//Patient Transit History           	 |#classPath+"/login?screen=*viewcrystal patienttransit(2;in,st;zid,admno;admissionno=Admission No,xviewtype=Report View)"
+//Emergency Patient List        	     |#classPath+"/login?screen=*viewcrystal empatientlist(5;in,dt,dt,st,st;zid,fdate,tdate,patient,cause;xdate=From Date,xdate=To Date,xpatient=Patient ID,xcauseadm=Cause of Admission,xviewtype=Report View)"
+Current Patient List For IPD EM DC   |#classPath+"/login?screen=*viewcrystal mmpatinetliststatuswise(7;in,st,st,st,st,st,st;@zid,@episodetype,@wing,@floor,@deptnamep,@staffp,@roomp;xpatientstatus= Episode Type,xwing=Wing,xfloor=Floor,xdeptnameclinical=Department Name,xdoctor=Doctor,xroom=Room No,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+//Home sample collection report        |#classPath+"/login?screen=*viewcrystal mmappmachinehsc(3;in,dt,st;zid,fdate,status;xdate=Date,xapstatus=Appointment Status,xviewtype=Report View)"
+//Patient list of Oncology Day Care    |#classPath+"/login?screen=*viewcrystal dcpatientlist(5;in,dt,dt,st,st;zid,fdate,tdate,patient,cause;xdate=From Date,xdate=To Date,xpatient=Patient ID,xcauseadm=Cause of Admission,xviewtype=Report View)" 
+//Electronic Health Record        	 |#classPath+"/login?screen=*viewcrystal ehealthrecordAll(8;in,st,st,st,st,st,st,st;@zid,@fdate,@tdate,@patient,@psex,@selectdt,@fdateofbirth,@tdateofbirth;xdate=From Date,xdate=To Date,xpatient=Patient ID,xsex=Gender,xselectdt=DOB,xdate=From,xdate=T0,xviewtype=Report View)"
+//Lab Test TAT                         |#classPath+"/login?screen=*viewcrystal mmlabtatrpt(4;in,st,dt,dt;zid,user,fdate,tdate;xuserhide=User ID,xdate=From Date<span>*</span>,xdate=To Date<span>*</span>,xviewxldt=Report View;rptproc=zabsp_RPT_labtusktatrpt)"
+//-------------------------------------------------------------------
+
+

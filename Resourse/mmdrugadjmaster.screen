@@ -1,0 +1,137 @@
+screen mmdrugadjmaster
+
+     sidebar list one//,two
+     sections form one, jscript myscript
+
+     list one
+        caption "Drug Adjustment For "
+        table drugadjustmentmaster
+        order xgenericdesc,xrow
+        fixed xgenericdesc
+		//select "xdoadjtype='+xdoadjtype+'"
+        rows 20
+        objects xrow attrib(link "login?screen=mmdrugadjmaster&command=Show&xrow=?"),~
+                xdoadjtype,xcreatininerenal,xcreatinineliver,xoraldose,xnote1
+				
+
+        header "Serial No","Dose Adjustment Type","Creatinine Clearance ml/min","Creatinine Clearance ml/min","Oral Dose","Remarks"
+     end list
+	 
+	 list two
+        caption "Drug Adjustment For "
+        table drugadjustmentmaster
+        order xgenericdesc,xrow
+        fixed xgenericdesc
+		select "xdoadjtype='+xdoadjtype+'"
+        rows 20
+        objects xrow attrib(link "login?screen=mmdrugadjmaster&command=Show&xrow=?"),~
+                xdoadjtype,xcreatininerenal,xcreatinineliver,xoraldose,xnote1
+				
+
+        //header "Generic Name","Description","Therapeutic Classification","LASA","Frequency","Drug Information"
+     end list
+	 
+
+
+
+
+     form one
+        caption "Drug Adjustment For "+xgenericname
+        table drugadjustmentmaster
+	    primarykey xgenericdesc,xrow
+        order xgenericdesc,xrow
+		fixed xgenericdesc
+        return "login"
+        layout 3
+        pstyle 3
+        objects Show,Clear,Add, Update, Delete,Back,~
+        	    Top,Previous,Next,Bottom,"<p>",~
+                xrow attrib(row 0 1),xdoadjtype,,cd display(const),xcreatininerenal,xcreatinineliver,xoraldose,xnote1
+		
+		field xrow
+			event after
+				set globals(xgenericname)=xgenericname
+				set globals(xgenericdesc)=xgenericdesc
+			end event
+		end field
+		
+        field xdoadjtype
+			column 2
+			display radio-horizontal
+        end field
+		
+		field cd
+		attrib local
+		caption <span class=sheader style="BACKGROUND:#a796c3;color:white;PADDING-LEFT: 7px; PADDING-RIGHT: 20px; ">IF YES <br/></span><b> Creatinine Clearance ml/min:  </b>
+		display const 
+		end field
+		
+		field xnote1
+		caption <span class=sheader style="BACKGROUND:#a796c3;color:white;PADDING-BOTTOM: 3px;PADDING-LEFT: 7px; PADDING-RIGHT: 20px; 	PADDING-TOP: 3px;">IF NO, Remarks</span>
+		column 2
+		end field
+
+        field xcreatininerenal
+			caption From 
+			
+		end field
+
+		field xcreatinineliver
+			caption To
+		end field
+		
+		field xoraldose
+			caption Oral Dose
+			width 50
+			height 3
+		end field
+		
+		field Add
+		event after
+			set xrow=''
+			action show
+		end event
+		end field
+		
+		field Back
+          embed onclick="clicked(this)"
+		  width 100
+        end field
+
+        embed onsubmit="submitit(this)"
+     end form
+
+
+
+
+
+     jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+        function submitit(form){
+
+         if (detail=="Back"){
+            form.screen.value = "mmgenericmaster"
+            form.searchbutton.value = "Find xgenericdesc=?"
+          }
+        }
+      function pickDetail(link){
+        if (navigator.appName.indexOf("Netscape") >= 0){
+          document.one.xinvnum.value=link.text
+          document.one.xbalance.value=primebal.text
+          document.one.xdate.value=date.text
+        }else{
+          document.one.xgenericname.value=link.innerText
+        }
+	return false
+	}	
+        </script>
+     end jscript
+
+
+
+end screen

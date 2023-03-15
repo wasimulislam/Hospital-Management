@@ -1,0 +1,293 @@
+screen mmhistoryexamcardsurg
+     sidebar list one
+     sections form one, jscript myscript
+
+
+     list one
+        caption "Physical Examination "+xpatient
+        table mmprescexamination
+        order xcase
+        fixed xcase
+        rows 20
+        objects xcase attrib(link "login?screen=mmhistoryexamcardsurg&command=Show&xcase=?"), ~
+                xgeneral attrib(link "login?screen=mmhistoryexamcardsurg&command=Show&xcase=?"), ~
+				xfetalheart attrib(link "login?screen=mmhistoryexamcardsurg&command=Show&xcase=?"), ~
+				xlungs attrib(link "login?screen=mmhistoryexamcardsurg&command=Show&xcase=?"), ~
+				xsysenquiry attrib(link "login?screen=mmhistoryexamcardsurg&command=Show&xcase=?")
+				//,xduration,xdurationday,xpersistant
+       // header "Serial No","Physical Examination"//,"Duration","","Persistant"
+     end list
+
+     form one
+        caption "<ACRONYM>Physical Examination</ACRONYM> <br>"//+mmpatient.xname("xpatient='"+xpatient+"'")
+        table mmprescexamination
+		primarykey xcase
+        order xcase
+        fixed xcase
+        return "login"
+        layout 1
+        pstyle 3
+        objects Add,Update,Delete,Show,Clear,History,General Examinations,Physical Examination,Investigation,Diagnosis,Medications,Diet & Advice,Back,*next,~
+		        Top,Previous,Next,Bottom,"<p>",~
+				xgeneral,xfetalheart,xlungs,xsysenquiry,xuserdept display(hide)
+		
+		field xuserdept
+			caption Doctor Department
+			attrib local
+			event after
+				set xuserdept=pdmstview.departmentname("xposition='"+#position+"'")
+			end event
+		end field
+
+		
+
+		
+		field xprovition
+			caption <b><font color=green size=+1>Cardiology</font></b>
+			attrib local
+			column 2
+		end field
+		
+		field xgeneral
+			//caption General
+			caption <b><font color=green size=+1>General</font></b>
+			height 5
+			width 70
+			display editor
+		end field
+		
+	
+		
+		field xsysenquiry
+			display editor
+			caption <b><font color=green size=+1>Other Systemic</font></b>
+			//caption Other Systemic
+			height 5
+			width 70
+		end field
+		
+		field xfetalheart
+			caption <b><font color=green size=+1>Heart</font></b>
+			//caption Herat
+			height 5
+			width 70
+			display editor
+		end field
+		
+		field xlungs
+			caption <b><font color=green size=+1>Lungs</font></b>
+			//caption Lung
+			height 5
+			width 70
+			display editor
+		end field
+
+
+        field Back
+          embed onclick="clicked(this)"
+		  width 100
+		  height 40
+        end field
+		
+		field Presenting Symptoms
+			height 40
+		  //width 100
+		  
+          embed onclick="clicked(this)"
+        end field
+		
+        field History
+			caption History
+			height 40
+			width 100
+			embed onclick="clicked(this)"
+        end field
+		
+		field Diet & Advice
+			caption Diet & Advice
+			height 40
+			//width 100
+			embed onclick="clicked(this)"
+        end field
+
+        field Investigation
+			//width 100
+			height 40
+			embed onclick="clicked(this)"
+        end field
+
+     
+        field Medications
+		    width 100
+			height 40
+			embed onclick="clicked(this)"
+        end field
+
+		field Physical Examination
+			height 40
+			width 100
+			embed onclick="clicked(this)"
+        end field
+		
+		field General Examinations
+		  height 40
+		  width 100
+          embed onclick="clicked(this)"
+        end field
+		
+		
+		field Diagnosis
+			height 40
+		  //width 100
+			embed onclick="clicked(this)"
+        end field
+
+        embed onsubmit="submitit(this)"
+     end form
+
+
+
+
+
+     jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+        function submitit(form){
+		
+		var prcstype = document.one.xuserdept.value
+		//alert(prcstype)
+    	    if (detail=="Back"){
+            form.screen.value = "mmdocapp"
+            form.searchbutton.value = "Find xcase=?"
+            //return false
+          }
+		
+		if (detail=="History"){
+        if (prcstype=="ENT" ){
+            form.screen.value = "mmentpatientassessment"
+            form.searchbutton.value = "find xcase=?"
+          }
+		  
+		else if (prcstype=="Pediatric Surgery"  || prcstype=="Neonatology" || prcstype=="Paediatrics"){
+            form.screen.value = "mmpaedneunpatassessment"
+            form.searchbutton.value = "find xcase=?"
+          }
+
+		else if (prcstype=="Obstetrics & Gynaecology" ){
+           form.screen.value = "mmobsandgynpatientassessment"
+           form.searchbutton.value = "find xcase=?"
+         }
+		 
+		else if (prcstype=="Cardiology"){
+			form.screen.value = "mmcardpatassessment"
+			form.searchbutton.value = "Top"
+			}
+		else {
+           form.screen.value = "mmpatassessment"
+           form.searchbutton.value = "Top"
+		   
+         }
+         		 
+        }
+    	   
+		
+		  
+		  if (detail=="General Examinations"){
+            form.screen.value = "mmgeneralexam"
+            form.searchbutton.value = "Clear"
+          }
+		  	
+		//Physical Examination
+		
+		if (detail=="Physical Examination"){
+			if (prcstype=="ENT"){
+				form.screen.value = "mmentexamination"
+				form.searchbutton.value = "Find xcase=?"
+			}
+			else if (prcstype=="Obstetrics & Gynaecology"){
+				form.screen.value = "mmhistoryexmobs"
+				form.searchbutton.value = "Find xcase=?"
+				}
+			else if (prcstype=="Pediatric Surgery"){
+				form.screen.value = "mmhistorypediatric"
+				form.searchbutton.value = "Find xcase=?"
+				}
+			else if (prcstype=="Cardiac Surgery"){
+				form.screen.value = "mmhistoryexamcardsurg"
+				form.searchbutton.value = "Find xcase=?"
+				}
+			else if (prcstype=="Cardiology"){
+				form.screen.value = "mmhistoryexamcardsurg"
+				form.searchbutton.value = "Find xcase=?"
+				}
+		    } 	   
+				  			
+
+	      if (detail=="Investigation"){
+            form.screen.value = "mmlaborder"
+            form.searchbutton.value = "Clear"
+          }
+		  
+		 // Diagnosis
+		  if (detail=="Diagnosis"){
+          if (prcstype=="ENT" ){
+            form.screen.value = "mmentdiagnosisnew"
+            form.searchbutton.value = "find xcase=?"
+          }
+		  
+		  else {
+            form.screen.value = "mmdiagnosisnew"
+            form.searchbutton.value = "find xcase=?"
+          }	
+        }
+    	   
+          if (detail=="Medications"){
+            form.screen.value = "mmprescription"
+            form.searchbutton.value = "xpatient=?"
+          }
+		 
+		   ///Diet&Advice
+		 
+		   if (detail=="Diet & Advice"){
+		   if (prcstype=="ENT" ){
+            form.screen.value = "mmentadvice"
+            form.searchbutton.value = "Top"
+          }
+		  
+		   else if (prcstype=="Pediatric Surgery"  || prcstype=="Neonatology" || prcstype=="Paediatrics"){
+            form.screen.value = "mmpaedneoadvice"
+            form.searchbutton.value = "Top"
+          }
+		  
+		   else if (prcstype=="Obstetrics & Gynaecology" ){
+            form.screen.value = "mmobsgynadvice"
+            form.searchbutton.value = "Top"
+         }
+		 
+		   else if (prcstype=="Cardiology"){
+			form.screen.value = "mmcardadvice"
+			form.searchbutton.value = "Top"
+		 }
+			
+		   else if (prcstype=="Oncology" || prcstype=="Endocrinology"){
+			form.screen.value = "mmendroadvice"
+			form.searchbutton.value = "Top"
+		 }
+		  
+		   else {
+            form.screen.value = "mmadvice"
+            form.searchbutton.value = "Top"
+         }
+          }
+		}
+
+        </script>
+     end jscript
+
+
+
+end screen

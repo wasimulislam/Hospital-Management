@@ -1,0 +1,15 @@
+product ZAB ERP
+
+table opdef
+  caption "Order Procesing Default Table"
+  columns ztime,zutime,zauserid,zuuserid,zid,zemail,xvatrate,xcusserial,~
+			xsupserial,xservicecharge,xdisc,xyear,xyesno,xinvserial,xacc,xdiscstatus,xoverdelivery,~
+			xcrnapproval,xdiscapproval,xallowdues,xallowcorporate,xnum,xregbillsettle,xwhopd,xwhipd,~
+			xwhem,xwhdc,xwhpharma,xallowduesopd,xallowduesipd,xsignonoff,xipdpharmacy,xwhpharmamain,xsignonoffdt,xstaffrequired,xupdateuser,xepisodetype,xotstore
+  primary key zid
+
+  foreign key
+        zid references zbusiness.zid
+  end foreign key
+
+end table

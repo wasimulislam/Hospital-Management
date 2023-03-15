@@ -1,0 +1,24 @@
+product ZAB ERP
+
+table mmvitalphview
+  caption 	"Appointment View"
+  columns 	zid,xcase,xdate,xdoctor,xpatient,~
+  xrow,xpulserate,xbp,xrespiration,xtemperature,xspo2,xrbs,xheartrate,xbmigyn,xheightvit,xweightvit,~
+  xbsa,xheartsound,xpalor,xjaundice,xodema,xnote
+  
+primary key zid,xcase
+
+	foreign key 
+        zid references zbusiness.zid
+	end foreign key
+
+sql create view mmvitalphview (zid,xcase,xdate,xdoctor,xpatient,~
+  xrow,xpulserate,xbp,xrespiration,xtemperature,xspo2,xrbs,xheartrate,xbmigyn,xheightvit,xweightvit,~
+  xbsa,xheartsound,xpalor,xjaundice,xodema,xanemia,xavpu,xofc,xnote) ~
+	as select zid,isnull(xcase,''),isnull(convert(VARCHAR, xdate, 106),'') as xdate,isnull(xdoctor,''),isnull(xpatient,''),~
+  isnull(xrow,''),isnull(xpulserate,''),isnull(xbp,''),isnull(xrespiration,''),isnull(xtemperature,''),isnull(xspo2,''),isnull(xrbs,''),isnull(xheartrate,''),isnull(xbmigyn,'0.00'),isnull(xheightvit,'0.00'),isnull(xweightvit,'0.00'),~
+  isnull(xbsa,'0'),isnull(xheartsound,''),isnull(xpalor,''),isnull(xjaundice,''),isnull(xodema,''),isnull(xanemia,''),isnull(xavpu,''),isnull(xofc,''),isnull(xnote,'') ~
+  from vitalssign (NOLOCK)
+end table
+  
+  

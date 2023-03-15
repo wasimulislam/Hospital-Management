@@ -1,0 +1,14 @@
+option                           |action
+//-------------------------------------------------------------------
+KOT Summary Report               |#classPath+"/login?screen=*viewcrystal mmkotmealsummary(3;in,st,st;@zid,@costitem,@fdate;xmealcost=Name Of Meal,xdate=Date,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+Liquid diet report               |#classPath+"/login?screen=*viewcrystal mmliquid(2;in,dt;zid,date;xdate=Date,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+Patient Detail Sheet             |#classPath+"/login?screen=*viewcrystal mmpatientdetailsheet(3;in,st,st;zid,floor,patient;xfloor=Floor,xpatient=Patient ID,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+//Meal Summary Sheet               |#classPath+"/login?screen=*viewcrystal mmdietmeal(3;in,dt,st;zid,date,costname;xdate=Date,xmealcost=Meal,xviewtype=Report View)"
+///Datewise Liquid Diet Sheet       |#classPath+"/login?screen=*viewcrystal mmliquidDietList(2;in,dt;zid,date;xdate=Date,xviewtype=Report View)"
+Patient Admission Card For F&B 	 |#classPath+"/login?screen=*viewcrystal mmdtcardfloorwise(5;in,st,st,st,st;@zid,@admissionno,@wing,@floor,@costitem;xadmissionno=Admission No,xwing=Wing,xfloor=Floor,xmealcost=Meal,xviewtype= Report View;zremip=http://172.16.0.48:32786/zab/)"
+
+Patient Admission Card F&B      |#classPath+"/login?screen=mmpatientadmissionlistfnb"
+
+//Extra food report       	   |#classPath+"/login?screen=*viewcrystal mmextrafoodreport(5;in,dt,dt,st,st;zid,date,tdate,foodfor,patient;xdate=From Date,xdate=To Date,xpatient=Patient,xattendfood=Food For,xviewtype=Report View)"
+Admission Card For Extra food    |#classPath+"/login?screen=*viewcrystal mmdtcardextrafood(3;in,st,st;@zid,@floor,@admissionno;xfloor=Floor,xadmissionno=Admission No,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+//Patient Meal Summary Sheet       |#classPath+"/login?screen=*viewcrystal mmpatientdietmeal(5;in,dt,dt,st,st;zid,date,tdate,costname,patient;xdate=From Date,xdate=To Date,xmealcost=Meal,xpatient=Patient,xviewtype=Report View)"

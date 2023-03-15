@@ -1,0 +1,64 @@
+screen smsconfig
+
+     sections form one
+
+      list one
+        caption "Fees List For "+pdmst.xname("xstaff='"+xstaff+"'")
+        table smsdetail
+        order xrow
+        rows 20
+        objects xrow,xnote,xmobile,xctype,xcus,xdocnum
+        header "Serial No","Message","Mobile","Type","Patient ID","Case No"
+     end list
+	 
+     form one
+        caption "SMS Master"
+        table smsconfig
+	    primarykey zid
+        order xuserid
+        return "login"
+        layout 2
+        pstyle 3
+        objects Show,Clear,Update,Top,~
+				xuserid,xapitoken,xsid,xcsmsid,xstatussms,xcqtyuse,zactive
+
+		field xuserid
+			caption User ID
+		end field
+		
+		field xapitoken
+			caption API Token
+			width 100
+		end field
+		
+		field xsid
+			caption SID
+			width 100
+		end field
+		
+		field xcsmsid
+			caption CSMSID
+			width 100
+		end field
+		
+		
+		field xcqtyuse
+			caption SMS Used
+			display hide
+		end field
+		
+		field xstatussms
+				attrib local
+				caption <span class=sheader style="	BACKGROUND:#563d7c;color:white;PADDING-BOTTOM: 2px;PADDING-LEFT: 7px; PADDING-RIGHT: 50px; 	PADDING-TOP: 2px;">Current SMS Used</span>
+				display const
+				event after
+					set xstatussms=xcqtyuse
+						set xstatussms="<font size=+2 color=green>"'+xstatussms+'</font>"
+					end if
+					
+				end event
+		end field
+
+        embed onsubmit="submitit(this)"
+     end form
+end screen

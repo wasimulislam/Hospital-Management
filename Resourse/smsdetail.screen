@@ -1,0 +1,68 @@
+screen smsdetail
+
+	 caption "SMS Details"
+     sections  form one,list one
+	
+	list one
+        caption "SMS List"
+        table smsdetail
+		maxwidth 1100
+		dtordering [0,"desc"]
+		select "(cast(ztime as date)='"+xfdate+"' and '"+xselectdate+"'='1')"
+        rows 10
+        objects  xrow,xcus,xmobile,xnote,ztime
+				field xrow
+					display const
+				 end field
+				 field xmobile
+					display const
+				 end field
+				 field ztime
+					display const
+				 end field
+				  field xcus
+					display const
+				 end field
+				  field xnote
+					display const
+				 end field
+				 headers "Serial No","Patient ID","Mobile","Message","Date Time"
+     end list
+
+     form one
+        caption "SMS"
+        table opipdpcreqheader
+	     primarykey xreqnum desc
+        order xreqnum desc
+        return "login"
+        layout 3
+        pstyle 3
+		prow 2
+        objects ~
+                Search,Clear,"<p>" ,~
+                xfdate
+				
+		field xfdate
+			caption Select Date
+		end field
+				
+		field Search
+			width 100
+			height 40
+			event before
+				set xselectdate="1"
+			end event
+			event after
+				
+			end event
+		end field	
+		
+		field Clear
+			width 100
+		    height 40
+		end field
+
+		embed onsubmit="submitit(this)"
+     end form
+
+end screen

@@ -1,0 +1,9 @@
+//im.menu
+//-------------------------------------------------------------------
+option                           |action
+//-------------------------------------------------------------------
+Stock Take                       |#classPath+"/login?screen=imtag"  
+Stock Take Process               |#classPath+"/login?screen=imtagcon" 
+//Reports                           |#classPath+"/login?menu=imtagreports"
+//-------------------------------------------------------------------
+

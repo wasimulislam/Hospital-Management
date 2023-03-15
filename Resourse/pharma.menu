@@ -1,0 +1,34 @@
+//pharma.menu
+//-------------------------------------------------------------------
+option                           |action                                     |modules|models|width
+//-------------------------------------------------------------------
+//Notification                    |#classPath+"/login?screen=pharmacynotification"	
+Transfer Transaction                       |#classPath+"/login?menu=imtransfer"         |       |      |120
+POS Sign On/Off                  |#classPath+"/login?screen=oppossignoff"					 |       |      |120
+//POS Sign On/Off                  |#classPath+"/login?screen=oppossignoffpharma"					 |       |      |120
+Pharmacy Order Entry(OPD)               |#classPath+"/login?screen=oppharmacyorder"  
+Pharmacy Bill Enty(OPD)         |#classPath+"/login?screen=oppospharmacy"              |       |      |120
+IPD Charge Return             |#classPath+"/login?screen=opdoheaderipdreturn"              |       |      |120
+Sales Return                     |#classPath+"/login?screen=opcrnheaderph"     				 |       |      |120
+Sales Return Approval	     	 |#classPath+"/login?screen=opcrnapvph"
+/////Pharmacy Review         |#classPath+"/login?screen=mmprescriptionpharmachyreview"              |       |      |120
+//Charging RX        |#classPath+"/login?screen=mmpharmachy"              |       |      |120
+/////Filling Review         |#classPath+"/login?screen=mmprescriptionfillingview"              |       |      |120
+/////Verification                       |#classPath+"/login?screen=mmprescriptionverification"              |       |      |120
+/////Dispense             |#classPath+"/login?screen=mmprescriptiondispense"              |       |      |120
+//Pharmacy Item                    |#classPath+"/login?screen=caitempc"
+//Codes & Parameter                |#classPath+"/login?menu=mmcodes"
+////Pharmacy Charging              |#classPath+"/login?menu=pharmaorder"         |       |      |120
+OPD Pharmacy                          |#classPath+"/login?menu=opdpharma"         |       |      |120
+
+IPD Pharmacy                          |#classPath+"/login?menu=ipdpharma"         |       |      |120
+Generic Master                   	|#classPath+"/login?screen=mmgenericmaster" 			    |ca        	|   	|rx.png   |210
+Pharmacy Item      |#classPath+"/login?screen=caitempc" |ac     |      |notification.png|180 //|fa-home|180
+Generic Name Wise Stock      |#classPath+"/login?screen=opipdgenericstock" |ac     |      |notification.png|180 //|fa-home|180
+///OPD Pharmacy Cancelled DO |#classPath+"/login?screen=*viewcrystal docanceldatewise(5;in,st,st,st,st;@zid,@fdate,@tdate,@user,@rpttype;xdate=From Date,xdate=To Date,xreportid=User,xtyperpt=Report Type,xviewtype=Report View)"
+//OPD Pharmacy DO Report |#classPath+"/login?screen=*viewcrystal dorepdatewise(6;in,st,st,st,st,st;@zid,@fdate,@tdate,@user,@dotype,@rpttype;xdate=From Date,xdate=To Date,xreportid=User,xdostatus=DO Status,xtyperpt=Report Type,xviewtype=Report View)"
+//Pharmacy Sales Report 	|#classPath+"/login?screen=*viewcrystal opsalesreportph(4;in,st,st,st;@zid,@fdate,@tdate,@store;xdate=From Date,xdate=To Date,xtype1=Pharmacy Store,xviewtype=Report View)"
+IPD Pharmacy Requisition(Date Wise) 	|#classPath+"/login?screen=*viewcrystal opipdpharmacyreqcount(3;in,st,st;@zid,@fdate,@tdate;xdate=From Date,xdate=To Date,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+
+//-------------------------------------------------------------------
+

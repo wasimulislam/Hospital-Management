@@ -1,0 +1,125 @@
+screen mmsideeffectmaster
+
+     sidebar list one//,two
+     sections form one, jscript myscript
+
+     list one
+        caption "Side Effect"
+        table sideeffectmaster
+        order xgenericdesc,xrow
+        fixed xgenericdesc
+		//select "xdosagetype='Adult Oral Dose'"
+        rows 20
+        objects xrow attrib(link "login?screen=mmsideeffectmaster&command=Show&xrow=?"),~
+                xsideeffecttype,xsys,xcmn,xuncmn,xrare,xveryrare
+				
+
+        //header "Generic Name","Description","Therapeutic Classification","LASA","Frequency","Drug Information"
+     end list
+	 
+
+     form one
+        caption "Side Effect For: "+xgenericdesc
+        table sideeffectmaster
+	    primarykey xgenericdesc,xrow
+        order xgenericdesc,xrow
+		fixed xgenericdesc
+        return "login"
+        layout 2
+        pstyle 3
+        objects Show,Clear,Add, Update, Delete,Back,~
+        	    Top,Previous,Next,Bottom,"<p>",~
+                xrow attrib(row 0 1),xsideeffecttype,xsys,xcmn,xuncmn,xrare,xveryrare
+		
+		field xrow
+			event after
+				
+				set globals(xgenericdesc)=xgenericdesc
+			end event
+		end field
+		
+        field xdosagetype
+			//column 2
+			display radio-horizontal
+        end field
+		
+
+        field xsys
+			display combo
+			column 2
+			pick "select xcode from xcodes where zactive='1' and xtype='System'"
+		end field
+
+		field xcmn
+			display multi
+			column 2
+			pick "select xcode from xcodes where zactive='1' and xtype='Common Side Effect'"
+		end field
+		
+		field xuncmn
+			display multi
+			column 2
+			pick "select xcode from xcodes where zactive='1' and xtype='Uncommon Side Effect'"
+		end field
+		
+		field xrare
+			display multi
+			column 2
+			pick "select xcode from xcodes where zactive='1' and xtype='Rare Side Effect'"
+		end field
+		
+		field xveryrare
+			display multi
+			column 2
+			pick "select xcode from xcodes where zactive='1' and xtype='Very Rare Side Effect'"
+		end field
+		
+		field Add
+		event after
+			set xrow=''
+			action show
+		end event
+		end field
+		
+		field Back
+          embed onclick="clicked(this)"
+		  width 100
+        end field
+
+        embed onsubmit="submitit(this)"
+     end form
+
+
+
+
+
+     jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+        function submitit(form){
+
+         if (detail=="Back"){
+            form.screen.value = "mmgenericmaster"
+            form.searchbutton.value = "Find xgenericdesc=?"
+          }
+        }
+      function pickDetail(link){
+        if (navigator.appName.indexOf("Netscape") >= 0){
+          document.one.xinvnum.value=link.text
+          document.one.xbalance.value=primebal.text
+          document.one.xdate.value=date.text
+        }else{
+          document.one.xgenericname.value=link.innerText
+        }
+	return false
+	}	
+        </script>
+     end jscript
+
+
+
+end screen

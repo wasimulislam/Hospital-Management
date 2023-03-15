@@ -1,0 +1,18 @@
+//mapp.menu
+//-------------------------------------------------------------------
+option                           |action
+
+Doctor Wise Investigation Appointment    	 |#classPath+"/login?screen=mmradiooncologyappheader" 
+//Investigation Appointment Search		  	 |#classPath+"/login?screen=mminveappdetailsearch" 
+//Investigation Appointment Day Shift  	 |#classPath+"/login?screen=therapyappshift" 
+Appointment with Charges			|#classPath+"/login?screen=mmprocedureheader"
+Appointment without Charge  |#classPath+"/login?screen=mmmachineappheader" 
+Search Appointment with Charges			  |#classPath+"/login?screen=mmprocedappdetailsearch" 
+//Radiology Machine Appointment  |#classPath+"/login?screen=mmmachineappheader" 
+//Vaccination Appointment Search               |#classPath+"/login?screen=mmvaccinationpatient"
+//Codes & Parameter    		     |#classPath+"/login?menu=mmrasetting" 
+
+
+
+
+//------------------------------------------------------------------------------------------------------------

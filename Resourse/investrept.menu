@@ -1,0 +1,6 @@
+option                           |action
+//-------------------------------------------------------------------
+//Radiology Report   	   		   |#classPath+"/login?screen=*viewcrystal allradiology(3;in,st,dt;zid,patient,xdate;xpatient=Patient ID,xdate=Date,xviewtype=Report View)"																		
+//Orthopaedic OT Schedule  |#classPath+"/login?screen=*bocrystal 3376(xpatientcategory=From Category,xpatientcategory=to Category,xdate=From Date,xdate=To Date)" //mmorthoschedule
+
+Radiology Report   	   		   |#classPath+"/login?screen=*viewcrystal allradiology(2;in,st;zid,patient;xpatient=Patient ID,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"

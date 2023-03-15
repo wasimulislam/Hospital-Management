@@ -1,0 +1,14 @@
+product ZAB ERP
+  
+table smsdetail
+  caption "smsdetail"
+  columns ztime,zutime,zauserid,zuuserid,zid,~
+          xrow,zorg,xvalue,xstatusord,xref,xnote,~
+		  xdate,xmobile,xctype,zactive,xtype,xintype,xunicode,xstatusdor,xcus,xdocnum,xsmssend
+
+  primary key zid,xrow
+  foreign key
+        zid references zbusiness.zid
+  end foreign key
+
+end table

@@ -1,0 +1,21 @@
+product ZAB ERP
+
+table mmcardsurghistoryview
+  caption 	"Appointment View"
+  columns 	zid,xrow,xcase,xpatient,xlong,xdate,xcode,xnote
+  
+primary key zid,xcase,xrow
+
+	foreign key
+        zid references zbusiness.zid
+	end foreign key
+
+sql create view mmcardsurghistoryview (zid,xrow,xcase,xpatient,xlong,xdate,xcode,xnote,xcag,xptcadt1,xptcadt2,xptcadt3,xcabgdt,xcabg,xsrgothers,xptca1,xptca2,xptca3) ~
+  as select isnull(m.zid,''),isnull(s.xrow,''),isnull(m.xcase,''),isnull(m.xpatient,''),isnull(s.xlong,''),isnull(convert(VARCHAR,m.xdate,106),'') as xdate,isnull(s.xcode,''),isnull(s.xnote,''),~
+  isnull(s.xcag,''),isnull(convert(VARCHAR, s.xptcadt1, 103),''),isnull(convert(VARCHAR, s.xptcadt2, 103),''),isnull(convert(VARCHAR, s.xptcadt3, 103),''),isnull(convert(VARCHAR,s.xcabgdt, 103),''),isnull(s.xcabg,''),~
+  isnull(s.xsrgothers,''),isnull(s.xptca1,''),isnull(s.xptca2,''),isnull(s.xptca3,'') ~
+  FROM mmappointment (NOLOCK) m ~
+  join mmsurgichistory (NOLOCK) s on m.zid=s.zid and m.xcase=s.xcase ~
+  JOIN mmprescription p on m.zid=p.zid and m.xpatient=p.xpatient 
+
+end table

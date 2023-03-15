@@ -1,0 +1,48 @@
+product ZAB ERP
+
+table caitemview
+
+    caption "Items Master"
+	columns zid,xitem,xdesc,xgitem, xcitem,xcatitem,xgenericname
+    primary key zid,xitem,xdesc,xgitem, xcitem,xcatitem,xgenericname
+  
+  foreign key
+        zid references zbusiness.zid
+  end foreign key  
+  
+	sql create view caitemview(zid,xitem,xdesc,xgitem, xcitem,xcatitem,xunitpur,xhscode,~
+          xunit,xtitem,xalias,zactive,xpnature,~
+		  xunitsel,xminqty,xtaxrate,xcountry,xtheircode,xpartno,~
+		  xmodel,xserialnum,xtype,xcus,xitmedept,xitemsubdept,xpackweightnet,~
+	      xsubcat,xsupptaxamt,xtypeitem,xstocktype,xstockcat,xnote,xmaxqty,xvatcode,xgenericname,~
+		  xwh,xsup,xunitstk,xunitalt,xunitsta,xlife,xminordqty,xmaxordqty,xreordqty,xipprice,xopprice, ~
+		  xopmargin,xipmargin,xitemold,xstrength,xdeptname,xhrc1,xhrc2,xhrc3,xhrc4,xhrc5,~
+		  xdosageandadmin,xroute,xwarning,xpreparation,~
+		  xpharmacology,xsideeffect,xuseinpregnancy,xcontraindication,xindication,xpharmaprecaution,~
+		  xdrugtype,xcomposition,xorg,xdruginteraction,~
+		  xoverdosage,xotherinfo,~
+          xday,xrem1,xrem2,xrefval,xmcode,xparam,xspecimen,~
+		  xitemdept,xsupptaxrate,xbarcode,xbodycode,xincode,xdornum,xdatecreate,xautogrn,xstarttime,xendtime,xdisctype,~
+		 xmethodology,xbomkey,~
+		 xotduration,xotdurationtime,~
+		 xprodnature,xacc,xtolpercent,xtypeobj,xgitemdesc,xcfpur,xrate,xcost)~	
+	as Select c.zid,c.xitem,c.xdesc,c.xgitem, c.xcitem,c.xcatitem,c.xunitpur,c.xhscode,~
+          c.xunit,c.xtitem,c.xalias,c.zactive,c.xpnature,~
+		  c.xunitsel,c.xminqty,c.xtaxrate,c.xcountry,c.xtheircode,c.xpartno,~
+		  c.xmodel,c.xserialnum,c.xtype,c.xcus,c.xitmedept,c.xitemsubdept,c.xpackweightnet,~
+	      c.xsubcat,c.xsupptaxamt,c.xtypeitem,c.xstocktype,c.xstockcat,c.xnote,c.xmaxqty,c.xvatcode,c.xgenericname,~
+		  c.xwh,xsup,c.xunitstk,c.xunitalt,c.xunitsta,c.xlife,c.xminordqty,c.xmaxordqty,c.xreordqty,c.xipprice,c.xopprice, ~
+		  c.xopmargin,c.xipmargin,c.xitemold,c.xstrength,c.xdeptname,c.xhrc1,c.xhrc2,c.xhrc3,c.xhrc4,c.xhrc5,~
+		  c.xdosageandadmin,c.xroute,c.xwarning,c.xpreparation,~
+		  c.xpharmacology,c.xsideeffect,c.xuseinpregnancy,c.xcontraindication,c.xindication,c.xpharmaprecaution,~
+		  c.xdrugtype,c.xcomposition,c.xorg,c.xdruginteraction,~
+		  c.xoverdosage,c.xotherinfo,~
+          c.xday,c.xrem1,c.xrem2,c.xrefval,c.xmcode,c.xparam,c.xspecimen,~
+		  c.xitemdept,c.xsupptaxrate,c.xbarcode,c.xbodycode,c.xincode,c.xdornum,c.xdatecreate,c.xautogrn,c.xstarttime,c.xendtime,c.xdisctype,~
+		  c.xmethodology,c.xbomkey,~
+		  c.xotduration,c.xotdurationtime,~
+		  c.xprodnature,c.xacc,c.xtolpercent,cc.xtypeobj,cc.xlong,c.xcfpur,c.xrate,c.xcost  from caitem(NOLOCK) c join xcodes(NOLOCK) cc on c.zid=cc.zid and c.xgitem=cc.xcode where cc.xtype='Item Group'
+		  
+
+
+end table

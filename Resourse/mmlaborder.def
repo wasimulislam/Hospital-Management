@@ -1,0 +1,20 @@
+product ZAB ERP
+
+table mmlaborder
+  caption "Lab Order"
+  columns ztime,zutime,zid,zauserid,zuuserid,xrow,~
+          xitem,xrem,xcase,xpatient,xepisodeno,xepisodetype,xstatus,~
+		  //new add
+		  xpatdate,xotherinfo,xinvestigationhistroy
+
+
+  primary key zid,xcase,xrow
+
+  foreign key
+        zid references zbusiness.zid
+        zid,xcase references mmappointment.zid,xcase
+  end foreign key
+
+end table
+
+

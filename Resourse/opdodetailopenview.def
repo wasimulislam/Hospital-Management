@@ -1,0 +1,26 @@
+product ZAB ERP
+
+table opdodetailopenview
+  caption "Do Detail Arc View"
+  columns zid,xrow,xdornum,xitem,xqtyord,xsign,xqtycrn,xwh,xstatusord,xstatusprint,xepisodetype
+
+
+  primary key zid,xvoucher
+
+  foreign key
+        zid references zbusiness.zid
+  end foreign key
+
+	sql create view opdodetailopenview (zid,xdornum,xrow,xwh,xitem,xqtyord,xsign,xqtycrn,xstatusord,xstatusprint,xepisodetype) ~ 
+								as SELECT d.zid,d.xdornum,d.xrow,d.xwh,d.xitem,isnull(d.xqtyord, 0),d.xsign,d.xqtycrn,d.xstatusord,h.xstatusprint,d.xepisodetype ~
+								FROM opdodetail d WITH (NOLOCK) JOIN opdoheader h WITH (NOLOCK) ON d.zid = h.zid AND d.xdornum = h.xdornum ~
+								//AND d.xitem = c.xitem ~
+								//join xcodes x on x.zid = c.zid and x.xcode=c.xgitem and x.xtype='Item Group' ~
+								WHERE isnull(xstatusprint,'')<>'Cancelled' and isnull(d.xstatusord,0)<>'1'  and isnull(d.xwh,'')<>'' and cast(d.ztime as date) >= DATEADD(day,-7, GETDATE())
+								//x.xtypeobj='Product' ~
+								
+
+								
+								
+								  
+	 end table							  

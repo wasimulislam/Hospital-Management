@@ -1,0 +1,202 @@
+screen mmdietsearch
+
+	 pstyle datatable
+     sections form one,list two,list requested,jscript myscript 
+
+
+     list two
+        caption "Diet Requsition Approved List" 
+        table mmdietaheaderview
+		primarykey xreqno
+        order xreqno
+        //fixed xpatient
+		//select "(xreqno='"+xreqno+"' or '"+xreqno+"'='') and xstatusdtreq='Approved' and ((cast(ztime as date) between '"+xfdate+"' and '"+xtdate+"' and '"+xselectdate+"'='1') or '"+xselectdate+"'='0')" 
+		select "(xreqno='"+xreqno+"' or '"+xreqno+"'='') and xstatusdtreq='Approved' and ((cast(xdatereq as date) between '"+xfdate+"' and '"+xtdate+"' and '"+xselectdate+"'='0') or '"+xselectdate+"'='1')" 
+        rows 20
+        
+		objects xreqno,xadmissionno display(hide),xpatient,xname,~
+		xage,xsex,xwing,xfloor,xbedno,xheightvit,xweightvit,~
+		xcurrdiet,xdietdetails,xstatusdtreq display(const),ztime
+		
+		field xcurrdiet
+		display const
+		end field
+		
+		field xname
+		display const
+		end field
+		
+		field xsex
+		display const
+		end field
+		
+		field xwing
+		display const
+		end field
+		
+		field xbedno
+		display const
+		end field
+		
+		field xheightvit
+		display const
+		end field
+		
+		field xweightvit
+		display const
+		end field
+		
+		field xpatient
+		display const
+		end field
+		
+		field xfloor
+		display const
+		end field
+		
+		field xdietdetails 
+			caption Diet Advice
+			display const
+			pick "select xcode from xcodes where zid='"#id+"' and xtype='Diet Type' and zactive=1"
+		end field
+		
+		field xstatusdtreq 
+			caption Diet Request Status
+		end field
+		
+		field ztime
+			format dd-MMM-yyyy hh:mm:ss a
+			display const
+		end field
+		
+		header  "Requsition No.","","Patient ID","Name","Age","Gender","Wing","Floor","Bed No","Height","Weight","Current Diet Details","Diet Detail","Diet Request Status","Request Date"
+	
+     end list
+	 
+	 list requested 
+        caption "Diet Requsition Requested List" 
+        table mmdietaheaderview
+		primarykey xreqno
+        order xreqno
+		searchselect "xreqno"
+		//select "(xreqno='"+xreqno+"' or '"+xreqno+"'='') and xstatusdtreq='Requested' and xreqno <> '' and xstatusdtprocess='Continue'"
+		select "condition0 and xstatusdtreq='Requested' and xreqno <> '' and xstatusdtprocess='Continue' and ((cast(xdatereq as date) between '"+xfdate+"' and '"+xtdate+"' and '"+xselectdate+"'='0') or '"+xselectdate+"'='1')" 
+        rows 20
+        
+		objects xreqno,xadmissionno display(hide),xpatient,xname,xage,xsex,xwing,xfloor,xbedno,xheightvit,xweightvit,~
+		xcurrdiet,xdietdetails,xstatusdtreq
+		
+		field xcurrdiet
+		  display const
+		end field
+		
+		field xname
+		  display const
+		end field
+		
+		field xsex
+		 display const
+		end field
+		
+		field xwing
+		display const
+		end field
+		
+		field xbedno
+		display const
+		end field
+		
+		field xheightvit
+		display const
+		end field
+		
+		field xweightvit
+		display const
+		end field
+		
+		field xpatient
+		display const
+		end field
+		
+		field xfloor
+		display const
+		end field
+		
+		field xdietdetails 
+			caption Diet Advice
+			display const
+			pick "select xcode from xcodes where zid='"#id+"' and xtype='Diet Type' and zactive=1"
+		end field
+		
+		field xstatusdtreq 
+			caption Diet Request Status
+			display const
+		end field
+		
+		header  "Requsition No.","","Patient ID","Name","Age","Gender","Wing","Floor","Bed No","Height","Weight","Current Diet Details","Diet Detail","Diet Request Status"
+				
+				
+     end list
+	 
+	 
+	form one
+        caption "Diet Requsition Search"
+		primarykey xreqno
+        order xreqno
+        layout 12
+        pstyle 3
+		prow 2
+       objects Clear,Search,~
+		 xreqno,xselectdate,xfdate,xtdate //,xstatusdtreq
+	
+	field Search
+		width 100
+		height 40
+		event before
+			if xreqno .eq. '"+xreqno+"'
+				set xselectdate=0
+			else 
+				set xselectdate=1
+			end if
+		
+		end event
+	end field	
+	
+	
+	field xfdate
+		attrib local
+		//display text
+	end field
+	
+	//field xselectdate
+	//	attrib local
+	//	display combo
+	//	pick "Requested,Approved"
+	//end field
+	
+	field xtdate
+		attrib local
+		//display text
+	end field
+	
+	
+	field xreqno
+		pick list mmdtreqapprove
+	end field
+		
+		
+		field Clear
+			width 100
+		    height 40
+		end field	
+
+	embed onsubmit="submitit(this)"
+
+	
+     end form
+	
+	jscript myscript
+	
+     end jscript
+	
+end screen

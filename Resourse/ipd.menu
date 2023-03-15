@@ -1,0 +1,17 @@
+//ipd.menu
+//-------------------------------------------------------------------
+option                           |action                                   
+//-------------------------------------------------------------------
+  
+Patient Admission                |#classPath+"/login?screen=mmadmission"
+Patient Transfer                 |#classPath+"/login?screen=mmpatienttransfer"
+//IPD Order Entry                  |#classPath+"/login?screen=opdoheaderipdorder"
+IPD Package Assign                |#classPath+"/login?screen=mmipdpackageassign"
+
+Patient Transfer Prev Bed                |#classPath+"/login?screen=mmpatienttransferreturn"
+
+Search Admitted Patient             |#classPath+"/login?screen=mmadmissionsearch"
+Out Doctor Entry             	 |#classPath+"/login?screen=pdoutdoctor"
+//-------------------------------------------------------------------
+Patient Wristband           |#classPath+"/login?screen=*viewcrystal patientwristband(2;in,st;zid,admissionno;xadmissionno=Admission No,xviewtype=Report View;zremip=http://172.16.0.48:32786/zab/)"
+//Admission Reports	      |#classPath+"/login?menu=ipdrept"     	            |ac  		|   	|210

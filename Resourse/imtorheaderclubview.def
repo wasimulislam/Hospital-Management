@@ -1,0 +1,19 @@
+product ZAB ERP
+
+table imtorheaderclubview
+  caption "Store Req View"
+  columns zid,xtornum,xdate,xlong,xfwh,xtwh,xstatustor,xtitem,xbuilding,xtypesr,xregi,xproject,xdatereq,xreqtype,xtypeobj,xappnote,xempunit
+
+   primary key zid,xtornum
+
+  foreign key
+        zid references zbusiness.zid
+  end foreign key
+
+	sql CREATE VIEW imtorheaderclubview(zid,xtornum,xdate,xfwh,xtwh,xstatustor,xregi,xproject,xtrnnum,xstatusclub) ~
+	AS ~
+	SELECT zid,xtornum,xdate,xfwh,xtwh,xstatustor,xregi,xproject,isnull(xtrnnum,''),xstatusclub ~
+	FROM imtorheader WITH (NOLOCK) where left(xtrnnum,4)='SPRC'
+
+end table
+

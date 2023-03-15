@@ -1,0 +1,18 @@
+product ZAB ERP
+
+table mmonexamview
+	caption "Examination View"
+	columns zid,xrow,xlong,xcode,xnote,xpatient,xcase
+
+	primary key zid,xcase,xrow
+
+	foreign key
+        zid references zbusiness.zid
+	end foreign key
+	
+
+	sql CREATE VIEW mmonexamview (zid,xrow,xlong,xcode,xnote,xpatient,xcase,xdate) AS SELECT a.zid,a.xrow,a.xlong,a.xcode,a.xnote,p.xpatient,a.xcase,isnull(convert(VARCHAR, b.xdate, 106),'') as xdate from mmonexam a  ~
+	JOIN mmprescription p on a.zid=p.zid and a.xpatient=p.xpatient ~
+	JOIN mmappointment b on a.zid=b.zid and a.xcase=b.xcase
+	
+end table

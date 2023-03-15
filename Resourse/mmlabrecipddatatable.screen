@@ -1,0 +1,435 @@
+screen mmlabrecipddatatable
+
+     caption "Chart of Accounts"
+     sidebar //list one
+	 pstyle datatable
+     sections  form one,list one,list two,list three, jscript myscript //list labtaskcoll
+
+
+     list one
+        caption "Lab Test Item Collected"
+        table mmsample
+        primarykey xsampleid
+        order xsampleid desc
+		fixed xpatient
+	    searchselect "xcatitem"
+		dtordering [0,"desc"]
+		select "isnull(xstatussample,'') in ('Collected') and ((cast(xcolldatetime as date) between '"+xfdate+"' and '"+xtdate+"' and '"+xselectdate+"'='1') or '"+xselectdate+"'='0') and ((cast(xcolldatetime as time) between '"+xftime+"' and '"+xttime+"' and '"+xselecttime+"'='1') or '"+xselecttime+"'='0') and xsampleid in ( select distinct xsampleid from mmlabtask where zid='"+#id+"' and xpatient='"+xpatient+"' and xitem in (select xitem from caitem where xgitem='1021' and condition0)) " // or xdesc like '%"+xdesc+"%'"
+		//select "distinct xsampleid"
+		
+		dtinfo false
+        rows 30
+        
+        objects xselection,xsampleid display(const),~
+	
+		//descspc equals(( select xlong from xcodes where zid=mmsample.zid and xcode=mmsample.xspecimen and xtype='SPECIMENNAME')),~
+		xspecimen display(const),~
+		xstatussample display(const),xspecimentype display(const),xcolldatetime display(const),xmcode,xrackid,xtubepos,View_Label,View_Test
+		
+		 field View_Label
+					display button
+					//class careports(getReport{lablabel;2;in,st;zid,sampleid;xsampleid;View/Print Label})
+					rptparams lablabel;2;in,st;zid,sampleid;xsampleid;Print_Label
+		   end field
+		//descdate equals(( cast(xcolldatetime as date))),desctime equals(( cast(xcolldatetime as time)))
+		//descdatett equals((convert(VARCHAR, xcolldatetime, 100)))
+		//field xreceive
+			//display checkbox
+			//attrib local
+			//linespname zabsp_validateafteropdodetailline
+		//end field
+		
+		field View_Test
+		display button
+		  rptparams mmlabsamplewisetest;2;in,st; @zid,@xsampleid;xsampleid;Print_Test
+		end field
+		
+		field xspecimen
+			display const
+		end field
+		
+		field xcolldatetime
+			format dd-MMM-yyyy hh:mm:ss a
+			//format dd-MMMM-yyyy hh:mm:ss a
+			//format dd-MM-yyyy HH:mm:ss 
+		end field
+		
+		
+		
+		field xmcode
+			
+			pick "select xmcode from lismachinemst where zid='"+#id+"' and zactive='1'"
+			display combo
+		end field
+		
+
+        headers "","Sample ID","Specimen Name","Status","Type","Collection Date Time","Machine Code","Rack ID","Tube POS","View_Report","View_Report"
+		end list
+		
+		
+		
+	 
+	 
+	    list two
+        caption "Lab Test Item Received"
+        table mmsample
+        primarykey xsampleid
+        order xsampleid desc
+		fixed xpatient
+	    dtordering [0,"desc"]
+		select "isnull(xstatussample,'') in ('Received')" // or xdesc like '%"+xdesc+"%'"
+		//select "distinct xsampleid"
+		
+		dtinfo false
+        rows 30
+        
+        objects xselection,xsampleid display(const),~
+	
+		//descspc equals(( select xlong from xcodes where zid=mmsample.zid and xcode=mmsample.xspecimen and xtype='SPECIMENNAME')),~
+		xspecimen display(const),~
+		xstatussample display(const),xspecimentype display(const),xcolldatetime display(const),xreceivedatetime display(const),xmcode display(const),xrackid display(const),xtubepos display(const),View_Label,View_Test
+		
+		 field View_Label
+					display button
+					//class careports(getReport{lablabel;2;in,st;zid,sampleid;xsampleid;View/Print Label})
+					rptparams lablabel;2;in,st;zid,sampleid;xsampleid;Print_Label
+		   end field
+		//descredate equals(( cast(xreceivedatetime as date))),descretime equals(( cast(xreceivedatetime as time)))
+		//desctime equals(((FORMAT(xcolldatetime,'hh:mm tt'))))
+		//descdate equals(( cast(xcolldatetime as date))),xcolltime,
+		
+		//field xreceive
+			//display checkbox
+			//attrib local
+			//linespname zabsp_validateafteropdodetailline
+		//end field
+		
+		field View_Test
+		display button
+		  rptparams mmlabsamplewisetest;2;in,st; @zid,@xsampleid;xsampleid;Print_Test
+		end field
+		
+		field xcolldatetime
+			format dd-MMM-yyyy hh:mm:ss a
+			//format dd-MMMM-yyyy hh:mm:ss a
+			//format dd-MM-yyyy HH:mm:ss 
+		end field
+		
+		
+		field xreceivedatetime
+			format dd-MMM-yyyy hh:mm:ss a
+			//format dd-MMMM-yyyy hh:mm:ss a
+			//format dd-MM-yyyy HH:mm:ss 
+		end field
+		
+		
+		
+
+        headers "","Sample ID","Specimen Name","Status","Type","Collection Date Time","Received Date Time","Machine","Rack ID","Tube POS","View_Report","View_Report"
+		end list
+		
+		
+		list three
+        caption "Rejected Sample List"
+        table mmsample
+        primarykey xsampleid
+        order xsampleid
+		fixed xpatient
+	    
+		select "isnull(xstatussample,'') in ('Rejected')" // or xdesc like '%"+xdesc+"%'"
+		//select "distinct xsampleid"
+		
+		dtinfo false
+        rows 30
+        
+        objects xsampleid display(const),~
+	
+		//descspc equals(( select xlong from xcodes where zid=mmsample.zid and xcode=mmsample.xspecimen and xtype='SPECIMENNAME')),~
+		xspecimen display(const),~
+		xstatussample display(const),xspecimentype display(const),xcolldatetime display(const),xreceivedatetime display(const),xidreject display(const),xdatereject display(const)
+		//descredate equals(( cast(xreceivedatetime as date))),descretime equals(( cast(xreceivedatetime as time)))
+		//desctime equals(((FORMAT(xcolldatetime,'hh:mm tt'))))
+		//descdate equals(( cast(xcolldatetime as date))),xcolltime,
+		
+		//field xreceive
+			//display checkbox
+			//attrib local
+			//linespname zabsp_validateafteropdodetailline
+		//end field
+		
+		
+		field xcolldatetime
+			format dd-MMM-yyyy hh:mm:ss a
+			//format dd-MMMM-yyyy hh:mm:ss a
+			//format dd-MM-yyyy HH:mm:ss 
+		end field
+		
+		
+		field xreceivedatetime
+			format dd-MMM-yyyy hh:mm:ss a
+			//format dd-MMMM-yyyy hh:mm:ss a
+			//format dd-MM-yyyy HH:mm:ss 
+		end field
+		
+		field xdatereject
+			format dd-MMM-yyyy hh:mm:ss a
+			//format dd-MMMM-yyyy hh:mm:ss a
+			//format dd-MM-yyyy HH:mm:ss 
+		end field
+		
+		
+		
+		
+
+        headers "Sample ID","Specimen Name","Status","Type","Collection Date Time","Received Date Time","Reject ID","Reject Date Time"
+		end list
+     
+     
+    
+	
+
+	 
+     form one
+        caption "Lab Receive"
+        //table mmsample
+		primarykey xsampleid
+        order xsampleid
+        //select "xepisodetype<>'OPD'"
+        return "login"
+        layout 12
+        pstyle 3
+		//pload Topdatatable
+		prow 2
+		//dtordering false
+		//dtsearching false
+		//dtinfo false
+		//dtlengthChange false
+		//dtpaging false
+
+       objects Clear,Search,Select_All,DeSelect_All,Confirm,Reject After Received,Process,~
+		 xsampleid display(hide),xpatient,xpatientdesc,xcase display(hide),~
+		 xepisodetype display(const),xbedno,xage,~
+		 xcatitem ,xselectdate,xfdate,xtdate,xselecttime,xftime,xttime
+ 		
+
+	
+
+
+	
+	
+	field Search
+		width 100
+		height 40
+		event before
+			set xepisodetype=mmpatientepisode.xepisodetype(" xpatient='"+xpatient+"' and xstatus='Open'")
+			set xcase=mmpatientepisode.xcase(" xpatient='"+xpatient+"' and xstatus='Open'")
+			if xepisodetype .eq. ""
+				set xepisodetype="OPD"
+				set #field(xbedno.display)="hidden"
+			end if
+		end event
+		event after
+			//set sampleid =mmsample.xsampleid("xpatient='"+xpatient+"' and xstatussample in ('Collected','Received')")		
+			//if sampleid .ne. "" 
+			//	set xsampleid=sampleid
+			//end if
+			
+			set globals(xfdate)=xfdate
+			set globals(xtdate)=xtdate
+			set globals(xcatitem)=xcatitem
+			action show
+		end event
+		
+		
+	end field	
+	
+	
+	
+	
+	
+	field xfdate
+		attrib local
+		
+	end field
+	
+	field xtdate
+		attrib local
+		
+	end field
+	
+	field xftime
+		attrib local
+	end field
+	
+	field xttime
+		attrib local
+	end field
+	
+	
+	field Select_All
+	    width 100
+		height 40
+		event after
+	
+		
+			set temp=#sesql("Update mmsample set xselection='1' where zid='"+#id+"' and xpatient='"+xpatient+"' and xsampleid in (select distinct xsampleid from mmlabtask (NOLOCK) where zid='"+#id+"' and xitem in (select xitem from caitem where zid='"+#id+"' and xgitem='1021' and xcatitem>=(CASE when ISNULL('"+xcatitem+"','')='' then '' else '"+xcatitem+"' end) and xcatitem<=(CASE when ISNULL('"+xcatitem+"','')='' then 'zzz' else '"+xcatitem+"' end))) and isnull(xstatussample,'')='Collected' and ((cast(xcolldatetime as date) between '"+xfdate+"' and '"+xtdate+"' and '"+xselectdate+"'='1') or '"+xselectdate+"'='0') and ((cast(xcolldatetime as time) between '"+xftime+"' and '"+xttime+"' and '"+xselecttime+"'='1') or '"+xselecttime+"'='0') ") 
+			
+		end event
+	end field
+	
+	field DeSelect_All
+	    width 100
+		height 40
+		event after
+	
+		
+			set temp=#sesql("Update mmsample set xselection='0' where zid='"+#id+"' and xpatient='"+xpatient+"' and xselection='1' and xsampleid in (select distinct xsampleid from mmlabtask (NOLOCK) where zid='"+#id+"' and xitem in (select xitem from caitem where zid='"+#id+"' and xgitem='1021' and xcatitem>=(CASE when ISNULL('"+xcatitem+"','')='' then '' else '"+xcatitem+"' end) and xcatitem<=(CASE when ISNULL('"+xcatitem+"','')='' then 'zzz' else '"+xcatitem+"' end))) and isnull(xstatussample,'')='Collected' and ((cast(xcolldatetime as date) between '"+xfdate+"' and '"+xtdate+"' and '"+xselectdate+"'='1') or '"+xselectdate+"'='0') and ((cast(xcolldatetime as time) between '"+xftime+"' and '"+xttime+"' and '"+xselecttime+"'='1') or '"+xselecttime+"'='0') ") 
+			
+		end event
+	end field
+	
+	
+	
+	
+	field xpatient
+		pick list xpatient
+			event after
+				set globals(xpatient)=xpatient
+				
+			end event
+	end field
+
+	
+	field xcatitem
+		attrib local
+		caption Lab Test Category
+		pick "select xcode from xcodes where zid='"+#id+"' and xtype='Lab Test Category' and zactive='1'" 
+		display combo
+	end field
+
+
+	
+	field xpatientdesc
+		attrib local
+		display const
+		caption Name
+		event after
+			set xpatientdesc=mmpatient.xname("xpatient='"+xpatient+"'")+"<br>Mobile No:"+mmpatient.xmobile("xpatient='"+xpatient+"'")
+
+           set xpatientdesc=xpatientdesc+"<br>Gender:"+mmpatient.xsex("xpatient='"+xpatient+"'")
+		end event
+	end field
+	
+	field xsex
+		attrib local
+		display const
+		event after
+			set xsex=mmpatient.xsex("xpatient='"+xpatient+"'")
+		end event
+	end field
+	
+	field xbedno
+          attrib local
+          display const
+          caption Bed Description
+	    event after
+		set xbedno=mmadmission.xbedno("xadmissionno='"+xcase+"'")
+		set roomno=caroomdetail.xroom("xbedno='"+xbedno+"'")
+		set roomdesc=caroomheader.xdesc("xroom='"+roomno+"'")
+		set xbedno="Bed No: "+xbedno+"</br>"+"Room No: "+roomno+"</br>"+roomdesc
+		
+	    end event		
+        end field
+	
+	    field xage
+			attrib local
+			event after
+				set xage=#sesql("select max(xage) from mmlabtask where zid='"+#id+"' and xpatient='"+xpatient+"'")
+				///set xage=#sesql("select max(xage) from mmlabtask where zid='"+#id+"' and xpatient='"+xpatient+"' and ((cast(xcolldatetime as date) between '"+xfdate+"' and '"+xtdate+"' and '"+xselectdate+"'='1') or '"+xselectdate+"'='0') and ((cast(xcolldatetime as time) between '"+xftime+"' and '"+xttime+"' and '"+xselecttime+"'='1') or '"+xselecttime+"'='0')") 
+			
+			end event
+		end field
+		
+		
+		field Confirm
+			width 100
+		    height 40
+			event before
+			if xpatient .eq. ""
+				error "Cannot Proceed--Please Select Patient ID"
+			end if
+			end event
+			event after
+				set temp = #spsql(zabsp_OP_SampleReceive,#id,#user,"mmlabrecipddatatable",xpatient,xcatitem,xcase,xselectdate,xfdate,xtdate,xselecttime,xftime,xttime)
+			action show
+			end event
+		end field
+		
+		field Reject
+			width 100
+		    height 40
+			event before
+			if xpatient .eq. ""
+				error "Cannot Proceed--Please Select Patient ID"
+			end if
+			end event
+			event after
+				set temp = #spsql(zabsp_OP_SampleReceive,#id,#user,"mmlabreject",xpatient,xcatitem,xcase,xselectdate,xfdate,xtdate,xselecttime,xftime,xttime)
+			action show
+			end event
+		end field
+		
+		field Process
+		    width 100
+		    height 40
+			event before
+			if xpatient .eq. ""
+				error "Cannot Proceed--Please Select Patient ID"
+			end if
+			end event
+			event after
+				set temp=#spsql(zabsp_PRCS_LIS,#id,#user,xpatient)
+			end event
+		end field
+
+		field Clear
+		width 100
+		    height 40
+		end field
+	
+     end form
+
+
+
+
+
+     jscript myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+        function budgeted(b){
+          detail="budgeted"
+        }
+        function submitit(form){
+
+	    if (detail=="Sub Code"){
+            form.screen.value = "acsub"
+            form.searchbutton.value = "Top"
+            //return false
+          }
+	    if (detail=="budgeted"){
+            form.screen.value = "glbud"
+            form.searchbutton.value = "Top"
+            //return false
+          }
+        }
+
+        </script>
+     end jscript
+
+
+
+end screen

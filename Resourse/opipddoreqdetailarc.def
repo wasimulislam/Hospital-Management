@@ -1,0 +1,23 @@
+product ZAB ERP
+
+table opipddoreqdetailarc
+
+  caption "IPD PC Requisition Detail"
+  
+  columns ztime,zutime,zauserid,zuuserid,zid,zphdistime,zphdisuid,~
+		  xdocnum,xdocrow,~
+          xreqnum,xrow,xitem,xitemold,xlong,xwh,~
+          xqtyord,xqtydel,xunit,xcase,xcostcenter,xgenericname,xgenericdesc,~
+		  xqtyreq,xqtyalc,xqtycom,xstype,xbinref,~ 
+         xtemplateinst,xfrequency,xtakingtime,xinst,xdrug,xdosage,xdose,xdrugtype,xduration1,xdurationday,~
+         xrem,xroute,xmeddetail,xmedcadvice,zactive,xstrengthgn,xduration,~
+		  xbatch,xnote,xstatusdisc,xdateexp
+
+  primary key zid,xdocnum,xdocrow
+
+  foreign key
+        zid references zbusiness.zid
+        zid,xdocnum references opipddoreqheaderarc.zid,xdocnum
+  end foreign key
+
+end table

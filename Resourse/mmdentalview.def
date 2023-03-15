@@ -1,0 +1,49 @@
+product ZAB ERP
+
+table mmdentalview
+  caption 	"Appointment View"
+  columns 	zid,xcase,xpatient,xdoctor,xdate,xposition,xname,xage,xmobile,~
+			xstatus,xyearperdate,xchest,xchestprbcheck,xheartrate,xmorbcheck,xbloodpressure,xbpcheck,xpacemakerother,xpacemaker,~
+			xheartprob,xheartvalve,xheartmedic,xrheumaticfever,xartificialvalve,xbloodproblem,xintestinalproblem,~
+			xulcersprblm,xkidneyprblm,xcancerprblm,xartvlvcheck,xheartmedicheck,xbldprbcheck,~
+			xintestinalprbcheck,xulcerprbcheck,xkdnyprbcheck,xcancerprbcheck,xlocalanestheticcheck,xpencilincheck,~
+			xsulfadrugcheck,xaspirincheck,xrubbercheck,xdiabetescheck,xsmokingcheck,xdrinkingcheck,xlivercheck,xneurocheck,~
+			xdrugcheck,xantibioticcheck,xcoumadincheck,xhbpmcheck,xaspcheck,xsteroidcheck,xhormoncheck,xpregnantcheck,xnursingcheck,xrheumaticradio,~
+			xheartmedicradio,xheartrateradio,xartificialradio,xdiabetic,xdrinkingalchol,xsmokingyes,xhepatitesjanliv,xneurological,xhistryofalcohol,xduedate,~
+			xliver,xhepatitesjancheck
+                                      
+		    
+  
+primary key zid,xcase
+
+	foreign key
+        zid references zbusiness.zid
+	end foreign key
+
+sql create view mmdentalview (zid,xcase,xpatient,xdoctor,xdate,xposition,xname,xage,xmobile,~
+			xstatus,xyearperdate,xchest,xchestprbcheck,xheartrate,xmorbcheck,xbloodpressure,xbpcheck,xpacemakerother,xpacemaker,~
+			xheartprob,xheartvalve,xheartmedic,xrheumaticfever,xartificialvalve,xbloodproblem,xintestinalproblem,~
+			xulcersprblm,xkidneyprblm,xcancerprblm,xartvlvcheck,xheartmedicheck,xbldprbcheck,~
+			xintestinalprbcheck,xulcerprbcheck,xkdnyprbcheck,xcancerprbcheck,xlocalanestheticcheck,xpencilincheck,~
+			xsulfadrugcheck,xaspirincheck,xrubbercheck,xdiabetescheck,xsmokingcheck,xdrinkingcheck,xlivercheck,xneurocheck,~
+			xdrugcheck,xantibioticcheck,xcoumadincheck,xhbpmcheck,xaspcheck,xsteroidcheck,xhormoncheck,xpregnantcheck,xnursingcheck,xrheumaticradio,~
+			xheartmedicradio,xheartrateradio,xartificialradio,xdiabetic,xdrinkingalchol,xsmokingyes,xhepatitesjanliv,xneurological,xhistryofalcohol,xduedate,~
+			xliver,xhepatitesjancheck) ~
+			
+			as select b.zid,isnull(b.xcase,''),isnull(b.xpatient,''),isnull(b.xdoctor,''),convert(VARCHAR, b.xdate, 106) as xdate,isnull(p.xposition,''),isnull(m.xname,''),isnull(b.xage,''),isnull(b.xmobile,''),~
+			isnull(h.xstatus,''),isnull(h.xyearperdate,''),isnull(h.xchest,''),isnull(h.xchestprbcheck,''),~
+			isnull(h.xheartrate,''),isnull(h.xmorbcheck,''),isnull(h.xbloodpressure,''),isnull(h.xbpcheck,''),isnull(h.xpacemakerother,''),isnull(h.xpacemaker,''),~
+			isnull(h.xheartprob,''),isnull(h.xheartvalve,''),isnull(h.xheartmedic,''),isnull(h.xrheumaticfever,''),isnull(h.xartificialvalve,''),isnull(h.xbloodproblem,''),~
+			isnull(h.xintestinalproblem,''),isnull(h.xulcersprblm,''),isnull(h.xkidneyprblm,''),isnull(h.xcancerprblm,''),isnull(h.xartvlvcheck,''),~
+			isnull(h.xheartmedicheck,''),isnull(h.xbldprbcheck,''),isnull(h.xintestinalprbcheck,''),isnull(h.xulcerprbcheck,''),isnull(h.xkdnyprbcheck,''),isnull(h.xcancerprbcheck,''),~
+			isnull(h.xlocalanestheticcheck,''),isnull(h.xpencilincheck,''),isnull(h.xsulfadrugcheck,''),isnull(h.xaspirincheck,''),~
+			isnull(h.xrubbercheck,''),isnull(h.xdiabetescheck,''),isnull(h.xsmokingcheck,''),isnull(h.xdrinkingcheck,''),isnull(h.xlivercheck,''),isnull(h.xneurocheck,''),~
+			isnull(h.xdrugcheck,''),isnull(h.xantibioticcheck,''),isnull(h.xcoumadincheck,''),isnull(h.xhbpmcheck,''),isnull(h.xaspcheck,''),~
+			isnull(h.xsteroidcheck,''),isnull(h.xhormoncheck,''),isnull(h.xpregnantcheck,''),isnull(h.xnursingcheck,''),isnull(h.xrheumaticradio,''),isnull(h.xheartmedicradio,''),~
+			isnull(h.xheartrateradio,''),isnull(h.xartificialradio,''),isnull(h.xdiabetic,0),isnull(h.xdrinkingalchol,0),isnull(h.xsmokingyes,0),isnull(h.xhepatitesjanliv,0),~
+			isnull(h.xneurological,0),isnull(h.xhistryofalcohol,0),convert(VARCHAR, h.xduedate, 106),isnull(h.xliver,''),isnull(h.xhepatitesjancheck,'') from mmappointment (NOLOCK) b ~
+			left join mmdentisthistory (NOLOCK) h on b.zid=h.zid and b.xcase=h.xcase ~
+			left join pdmst (NOLOCK) p on b.zid = p.zid and b.xdoctor=p.xstaff ~
+			left join mmpatient (NOLOCK) m on b.zid = m.zid and b.xpatient=m.xpatient 
+
+end table

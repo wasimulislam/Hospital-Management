@@ -1,0 +1,885 @@
+screen proceduredetails
+ 
+    
+     sidebar list one, list dialysis,text loader
+     sections  form one, jscript myscript
+	 
+	 text loader
+		"<div id='Create' style='display:none' class='box'><p class='loader-text'>Please Wait Appointment is Confirming.....</p><div class='labloader'><span class='dot'></span><span class='dot'></span><span class='dot'></span><span class='dot'></span></div></div>"
+	 end text
+
+    list one
+        caption "Procedure Appointment Detail List For "+xitem+" - "+caitem.xdesc("xitem='"+xitem+"'")+" " +xdate
+        table procedureplanview
+        order xyearperdate,xitem,xrow
+        fixed xyearperdate,xitem
+        select "xapptype='Procedure'"
+		dtlengthmenu [100, -1], [100, "All"]
+		maxheight 2000
+        rows 100
+        objects xrow attrib(link "login?screen=proceduredetails&command=Show&xyearperdate=?&xitem=?&xrow=?"),~
+                xapptime,xpatient,xname,~
+                xstatus,xnote,xyearperdate
+		field xyearperdate
+			display hide
+        end field
+
+        header "Serial No","Time","Patient ID","Patient's Name","Status","Note"
+     end list
+
+
+     form one
+        caption "Procedure Appointment Detail For "+xitem+" - "+caitem.xdesc("xitem='"+xitem+"'")
+      	table mmappointmentprocedure
+		primarykey xcase
+        order xyearperdate,xitem,xrow
+        fixed xyearperdate,xitem
+        select "xapptype='Procedure'"
+        return "login"
+        layout 2
+        pstyle 3  
+        objects Show,Clear,Back,~
+                Patient_Registration,~
+                Booked,Confirmed,Reported,Attended,Completed,*next,Canceled,Note_Update,Blocked,Open,Shifting,Slot_Manage,Day_Shifting,"<p>" ,~//,Cancel,Multiple_Block,Completed
+                xrow attrib(readonly),xapptimelocal display(const),xapptime display(hide),~
+                xdoctorprofile display(hide),xpatient width(30),xpatientdesc,xmobile,xage display(const),xbillno display(hide),xdoctor,xdoctordesc,xstatus display(const),~
+                xtype display(hide),xrate display(hide),xdate display(hide),~
+                xdname,xopprice display(hide),xcase display(const),~
+                xnote,xclinictype display(hide),~
+                xstatusar display(hide),~
+                xroom display(hide),xapptype display(hide),xdorrow display(hide)
+	
+	
+
+	
+	
+	field xdoctor
+			 pick list ipdorderdoc
+			 embed required
+	end field
+
+
+	field Note_Update
+		witdth 130
+		height 40
+		event before
+		
+		end event
+		event after
+			set temp= #sql("update mmappointmentprocedure set xnote='"+xnote+"' where zid='"+#id+"' and xapptype='"+xapptype+"' and xcase='"+xcase+"'")
+			action show
+		end event
+	end field
+
+	field xopprice
+		attrib local
+	end field
+
+	field xcase
+		width 150
+		event after
+			set globals(xyearperdate)=xyearperdate
+			set globals(xitem)=xitem
+			set globals(xrow)=xrow
+			set globals(xcase)=xcase
+			
+		end event
+	end field
+
+	field xdname
+		caption Name
+		attrib local
+		display const
+		event after
+			set xdname = caitem.xdesc("xitem='"+xitem+"'")
+		end event
+	end field
+
+	field xdoctordesc
+	attrib local
+	caption Doctor Profile
+	display const
+	width 250
+	event after
+
+		if xdoctor .eq. ""
+			set roomno=""
+			set deptname=""
+			set floor=""
+			set wing=""
+		else
+		    set name =pdmst.xname("xstaff='"+xdoctor+"' and xempstatus in ('Normal','Inactive')")
+			set designation=pdmstview.designationname("xstaff='"+xdoctor+"' and xempstatus in ('Normal','Inactive')")
+			set deptname = "<br>"+pdmstview.departmentname("xstaff='"+xdoctor+"' and xempstatus in ('Normal','Inactive')")
+			set profdegree=pdmst.xprofdegree("xstaff = '"+xdoctor+"' and xempstatus in ('Normal','Inactive')")
+		    set roomno=", Room No."
+		    set room=pdmst.xroom("xstaff = '"+xdoctor+"' and xempstatus in ('Normal','Inactive')")
+		    set floor =", "+caroomheader.xfloor("xroom='"+room+"'")
+		    set wing =", "+caroomheader.xwing("xroom='"+room+"'")
+		    set clinictyp=caroomheader.xclinictype("xroom='"+room+"'")
+		end if
+		set xdoctordesc="<b>"+name+"<br>"+designation+deptname+"</b>"+"<br> "+profdegree+"<br> "+clinictyp+roomno+room+floor+wing
+	end event
+	end field
+
+
+
+
+	field xapptimelocal
+	display const
+	attrib local
+	caption <span class=sheader style="	BACKGROUND:#563d7c;color:white;PADDING-BOTTOM: 2px;PADDING-LEFT: 7px; PADDING-RIGHT: 50px; 	PADDING-TOP: 2px;">Appointment Date & Times</span>
+	event after
+		set appdate=#sql(varchar,"select convert(VARCHAR,xdate, 106)  from mmappointmentprocedure WITH (NOLOCK) where xcase='"+xcase+"' ")
+		set apptimelocal=#sesql("select FORMAT(CAST(xapptime AS datetime), 'hh:mm tt') from mmappointmentprocedure WITH (NOLOCK) where zid='"+#id+"' and xcase='"+xcase+"'")
+		set xapptimelocal=appdate+"  "+apptimelocal
+	end event
+	end field
+
+
+	field xpatient
+	event after
+		class careports(getReport{mmappoitmentprocedurecard;2;in,st;zid,case;xcase;Attended Card})
+		class careports(getReport{patientwristbandprocedureapp;2;in,st;zid,case;xcase;Wristband})
+		//class careports(getReport{patientwristbandprocedureapp;2;in,st;zid,case;xcase;Wristband})
+	end event
+	embed required
+	end field
+
+
+
+	field xpatientdesc
+	width 120
+	attrib local
+	display const
+	caption Patient's Name
+	event after
+		if xpatient .ne. ""
+			set xpatientdesc = mmpatient.xname("xpatient='"+xpatient+"'")
+		end if 
+	end event
+	end field
+
+	field xnote
+	width 70
+	column 2
+	height 3
+	end field
+
+	field xrate
+	caption Fee
+	end field
+
+	field xrow
+	caption Serial No
+	event after
+		set year=#sub(#date,0,4)
+		set per=#sub(#date,5,2)
+		set day=#sub(#date,8,2)
+		set curyearperdate = year+per+day
+		
+	if xyearperdate<curyearperdate
+		set #field(Confirmed.attrib) = "disabled"
+		set #field(Open.attrib) = "disabled"
+		set #field(Blocked.attrib) = "disabled"
+		set #field(Booked.attrib) = "disabled"
+		set #field(Canceled.attrib) = "disabled"
+		set #field(Reported.attrib) = "disabled"
+		set #field(Shifting.attrib)="disabled"
+		set #field(Attended.attrib) = "disabled"
+		set #field(Completed.attrib) = "disabled"
+		set #field(Note_Update.attrib) = "disabled"
+		set #field(Slot_Manage.attrib) = "disabled"
+		set #field(Day_Shifting.attrib) = "disabled"
+		set #field(Patient_Registration.attrib)="disabled"
+		set #field(xpatient.display)="const"
+		set #field(xdoctor.display)="const"
+		set #field(xmobile.display)="const"
+	end if
+	
+	if mmappointmentprocedure.xyearperdate("xcase='"+xcase+"'")<curyearperdate
+		set #field(Confirmed.attrib) = "disabled"
+		set #field(Open.attrib) = "disabled"
+		set #field(Blocked.attrib) = "disabled"
+		set #field(Booked.attrib) = "disabled"
+		set #field(Canceled.attrib) = "disabled"
+		set #field(Reported.attrib) = "disabled"
+		set #field(Shifting.attrib)="disabled"
+		set #field(Attended.attrib) = "disabled"
+		set #field(Completed.attrib) = "disabled"
+		set #field(Note_Update.attrib) = "disabled"
+		set #field(Slot_Manage.attrib) = "disabled"
+		set #field(Day_Shifting.attrib) = "disabled"
+		set #field(Patient_Registration.attrib)="disabled"
+		set #field(xpatient.display)="const"
+		set #field(xdoctor.display)="const"
+		set #field(xmobile.display)="const"
+	end if
+	
+	if xrow<1
+		set #field(Confirmed.attrib) = "disabled"
+		set #field(Open.attrib) = "disabled"
+		set #field(Blocked.attrib) = "disabled"
+		set #field(Booked.attrib) = "disabled"
+		set #field(Canceled.attrib) = "disabled"
+		set #field(Reported.attrib) = "disabled"
+		set #field(Shifting.attrib)="disabled"
+		set #field(Attended.attrib) = "disabled"
+		set #field(Completed.attrib) = "disabled"
+		set #field(Note_Update.attrib) = "disabled"
+		set #field(Slot_Manage.attrib) = "disabled"
+		set #field(Day_Shifting.attrib) = "disabled"
+		set #field(Patient_Registration.attrib)="disabled"
+		set #field(xpatient.display)="const"
+		set #field(xdoctor.display)="const"
+		set #field(xmobile.display)="const"
+	end if
+	
+	if xstatus .eq. "Booked"
+		set #field(Blocked.attrib) = "disabled"
+		set #field(Open.attrib) = "disabled"
+		set #field(Booked.attrib) = "disabled"
+		//set #field(Reported.attrib) = "disabled"
+	end if
+	
+	if mmappointmentprocedure.xstatus("xcase='"+xcase+"'") .eq. "Booked"
+		set #field(Blocked.attrib) = "disabled"
+		set #field(Open.attrib) = "disabled"
+		set #field(Booked.attrib) = "disabled"
+		//set #field(Reported.attrib) = "disabled"
+	end if
+	
+	if xstatus .eq. "Blocked"
+		set #field(Shifting.attrib)="disabled"
+	end if
+	if mmappointmentprocedure.xstatus("xcase='"+xcase+"'") .eq. "Blocked"
+		set #field(Shifting.attrib)="disabled"
+	end if
+	if xstatus .eq. "Confirmed"
+		set #field(Confirmed.attrib) = "disabled"
+		set #field(Open.attrib) = "disabled"
+		set #field(Blocked.attrib) = "disabled"
+		set #field(Booked.attrib) = "disabled"
+		set #field(Canceled.attrib) = "disabled"
+		set #field(xpatient.display)="const"
+		set #field(xdoctor.display)="const"
+		set #field(xmobile.display)="const"
+	end if
+		
+	if mmappointmentprocedure.xstatus("xcase='"+xcase+"'") .eq. "Confirmed"
+		set #field(Confirmed.attrib) = "disabled"
+		set #field(Open.attrib) = "disabled"
+		set #field(Blocked.attrib) = "disabled"
+		set #field(Booked.attrib) = "disabled"
+		set #field(Canceled.attrib) = "disabled"
+		set #field(xpatient.display)="const"
+		set #field(xdoctor.display)="const"
+		set #field(xmobile.display)="const"
+	end if
+	
+	if xstatus .eq. "Reported"
+		set #field(Reported.attrib) = "disabled"
+		set #field(Confirmed.attrib) = "disabled"
+		set #field(Open.attrib) = "disabled"
+		set #field(Blocked.attrib) = "disabled"
+		set #field(Booked.attrib) = "disabled"
+		set #field(Shifting.attrib)="disabled"
+		set #field(xpatient.display)="const"
+		set #field(xdoctor.display)="const"
+		set #field(xmobile.display)="const"
+		set #field(Canceled.attrib) = "disabled"
+	end if
+	
+	if mmappointmentprocedure.xstatus("xcase='"+xcase+"'") .eq. "Reported"
+		set #field(Reported.attrib) = "disabled"
+		set #field(Confirmed.attrib) = "disabled"
+		set #field(Open.attrib) = "disabled"
+		set #field(Blocked.attrib) = "disabled"
+		set #field(Booked.attrib) = "disabled"
+		set #field(Shifting.attrib)="disabled"
+		set #field(xpatient.display)="const"
+		set #field(xdoctor.display)="const"
+		set #field(xmobile.display)="const"
+		set #field(Canceled.attrib) = "disabled"
+	end if
+	
+	if xstatus .eq. "Attended"
+		set #field(Attended.attrib) = "disabled"
+		set #field(Confirmed.attrib) = "disabled"
+		set #field(Open.attrib) = "disabled"
+		set #field(Blocked.attrib) = "disabled"
+		set #field(Booked.attrib) = "disabled"
+		set #field(Reported.attrib) = "disabled"
+		set #field(Shifting.attrib)="disabled"
+		set #field(xpatient.display)="const"
+		set #field(xdoctor.display)="const"
+		set #field(xmobile.display)="const"
+		set #field(Canceled.attrib) = "disabled"
+	end if
+	
+	if mmappointmentprocedure.xstatus("xcase='"+xcase+"'") .eq. "Attended"
+		set #field(Attended.attrib) = "disabled"
+		set #field(Confirmed.attrib) = "disabled"
+		set #field(Open.attrib) = "disabled"
+		set #field(Blocked.attrib) = "disabled"
+		set #field(Booked.attrib) = "disabled"
+		set #field(Reported.attrib) = "disabled"
+		set #field(Shifting.attrib)="disabled"
+		set #field(xpatient.display)="const"
+		set #field(xdoctor.display)="const"
+		set #field(xmobile.display)="const"
+		set #field(Canceled.attrib) = "disabled"
+	end if
+	
+	if xstatus .eq. "Completed"
+		set #field(Completed.attrib) = "disabled"
+		set #field(Confirmed.attrib) = "disabled"
+		set #field(Open.attrib) = "disabled"
+		set #field(Blocked.attrib) = "disabled"
+		set #field(Booked.attrib) = "disabled"
+		set #field(Reported.attrib) = "disabled"
+		set #field(Attended.attrib) = "disabled"
+		set #field(Shifting.attrib)="disabled"
+		set #field(xpatient.display)="const"
+		set #field(xdoctor.display)="const"
+		set #field(xmobile.display)="const"
+		set #field(Canceled.attrib) = "disabled"
+		set #field(Note_Update.attrib)="disabled"
+	end if
+
+	if mmappointmentprocedure.xstatus("xcase='"+xcase+"'") .eq. "Completed"
+		set #field(Completed.attrib) = "disabled"
+		set #field(Confirmed.attrib) = "disabled"
+		set #field(Open.attrib) = "disabled"
+		set #field(Blocked.attrib) = "disabled"
+		set #field(Booked.attrib) = "disabled"
+		set #field(Reported.attrib) = "disabled"
+		set #field(Attended.attrib) = "disabled"
+		set #field(Shifting.attrib)="disabled"
+		set #field(xpatient.display)="const"
+		set #field(xdoctor.display)="const"
+		set #field(xmobile.display)="const"
+		set #field(Canceled.attrib) = "disabled"
+		set #field(Note_Update.attrib)="disabled"
+	end if
+
+	if xpatient .eq. mmpatient.xpatient("xpatient='"+xpatient+"'") .and. xpatient .ne. ""
+		set #field(Patient_Registration.attrib)="disabled"
+	end if
+	
+	if mmappointmentprocedure.xpatient("xcase='"+xcase+"'") .eq. mmpatient.xpatient("xpatient='"+xpatient+"'") .and. mmappointmentprocedure.xpatient("xcase='"+xcase+"'") .ne. ""
+		set #field(Patient_Registration.attrib)="disabled"
+	end if
+
+	end event
+	end field
+
+	field xmobile
+	caption Contact No.
+	width 32
+	embed required placeholder="01XXXXXXXXX"  onblur="validateMobile()"
+	end field
+
+	field Booked
+	//customclass Booked
+	width 100
+	height 40
+	event before
+		set year=#sub(#date,0,4)
+		set per=#sub(#date,5,2)
+		set day=#sub(#date,8,2)
+		set curyearperdate = year+per+day
+		set xpatient=#trim(xpatient)
+		set curpatient = mmappointmentprocedure.xpatient("xyearperdate="+xyearperdate+" and xitem='"+xitem+"' and xpatient='"+xpatient+"' and xcase<>'"+xcase+"' and xapptype='"+xapptype+"'")
+		
+		if xmobile .eq. ""
+			set xmobile=mmpatient.xmobile("xpatient='"+xpatient+"'")
+		end if
+		set visittype=mmpatientepisode.xepisodetype("xpatient='"+xpatient+"' and xstatus='Open'")
+		if visittype .eq. "IPD"
+			set xrate=caitem.xipprice("xitem='"+xitem+"'")
+		else
+			set xrate=caitem.xopprice("xitem='"+xitem+"'")
+		end if
+
+		if xitem .eq. ""
+			error "Cannot Proceed--Please Select Procedure Code From Procedure Appointment Screen"
+		else if xrow<1
+				error "Cannot Proceed--Please Select Serial No."
+		else if xyearperdate<curyearperdate
+			error "Appointment date is invalid!"
+		else if mmappointmentprocedure.xyearperdate("xcase='"+xcase+"'")<curyearperdate
+			error "Appointment date is invalid!"
+		//else if curyearperdate .eq. xyearperdate //.and. xapptime .lt. #time
+		//error "Appointment Time Is Invalid!"
+		else if xpatient .eq. ""
+			error "Patient is blank"
+		else if xstatus .ne. "Open"
+			error "Booked is only allowed for open slot"
+		else if mmappointmentprocedure.xstatus("xcase='"+xcase+"'") .ne. "Open"
+			error "Booked is only allowed for open slot"
+		else if xpatient .eq. curpatient
+			error "The patient already had and appointment on the same day"
+		else if xmobile .eq. ""
+			error "Please give the contact number"
+		else if xdoctor .eq. ""
+			error "Please give Doctor ID"
+		else if pdmst.xstaff("xstaff='"+xdoctor+"' and xempstatus in ('Normal','Inactive')") .ne. xdoctor
+			error "Please Select Active Doctor ID"
+		end if
+		end event
+		event after
+		if xitem .ne. "" .and. xpatient .ne. ""
+		set temp =#sesql("update mmappointmentprocedure set xdoctor='"+xdoctor+"',xstatus='Booked',xpatient='"+xpatient+"',xmobile='"+xmobile+"',xrate='"+xrate+"',xappbooked=GETDATE(),xbookid='"+#user+"',xnote='"+xnote+"' where zid='"+#id+"' and  xcase='"+xcase+"' and xstatus='Open'")
+		end if
+		action show
+		end event
+	end field
+	
+	
+	field Confirmed
+	//customclass Confirmed
+	width 100
+	height 40
+		event  before
+			set xpatient=#trim(xpatient)
+			set curpatient = mmappointmentprocedure.xpatient("xyearperdate="+xyearperdate+" and xitem='"+xitem+"' and xpatient='"+xpatient+"' and xcase<>'"+xcase+"' and xapptype='"+xapptype+"'")
+			set year=#sub(#date,0,4)
+			set per=#sub(#date,5,2)
+			set day=#sub(#date,8,2)
+			set curyearperdate = year+per+day
+			set visittype=mmpatientepisode.xepisodetype("xpatient='"+xpatient+"' and xstatus='Open'")
+			if visittype .eq. "IPD"
+				set xrate=caitem.xipprice("xitem='"+xitem+"'")
+			else
+				set xrate=caitem.xopprice("xitem='"+xitem+"'")
+			end if
+			if xmobile .eq. ""
+				set xmobile=mmpatient.xmobile("xpatient='"+xpatient+"'")
+			end if
+		set bookedpatient=mmappointmentprocedure.xpatient("xcase='"+xcase+"'")
+		if xitem .eq. ""
+			error "Cannot Proceed--Please Select Procedure Code From Procedure Appointment Screen"
+		else if xrow<1
+				error "Cannot Proceed--Please Select Serial No."
+		else if mmappointmentprocedure.xyearperdate("xcase='"+xcase+"'")<curyearperdate
+			error "Appointment date is invalid!" 
+		else if xyearperdate<curyearperdate
+			error "Appointment date is invalid!"
+		//else if curyearperdate .eq. xyearperdate //.and. xapptime .lt. #time
+		//error "Appointment Time Is Invalid!"
+		else if xpatient .eq. ""
+			error "Patient is blank"
+		else if xmobile .eq. ""
+			error "Please Select Mobile No."
+		else if xdoctor .eq. ""
+			error "Please Select Doctor ID"
+		else if xpatient .ne. mmpatient.xpatient("xpatient='"+xpatient+"' and zactive='1'")
+			error "Patient ID is not active in the stystem"
+		//else if mmappointmentprocedure.xstatus("xcase='"+xcase+"'") .ne. "Booked"
+			//error "Confirmed is only allowed for booked slot"
+		else if xstatus .ne. "Open" .and. xstatus .ne. "Booked"
+			error "Slot should be open or booked"
+		else if mmappointmentprocedure.xstatus("xcase='"+xcase+"'") .ne. "Open" .and. mmappointmentprocedure.xstatus("xcase='"+xcase+"'") .ne. "Booked"
+			error "Slot should be open or booked"
+		else if xpatient .eq. curpatient
+			error "The patient already had and appointment on the same day"
+		//else if bookedpatient .ne. "" .and. bookedpatient .eq. mmpatient.xpatient("xpatient='"+bookedpatient+"'") .and. bookedpatient .ne. xpatient
+			//error "Cannot Proceed--Patient ID Missmatch With Booked Patient ID Please Show"
+		end if
+		end event
+		event after
+		if xitem .ne. "" .and. xpatient .ne. ""
+		set temp = #spsql(zabsp_PRCS_ProcedureApp,#id,#user,"procedureppointment","Confirmed",xpatient,xdate,"OPD",xdoctor,xcase,xrow)
+		set temp = #sesql("update mmappointmentprocedure set xmobile='"+xmobile+"',xnote='"+xnote+"' where zid='"+#id+"' and  xcase='"+xcase+"'")
+		end if
+		action show
+		end event
+	end field
+
+	field Reported
+	//customclass Reported
+	width 100
+	height 40
+		event before
+		set year=#sub(#date,0,4)
+		set per=#sub(#date,5,2)
+		set day=#sub(#date,8,2)
+		set curyearperdate = year+per+day
+			set episodetype=mmappointmentprocedure.xepisodetype("xcase='"+xcase+"'")
+			set donum = #sql("select xdornum from opdodetail where xcase='"+xcase+"' and xitem='"+xitem+"'" )
+			double gtot = 0.00
+			set gtot = #sql(double,"select sum(isnull(xtotamt,0)-isnull(xvoucheramt,0)-isnull(xcrnamt,0)-isnull(xearnedbonusamt,0)-isnull(xdiscamt,0)+isnull(xvatamt,0)+isnull(xsupptaxamt,0)+isnull(xroundingchange,0)-isnull(xcardamt,0)) from opdoheader where xdornum='"+donum+"'")
+			set  gtot = #round(gtot,2)
+			if xrow<1
+				error "Cannot Proceed--Please Select Serial No."
+			else if xyearperdate<curyearperdate  //.and. xapptime .lt. #time
+				error "Appointment Date is invalid!"
+			else if mmappointmentprocedure.xstatus("xcase='"+xcase+"'") .ne. "Confirmed"
+				error "Cannot Proceed -- Reported Is Only Allowed In Confirmed Slot"
+			else if episodetype .ne. "IPD" .and. gtot >0.00
+				error "Cannot Proceed--This Patient Has Due Amount "+gtot
+			end if
+		end event
+		event after
+		set temp =#sesql("update mmappointmentprocedure set xstatus='Reported',xappreported=GETDATE(),xreportid='"+#user+"' where zid='"+#id+"' and xcase='"+xcase+"' and xstatus='Confirmed'")
+		action show
+		end event
+	end field
+
+	field Attended
+	//customclass Attended
+	width 100
+	height 40
+	event before
+		set year=#sub(#date,0,4)
+		set per=#sub(#date,5,2)
+		set day=#sub(#date,8,2)
+		set curyearperdate = year+per+day
+
+		if xrow<1
+				error "Cannot Proceed--Please Select Serial No."
+		else if xyearperdate<curyearperdate  //.and. xapptime .lt. #time
+			error "Appointment Date is invalid!"
+		else if mmappointmentprocedure.xstatus("xcase='"+xcase+"'") .ne. "Reported"
+			error "Cannot Proceed -- Attended Is Only Allowed In Reported Slot"
+		end if
+	end event
+	event after
+		set temp =#sesql("update mmappointmentprocedure set xstatus='Attended',xappattended=GETDATE(),xattendid='"+#user+"' where zid='"+#id+"' and  xcase='"+xcase+"' and xstatus='Reported'")
+		action show
+	end event
+	end field
+
+	field Completed
+	//customclass Completed
+	width 100
+	height 40
+	event before
+		set year=#sub(#date,0,4)
+	set per=#sub(#date,5,2)
+	set day=#sub(#date,8,2)
+	set curyearperdate = year+per+day
+
+		if xrow<1
+				error "Cannot Proceed--Please Select Serial No."
+		else if xyearperdate<curyearperdate  //.and. xapptime .lt. #time
+			error "Appointment Date is invalid!"
+		else if mmappointmentprocedure.xstatus("xcase='"+xcase+"'") .ne. "Attended"
+			error "Cannot Proceed -- Completed Is Only Allowed In Attended Slot"
+		end if
+	end event
+	event after
+	set temp =#sesql("update mmappointmentprocedure set xstatus='Completed',xappcompleted=GETDATE(),xcompleteid='"+#user+"' where zid='"+#id+"' and  xcase='"+xcase+"' and xstatus='Attended'")
+	action show
+	end event
+	end field
+
+
+
+	field Blocked
+	//customclass Blocked
+	width 100
+	height 40
+	event before
+	set year=#sub(#date,0,4)
+	set per=#sub(#date,5,2)
+	set day=#sub(#date,8,2)
+	set curyearperdate = year+per+day
+
+		if xrow<1
+				error "Cannot Proceed--Please Select Serial No."
+		else if xyearperdate<curyearperdate  //.and. xapptime .lt. #time
+			error "Appointment Date is invalid!"
+		else if mmappointmentprocedure.xstatus("xcase='"+xcase+"'") .ne. "Open"
+			error "Blocked allowed only for open slot"
+		end if
+	end event
+	event after
+		set temp =#sesql("update mmappointmentprocedure set xstatus='Blocked',xblockid='"+#user+"',xblockdatetime=GETDATE() where zid='"+#id+"' and xcase='"+xcase+"' and xstatus='Open'")
+	action show
+	end event
+	end field
+
+	field Open
+	//customclass Open
+	width 100
+	height 40
+	event before
+	set year=#sub(#date,0,4)
+	set per=#sub(#date,5,2)
+	set day=#sub(#date,8,2)
+	set curyearperdate = year+per+day
+
+	if xrow<1
+		error "Cannot Proceed--Please Select Serial No."
+	else if xyearperdate<curyearperdate  //.and. xapptime .lt. #time
+		error "Appointment Date is invalid!"
+	else if mmappointmentprocedure.xstatus("xcase='"+xcase+"'") .ne. "Blocked"
+		error "Open is only allowed in blocked slot"
+	end if
+	end event
+
+	event after
+	set temp =#sesql("update mmappointmentprocedure set xstatus='Open' where zid='"+#id+"' and xcase='"+xcase+"' and xstatus='Blocked'")
+	action show
+	end event
+	end field
+
+	field Canceled
+	//customclass Cancel
+	width 100
+	height 40
+	event before
+	set year=#sub(#date,0,4)
+	set per=#sub(#date,5,2)
+	set day=#sub(#date,8,2)
+	set curyearperdate = year+per+day
+
+	if xrow<1
+		error "Cannot Proceed--Please Select Serial No."
+	else if xyearperdate<curyearperdate // .and. xapptime .lt. #time
+		error "Appointment Date is invalid!"
+	else if mmappointmentprocedure.xyearperdate("xcase='"+xcase+"'")<curyearperdate // .and. xapptime .lt. #time
+		error "Appointment Date is invalid!"
+	else if mmappointmentprocedure.xstatus("xcase='"+xcase+"'") .ne. "Booked"
+		error "Cancel only allowed for booked slot"
+	else if xstatus .ne. "Booked"
+		error "Cancel only allowed for booked slot"
+	else if xpatient .eq. ""
+		error "Patient is blank"
+	else if xnote .eq. ""
+		error "Please write cancel note"
+	end if			
+	end event
+	event after
+	set temp=#sesql("Update mmappointmentprocedure set xnote='"+xnote+"' where zid='"+#id+"' and xcase='"+xcase+"'")
+	set temp = #spsql(zabsp_MMAPP_validateAfterAppointment,#id,#user,"mmmproceduredetail",xdate,xyearperdate,xtype,xitem,xrow,0,xcase,xpatient,0,"cancel")
+	action show
+	end event
+	end field
+	
+	field Shifting
+		width 100
+		height 40
+		embed onclick="clicked(this)"
+	end field
+
+	field Day_Shifting
+		width 100
+		height 40
+		embed onclick="clicked(this)"
+	end field
+
+
+	field Back
+	width 100
+	height 40
+
+	embed onclick="clicked(this)"
+	end field
+
+	field Multiple_Block
+	width 100
+	height 40
+	embed onclick="clicked(this)"
+	end field
+
+	field Patient_Registration
+	width 130
+	height 40
+	embed onclick="clicked(this)"
+	end field
+
+	field Slot_Manage
+	width 100
+	height 40
+	embed onclick="clicked(this)"
+	end field
+
+
+
+embed onsubmit="submitit(this)"
+
+end form
+
+     jscript myscript
+
+        <script language="javascript" type="text/javascript">
+		
+			$(document).ready(function () {
+            $("#Confirmed").click(function () {
+                $("#Create").toggle();
+            });
+        });
+
+
+		
+        var detail
+        function clicked(b){
+          detail=b.value
+        }
+        function submitit(form){
+
+	        if (detail=="Back"){
+            form.screen.value = "mmprocedureheader"
+            form.searchbutton.value = "Find xyearperdate=?&xitem=?"
+			}
+	        if (detail=="Patient_Registration"){
+            form.screen.value = "dilalyspatient"
+            form.searchbutton.value = "Find xpatient=?"
+          }
+	       
+         if (detail=="Multiple Block"){
+            form.screen.value = "mmappmblock"
+            form.searchbutton.value = "Top"
+          }
+			if (detail=="Shifting"){
+            form.screen.value = "mmproappshift"
+            form.searchbutton.value = "Find xyearperdate=?&xitem=?&xrow=?"
+          }
+			if (detail=="Day_Shifting"){
+            form.screen.value = "mmdateappshiftpro"
+            form.searchbutton.value = "Clear"
+          }  
+			if (detail=="Slot_Manage"){
+			form.screen.value = "mmprocedureappmblock"
+			form.searchbutton.value = "Clear"
+			}
+		
+			if (detail=="Booked"){
+            form.searchbutton.value = "Booked"
+			document.getElementById("Booked").disabled = true;
+			document.getElementById("Confirmed").disabled = true;
+			document.getElementById("Canceled").disabled = true;	
+			
+			
+			}
+		  if (detail=="Confirmed"){
+            form.searchbutton.value = "Confirmed"
+			document.getElementById("Confirmed").disabled = true;
+			document.getElementById("Reported").disabled = true;
+         }
+		
+			if (detail=="Reported"){
+    		form.searchbutton.value = "Reported"
+			document.getElementById("Reported").disabled = true;
+			
+          }
+		  
+		  
+		  if (detail=="Canceled"){
+            form.searchbutton.value = "Canceled"
+			document.getElementById("Canceled").disabled = true;
+			document.getElementById("Confirmed").disabled = true;
+          }
+		  
+		   if (detail=="Note_Update"){
+            form.searchbutton.value = "Note_Update"
+			document.getElementById("Note_Update").disabled = true;
+			
+          }
+		
+		
+		
+		 if (detail=="Attended"){
+            form.searchbutton.value = "Attended"
+			document.getElementById("Attended").disabled = true;
+
+          }
+		
+		
+		 if (detail=="Completed"){
+			form.searchbutton.value = "Completed"
+			document.getElementById("Completed").disabled = true;
+          }
+		
+		
+			if (detail=="Blocked"){
+			form.searchbutton.value = "Blocked"
+			document.getElementById("Blocked").disabled = true;
+          }
+		  
+		  
+        }
+		
+	
+		
+		
+		function validateMobile()
+        {
+            var x = document.one.xmobile.value;
+           if (x==""){
+		   
+		   }
+		   
+		   else if(isNaN(x)|| x.indexOf(" ")!=-1)
+           {
+              alert("Mobile number should be numeric");
+			  setTimeout(function() { one.xmobile.focus(); });
+           }
+		   
+		  
+           else if (x.charAt(0)!="0")
+           {
+              alert("Mobile number should be start with 0");
+			  setTimeout(function() { one.xmobile.focus(); });
+           }
+		   else if (x.length<11 || x.length>11)
+           {
+              alert("Mobile number should be 11 digit");
+			  setTimeout(function() { one.xmobile.focus(); });
+           }
+        }
+		
+		function pickrow(link,row,patient){
+          if (navigator.appName.indexOf("Netscape") >= 0){
+            document.one.xdornum.value=link.text
+			document.one.xdorrow.value=row.text 
+			document.one.xpatient.value=patient.text  			
+			
+          }else{
+            document.one.xdornum.value=link.innerText
+			document.one.xdorrow.value=row.innerText
+			document.one.xpatient.value=patient.innerText
+            
+          }
+		  return false
+		 }
+		 
+		 	$(function() {
+	  $("#oneListTable td").each(function() {
+		if ($(this).text() == 'Blocked') {
+		  $(this).css('background', 'red');
+		  $(this).css('color', 'White');
+		}
+		else if ($(this).text() == 'Open') {
+		  $(this).css('background', '#ffeb3b');
+		}
+		else if ($(this).text() == 'Confirmed') {
+		  $(this).css('background', 'lightsalmon');
+		//  $(this).css('color', 'White');
+		}
+		else if ($(this).text() == 'Booked') {
+		  $(this).css('background', 'deepskyblue');
+		//  $(this).css('color', 'White');
+		}
+		else if ($(this).text() == 'Reported') {
+		  $(this).css('background', 'purple');
+		  $(this).css('color', 'White');
+		}
+		else if ($(this).text() == 'Attended') {
+		  $(this).css('background', 'cornflowerblue');
+		  $(this).css('color', 'White');
+		}
+		else if ($(this).text() == 'Completed') {
+		  $(this).css('background', 'green');
+		  $(this).css('color', 'White');
+		}
+	  });
+	  console.log(oneListTable)
+	});
+
+      
+        </script>
+     end jscript
